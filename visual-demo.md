@@ -1,0 +1,218 @@
+# 🎨 DEMOSTRACIÓN VISUAL DE VAVOY
+
+## 🏠 PÁGINA DE INICIO (Landing Page)
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                         🚗 Vavoy
+
+  Conecta con personas del Valle de Benasque y
+  Merindades de Burgos para compartir viajes cortos
+  en tiempo real: rápido, sencillo y sostenible.
+
+          ┏━━━━━━━━━━━━━━━━━━━━━━━┓
+          ┃    REGISTRARME        ┃  (Verde oscuro)
+          ┗━━━━━━━━━━━━━━━━━━━━━━━┛
+
+          ┏━━━━━━━━━━━━━━━━━━━━━━━┓
+          ┃   INICIAR SESIÓN      ┃  (Blanco con borde verde)
+          ┗━━━━━━━━━━━━━━━━━━━━━━━┛
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+           ¿Cómo funciona?
+
+   ✓ Crea tu cuenta
+   Regístrate en segundos con tu nombre, email y contraseña.
+
+   🚗 Ofrece o busca viajes
+   Publica un viaje que vayas a hacer o busca uno que te convenga.
+
+   🤝 Conecta y comparte
+   Ahorra dinero, reduce tu huella ecológica y conoce a tus vecinos.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Footer: Vavoy · Proyecto piloto de movilidad compartida
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## 📝 PÁGINA DE REGISTRO
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+                Crear cuenta en Vavoy
+
+    Nombre
+    ┌──────────────────────────────────────┐
+    │ Tu nombre completo                   │
+    └──────────────────────────────────────┘
+
+    Email
+    ┌──────────────────────────────────────┐
+    │ tu@email.com                         │
+    └──────────────────────────────────────┘
+
+    Contraseña
+    ┌──────────────────────────────────────┐
+    │ ••••••                               │
+    └──────────────────────────────────────┘
+    Mínimo 6 caracteres
+
+    ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+    ┃         CREAR CUENTA               ┃
+    ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+    ¿Ya tienes cuenta? Iniciar sesión
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## 🎯 DASHBOARD (Vista Principal)
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VAVOY        Hola, Juan Pérez | Mis viajes | Cerrar sesión
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+┌─────────────────────────────┐  ┌─────────────────────────────┐
+│  🔍 BUSCAR VIAJE            │  │  ➕ OFRECER VIAJE           │
+│                             │  │                             │
+│  Origen                     │  │  Origen *                   │
+│  ┌──────────────────────┐   │  │  ┌──────────────────────┐   │
+│  │ Ej: Benasque         │   │  │  │ Ej: Benasque         │   │
+│  └──────────────────────┘   │  │  └──────────────────────┘   │
+│                             │  │                             │
+│  Destino                    │  │  Destino *                  │
+│  ┌──────────────────────┐   │  │  ┌──────────────────────┐   │
+│  │ Ej: Huesca           │   │  │  │ Ej: Huesca           │   │
+│  └──────────────────────┘   │  │  └──────────────────────┘   │
+│                             │  │                             │
+│  ┏━━━━━━━━━━━━━━━━━━━━┓   │  │  Fecha y hora de salida *   │
+│  ┃  BUSCAR VIAJES      ┃   │  │  ┌──────────────────────┐   │
+│  ┗━━━━━━━━━━━━━━━━━━━━┛   │  │  │ [18/11/2025 10:00]   │   │
+│                             │  │  └──────────────────────┘   │
+│  ───────────────────────    │  │                             │
+│  VIAJES DISPONIBLES:        │  │  Plazas disponibles * [3]   │
+│                             │  │  Precio (€) * [5.00]        │
+│  ┌─────────────────────┐    │  │                             │
+│  │ Benasque → Huesca   │    │  │  Notas (opcional)           │
+│  │ 🕒 Mañana 10:00     │    │  │  ┌──────────────────────┐   │
+│  │ 👤 María García     │    │  │  │ Información adicional│   │
+│  │ 🪑 3 plazas         │    │  │  └──────────────────────┘   │
+│  │ 💰 5.00 €           │    │  │                             │
+│  │ 💬 Llevo portabicis │    │  │  ┏━━━━━━━━━━━━━━━━━━━━┓   │
+│  │ ┏━━━━━━━━━━━━━━━┓  │    │  │  ┃  PUBLICAR VIAJE     ┃   │
+│  │ ┃ RESERVAR PLAZA ┃  │    │  │  ┗━━━━━━━━━━━━━━━━━━━━┛   │
+│  │ ┗━━━━━━━━━━━━━━━┛  │    │  │                             │
+│  └─────────────────────┘    │  └─────────────────────────────┘
+│                             │
+│  ┌─────────────────────┐    │
+│  │ Huesca → Zaragoza   │    │
+│  │ 🕒 19 nov 16:30     │    │
+│  │ 👤 María García     │    │
+│  │ 🪑 2 plazas         │    │
+│  │ 💰 8.00 €           │    │
+│  │ 💬 Centro comercial │    │
+│  │ ┏━━━━━━━━━━━━━━━┓  │    │
+│  │ ┃ RESERVAR PLAZA ┃  │    │
+│  │ ┗━━━━━━━━━━━━━━━┛  │    │
+│  └─────────────────────┘    │
+└─────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## 📋 MIS VIAJES (Gestión de viajes)
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VAVOY        Hola, Juan Pérez | Dashboard | Cerrar sesión
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+          Mis viajes como conductor
+          Gestiona los viajes que has publicado
+
+┌──────────────────────────────────────────────────────────┐
+│  Benasque → Huesca                                       │
+│                                                          │
+│  🕒 Mañana 10:00                                         │
+│  🪑 Plazas disponibles: 3                                │
+│  💰 Precio: 5.00 €                                       │
+│  📅 Publicado: 17/11/2025                                │
+│                                                          │
+│  💬 Salgo desde la plaza del pueblo. Llevo portabicis.  │
+│                                                          │
+│  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓                      │
+│  ┃     ELIMINAR VIAJE           ┃  (Rojo)              │
+│  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛                      │
+│                                                          │
+│  [ Viaje activo ]  (Badge verde)                        │
+└──────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────┐
+│  Cerler → Benasque                                       │
+│                                                          │
+│  🕒 Mañana 18:00                                         │
+│  🪑 Plazas disponibles: 4                                │
+│  💰 Precio: 3.00 €                                       │
+│  📅 Publicado: 17/11/2025                                │
+│                                                          │
+│  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓                      │
+│  ┃     ELIMINAR VIAJE           ┃  (Rojo)              │
+│  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛                      │
+│                                                          │
+│  [ Viaje activo ]  (Badge verde)                        │
+└──────────────────────────────────────────────────────────┘
+
+          ┏━━━━━━━━━━━━━━━━━━━━━━━━━┓
+          ┃  ← Volver al Dashboard  ┃
+          ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## 🎨 PALETA DE COLORES
+
+- **Verde principal**: #2d6a4f (botones, títulos)
+- **Verde hover**: #1b4332 (botones al pasar el mouse)
+- **Verde claro**: #52b788 (acentos)
+- **Fondo**: #f8f9fa (gris muy claro)
+- **Tarjetas**: #ffffff (blanco)
+- **Texto**: #212529 (gris oscuro)
+
+---
+
+## 📱 RESPONSIVE
+
+- **Móvil**: Las dos columnas del dashboard se apilan verticalmente
+- **Tablet/Desktop**: Las secciones están lado a lado
+- **Navegación**: Se adapta ocultando el nombre de usuario en móviles pequeños
+
+---
+
+## ✨ INTERACCIONES
+
+1. **Hover en botones**: Se oscurecen ligeramente y se elevan 1px
+2. **Hover en tarjetas de viajes**: Borde verde y sombra más pronunciada
+3. **Inputs con focus**: Borde verde cuando están activos
+4. **Confirmación de eliminar**: Aparece un alert de confirmación antes de eliminar un viaje
+
+---
+
+## 🔒 SEGURIDAD IMPLEMENTADA
+
+✅ Contraseñas hasheadas con bcrypt
+✅ Sesiones con express-session
+✅ Consultas SQL parametrizadas (prevención de SQL injection)
+✅ Validación de campos en servidor
+✅ Solo el dueño puede eliminar sus viajes
+✅ Redirección automática a login si no estás autenticado
