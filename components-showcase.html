@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VAVOY — Design System Showcase</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Design Tokens -->
+  <link rel="stylesheet" href="design-tokens.css">
+
+  <style>
+    /* ============================================
+       COMPONENTES — BOTONES
+       ============================================ */
+
+    .btn {
+      font-family: var(--font-family-base);
+      font-weight: var(--font-weight-semibold);
+      border: none;
+      cursor: pointer;
+      transition: all var(--transition-base);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-2);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary-main);
+      color: white;
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+      box-shadow: var(--shadow-primary);
+    }
+
+    .btn-primary:active {
+      background: var(--primary-dark);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary:disabled {
+      background: var(--neutral-200);
+      color: var(--neutral-400);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--primary-main);
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+      border: 2px solid var(--primary-main);
+    }
+
+    .btn-secondary:hover {
+      background: var(--primary-subtle);
+      border-color: var(--primary-dark);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-primary);
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+    }
+
+    .btn-ghost:hover {
+      background: var(--neutral-100);
+    }
+
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: var(--font-size-sm);
+      border-radius: 6px;
+    }
+
+    .btn-lg {
+      padding: 16px 32px;
+      font-size: var(--font-size-lg);
+      border-radius: 10px;
+    }
+
+
+    /* ============================================
+       COMPONENTES — INPUTS
+       ============================================ */
+
+    .input-group {
+      margin-bottom: var(--spacing-4);
+    }
+
+    .label {
+      display: block;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-2);
+    }
+
+    .input {
+      width: 100%;
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      font-size: var(--font-size-base);
+      font-family: var(--font-family-base);
+      color: var(--text-primary);
+      transition: all var(--transition-base);
+    }
+
+    .input::placeholder {
+      color: var(--text-disabled);
+    }
+
+    .input:focus {
+      outline: none;
+      border-color: var(--primary-main);
+      box-shadow: 0 0 0 3px rgba(45, 122, 79, 0.1);
+    }
+
+    .input.error {
+      border-color: var(--error-main);
+    }
+
+    .input.error:focus {
+      box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+    }
+
+    .input:disabled {
+      background: var(--neutral-50);
+      color: var(--text-disabled);
+      cursor: not-allowed;
+    }
+
+    .helper-text {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      margin-top: var(--spacing-1);
+    }
+
+    .error-message {
+      font-size: var(--font-size-xs);
+      color: var(--error-main);
+      margin-top: var(--spacing-1);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-1);
+    }
+
+
+    /* ============================================
+       COMPONENTES — CARDS
+       ============================================ */
+
+    .card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-4);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--neutral-100);
+      transition: all var(--transition-base);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--border-active);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+      margin-bottom: var(--spacing-3);
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      background: var(--primary-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-weight-semibold);
+      color: var(--primary-dark);
+    }
+
+    .card-title {
+      font-size: var(--font-size-h4);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      margin: 0 0 var(--spacing-1) 0;
+    }
+
+    .card-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--text-tertiary);
+      margin: 0;
+    }
+
+    .card-body {
+      margin: var(--spacing-3) 0;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: var(--spacing-4);
+    }
+
+
+    /* ============================================
+       COMPONENTES — BADGES Y CHIPS
+       ============================================ */
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      line-height: 1;
+    }
+
+    .badge-success {
+      background: var(--success-light);
+      color: var(--success-dark);
+    }
+
+    .badge-info {
+      background: var(--info-light);
+      color: var(--info-dark);
+    }
+
+    .badge-warning {
+      background: var(--warning-light);
+      color: var(--warning-dark);
+    }
+
+    .badge-error {
+      background: var(--error-light);
+      color: var(--error-dark);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      background: var(--neutral-100);
+      color: var(--text-primary);
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .chip:hover {
+      background: var(--neutral-200);
+    }
+
+    .chip.active {
+      background: var(--primary-subtle);
+      color: var(--primary-dark);
+      border-color: var(--primary-main);
+    }
+
+
+    /* ============================================
+       LAYOUT
+       ============================================ */
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--spacing-4);
+    }
+
+    .section {
+      margin-bottom: var(--spacing-12);
+    }
+
+    .section-title {
+      font-size: var(--font-size-h2);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-6);
+      padding-bottom: var(--spacing-3);
+      border-bottom: 2px solid var(--border);
+    }
+
+    .grid {
+      display: grid;
+      gap: var(--spacing-6);
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    .demo-group {
+      margin-bottom: var(--spacing-6);
+    }
+
+    .demo-group h3 {
+      font-size: var(--font-size-h4);
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-3);
+    }
+
+    .demo-row {
+      display: flex;
+      gap: var(--spacing-3);
+      flex-wrap: wrap;
+      margin-bottom: var(--spacing-3);
+    }
+
+    .color-swatch {
+      width: 100px;
+      height: 100px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    /* Header */
+    .app-header {
+      height: 64px;
+      background: white;
+      border-bottom: 1px solid var(--neutral-100);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--spacing-4);
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+    }
+
+    .logo {
+      font-size: var(--font-size-h3);
+      font-weight: var(--font-weight-bold);
+      color: var(--primary-main);
+    }
+
+    .price {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      color: var(--primary-main);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="logo">VAVOY</div>
+    <button class="btn btn-primary btn-sm">Iniciar sesión</button>
+  </header>
+
+  <div class="container">
+
+    <!-- Colores -->
+    <section class="section">
+      <h2 class="section-title">🎨 Paleta de Colores</h2>
+
+      <div class="demo-group">
+        <h3>Colores Primarios</h3>
+        <div class="demo-row">
+          <div class="color-swatch" style="background: #2D7A4F; color: white;">
+            Primary<br>#2D7A4F
+          </div>
+          <div class="color-swatch" style="background: #3B82C4; color: white;">
+            Secondary<br>#3B82C4
+          </div>
+          <div class="color-swatch" style="background: #F59E42; color: white;">
+            Accent<br>#F59E42
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-group">
+        <h3>Colores Semánticos</h3>
+        <div class="demo-row">
+          <div class="color-swatch" style="background: #E8F5EF; color: #1E5A3A;">
+            Éxito<br>#E8F5EF
+          </div>
+          <div class="color-swatch" style="background: #FEF3E8; color: #D47A1E;">
+            Advertencia<br>#FEF3E8
+          </div>
+          <div class="color-swatch" style="background: #FDEAEC; color: #B02A37;">
+            Error<br>#FDEAEC
+          </div>
+          <div class="color-swatch" style="background: #EBF4FA; color: #2B6399;">
+            Info<br>#EBF4FA
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Tipografía -->
+    <section class="section">
+      <h2 class="section-title">✍️ Tipografía</h2>
+
+      <div class="demo-group">
+        <h1 class="text-h1">Heading 1 — Encuentra tu viaje</h1>
+        <h2 class="text-h2">Heading 2 — Viajes disponibles hoy</h2>
+        <h3 class="text-h3">Heading 3 — Detalles del conductor</h3>
+        <h4 class="text-h4">Heading 4 — Información adicional</h4>
+        <p class="text-body-lg">Body Large — Texto destacado para introducciones o resúmenes importantes.</p>
+        <p class="text-body">Body Regular — Este es el texto principal que se usa en párrafos y contenido general de la aplicación.</p>
+        <p class="text-body-sm">Body Small — Texto secundario para información complementaria o descripciones breves.</p>
+        <p class="text-caption">Caption — Microcopy, timestamps, notas al pie.</p>
+      </div>
+    </section>
+
+
+    <!-- Botones -->
+    <section class="section">
+      <h2 class="section-title">🔘 Botones</h2>
+
+      <div class="demo-group">
+        <h3>Tipos de Botones</h3>
+        <div class="demo-row">
+          <button class="btn btn-primary">Reservar ahora</button>
+          <button class="btn btn-secondary">Ver detalles</button>
+          <button class="btn btn-ghost">Cancelar</button>
+          <button class="btn btn-primary" disabled>Deshabilitado</button>
+        </div>
+      </div>
+
+      <div class="demo-group">
+        <h3>Tamaños</h3>
+        <div class="demo-row">
+          <button class="btn btn-primary btn-lg">Botón Grande</button>
+          <button class="btn btn-primary">Botón Normal</button>
+          <button class="btn btn-primary btn-sm">Botón Pequeño</button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Inputs -->
+    <section class="section">
+      <h2 class="section-title">📝 Formularios</h2>
+
+      <div class="grid">
+        <div class="input-group">
+          <label class="label">Origen</label>
+          <input type="text" class="input" placeholder="Escribe tu punto de partida">
+          <p class="helper-text">Introduce tu dirección o punto de referencia</p>
+        </div>
+
+        <div class="input-group">
+          <label class="label">Destino</label>
+          <input type="text" class="input" placeholder="¿A dónde vas?">
+        </div>
+
+        <div class="input-group">
+          <label class="label">Email (con error)</label>
+          <input type="email" class="input error" value="email-invalido">
+          <p class="error-message">⚠ Por favor introduce un email válido</p>
+        </div>
+
+        <div class="input-group">
+          <label class="label">Campo deshabilitado</label>
+          <input type="text" class="input" value="No editable" disabled>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Badges y Chips -->
+    <section class="section">
+      <h2 class="section-title">🏷️ Badges y Chips</h2>
+
+      <div class="demo-group">
+        <h3>Badges</h3>
+        <div class="demo-row">
+          <span class="badge badge-success">2 plazas</span>
+          <span class="badge badge-info">Verificado</span>
+          <span class="badge badge-warning">Salida en 10 min</span>
+          <span class="badge badge-error">Cancelado</span>
+        </div>
+      </div>
+
+      <div class="demo-group">
+        <h3>Chips (filtros seleccionables)</h3>
+        <div class="demo-row">
+          <span class="chip active">Hoy</span>
+          <span class="chip">Mañana</span>
+          <span class="chip">Esta semana</span>
+          <span class="chip">Flexibles</span>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Cards -->
+    <section class="section">
+      <h2 class="section-title">🎴 Cards de Viaje</h2>
+
+      <div class="grid">
+
+        <!-- Card 1 -->
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar">AM</div>
+            <div>
+              <h3 class="card-title">Ana Martínez</h3>
+              <p class="card-subtitle">⭐ 4.8 · 23 viajes</p>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <h4 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--text-primary); margin: 0 0 8px 0;">
+              Madrid → Segovia
+            </h4>
+            <p style="font-size: var(--font-size-sm); color: var(--text-tertiary); margin: 0;">
+              Hoy, 18:30
+            </p>
+          </div>
+
+          <div class="card-footer">
+            <div style="display: flex; gap: 8px;">
+              <span class="badge badge-success">2 plazas</span>
+            </div>
+            <span class="price">15€</span>
+          </div>
+
+          <button class="btn btn-primary" style="width: 100%; margin-top: 16px;">
+            Reservar ahora →
+          </button>
+        </div>
+
+
+        <!-- Card 2 -->
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar">JL</div>
+            <div>
+              <h3 class="card-title">Javier López</h3>
+              <p class="card-subtitle">⭐ 5.0 · 47 viajes</p>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <h4 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--text-primary); margin: 0 0 8px 0;">
+              Barcelona → Girona
+            </h4>
+            <p style="font-size: var(--font-size-sm); color: var(--text-tertiary); margin: 0;">
+              Mañana, 09:00
+            </p>
+          </div>
+
+          <div class="card-footer">
+            <div style="display: flex; gap: 8px;">
+              <span class="badge badge-success">3 plazas</span>
+              <span class="badge badge-info">Equipaje grande</span>
+            </div>
+            <span class="price">12€</span>
+          </div>
+
+          <button class="btn btn-primary" style="width: 100%; margin-top: 16px;">
+            Reservar ahora →
+          </button>
+        </div>
+
+
+        <!-- Card 3 -->
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar">MC</div>
+            <div>
+              <h3 class="card-title">María Castro</h3>
+              <p class="card-subtitle">⭐ 4.9 · 31 viajes</p>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <h4 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--text-primary); margin: 0 0 8px 0;">
+              Valencia → Alicante
+            </h4>
+            <p style="font-size: var(--font-size-sm); color: var(--text-tertiary); margin: 0;">
+              Hoy, 20:00
+            </p>
+          </div>
+
+          <div class="card-footer">
+            <div style="display: flex; gap: 8px;">
+              <span class="badge badge-success">1 plaza</span>
+              <span class="badge badge-warning">Salida en 2h</span>
+            </div>
+            <span class="price">18€</span>
+          </div>
+
+          <button class="btn btn-primary" style="width: 100%; margin-top: 16px;">
+            Reservar ahora →
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- Espaciado -->
+    <section class="section">
+      <h2 class="section-title">📐 Sistema de Espaciado (4pt)</h2>
+
+      <div class="demo-group">
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+          <div style="background: var(--primary-subtle); padding: 4px; border-radius: 4px;">
+            <div style="background: var(--primary-main); width: 4px; height: 40px;"></div>
+            <small>4px</small>
+          </div>
+          <div style="background: var(--primary-subtle); padding: 4px; border-radius: 4px;">
+            <div style="background: var(--primary-main); width: 8px; height: 40px;"></div>
+            <small>8px</small>
+          </div>
+          <div style="background: var(--primary-subtle); padding: 4px; border-radius: 4px;">
+            <div style="background: var(--primary-main); width: 12px; height: 40px;"></div>
+            <small>12px</small>
+          </div>
+          <div style="background: var(--primary-subtle); padding: 4px; border-radius: 4px;">
+            <div style="background: var(--primary-main); width: 16px; height: 40px;"></div>
+            <small>16px</small>
+          </div>
+          <div style="background: var(--primary-subtle); padding: 4px; border-radius: 4px;">
+            <div style="background: var(--primary-main); width: 24px; height: 40px;"></div>
+            <small>24px</small>
+          </div>
+          <div style="background: var(--primary-subtle); padding: 4px; border-radius: 4px;">
+            <div style="background: var(--primary-main); width: 32px; height: 40px;"></div>
+            <small>32px</small>
+          </div>
+          <div style="background: var(--primary-subtle); padding: 4px; border-radius: 4px;">
+            <div style="background: var(--primary-main); width: 48px; height: 40px;"></div>
+            <small>48px</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</body>
+</html>
