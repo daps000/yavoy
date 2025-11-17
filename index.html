@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vavoy - Viajes compartidos entre pueblos</title>
+    <meta name="description" content="Comparte coche entre pueblos. Vavoy conecta vecinos para ir al médico, al mercado o a la ciudad.">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Vavoy</h1>
+                <p class="tagline">Viajes compartidos entre pueblos, hoy para hoy.</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#como-funciona">Cómo funciona</a></li>
+                    <li><a href="#ver-viajes">Ver viajes</a></li>
+                    <li><a href="#publicar-viaje">Publicar viaje</a></li>
+                    <li><a href="#preguntas">Preguntas frecuentes</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section id="hero">
+            <div class="container">
+                <h2>Muévete entre pueblos compartiendo coche</h2>
+                <p class="subtitle">
+                    Vavoy conecta a vecinas y vecinos que necesitan ir al médico, al mercado o a la ciudad con quienes ya van en coche.
+                    Menos gastos, más comunidad.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#ver-viajes" class="btn btn-primary">Ver viajes disponibles</a>
+                    <a href="#publicar-viaje" class="btn btn-secondary">Publicar un viaje</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- CÓMO FUNCIONA -->
+        <section id="como-funciona">
+            <div class="container">
+                <h2>Cómo funciona</h2>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-icon">🚗</div>
+                        <h3>Publica tu viaje</h3>
+                        <p>Indica de dónde sales, a dónde vas, la hora y cuántas plazas tienes libres. Solo te lleva un minuto.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">📱</div>
+                        <h3>Conecta por WhatsApp</h3>
+                        <p>Si alguien está interesado en tu viaje, te contacta directamente por teléfono o WhatsApp para confirmar.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">🤝</div>
+                        <h3>Compartís el trayecto</h3>
+                        <p>Viajáis juntos, compartís gastos de gasolina y reducís coches vacíos en la carretera.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VER VIAJES DISPONIBLES -->
+        <section id="ver-viajes">
+            <div class="container">
+                <h2>Ver viajes disponibles</h2>
+
+                <!-- Filtros -->
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="filter-origen">Origen</label>
+                        <input type="text" id="filter-origen" placeholder="Ej: Villarcayo" autocomplete="off" inputmode="text">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-destino">Destino</label>
+                        <input type="text" id="filter-destino" placeholder="Ej: Burgos" autocomplete="off" inputmode="text">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-fecha">Fecha</label>
+                        <select id="filter-fecha">
+                            <option value="">Todas</option>
+                            <option value="hoy">Hoy</option>
+                            <option value="mañana">Mañana</option>
+                            <option value="proximos">Próximos días</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="btn-filtrar">Filtrar</button>
+                    <button class="btn btn-secondary" id="btn-limpiar">Limpiar filtros</button>
+                </div>
+
+                <!-- Lista de viajes -->
+                <div id="rides-list" class="rides-list">
+                    <!-- Los viajes se cargarán aquí con JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- PUBLICAR VIAJE -->
+        <section id="publicar-viaje">
+            <div class="container">
+                <h2>Publicar un viaje</h2>
+                <p class="section-description">Comparte tu viaje para ayudar a otros vecinos y ahorrar en gastos de gasolina.</p>
+
+                <form id="form-publicar" class="form-publicar">
+                    <div class="form-group">
+                        <label for="nombre">Nombre <span class="required">*</span></label>
+                        <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre" autocomplete="name" inputmode="text">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="origen">Origen <span class="required">*</span></label>
+                            <input type="text" id="origen" name="origen" required placeholder="Pueblo de salida" autocomplete="off" inputmode="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="destino">Destino <span class="required">*</span></label>
+                            <input type="text" id="destino" name="destino" required placeholder="Pueblo de llegada" autocomplete="off" inputmode="text">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fecha">Fecha <span class="required">*</span></label>
+                            <input type="date" id="fecha" name="fecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hora">Hora <span class="required">*</span></label>
+                            <input type="time" id="hora" name="hora" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="plazas">Plazas libres <span class="required">*</span></label>
+                            <input type="number" id="plazas" name="plazas" min="1" max="8" required placeholder="1" inputmode="numeric">
+                        </div>
+                        <div class="form-group">
+                            <label for="contacto">Contacto (teléfono o WhatsApp) <span class="required">*</span></label>
+                            <input type="tel" id="contacto" name="contacto" required placeholder="Ej: 600123456" autocomplete="tel" inputmode="tel">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notas">Notas (opcional)</label>
+                        <textarea id="notas" name="notas" rows="3" placeholder="Ej: Paso por Medina de Pomar"></textarea>
+                    </div>
+
+                    <div id="mensaje-exito" class="mensaje-exito" style="display: none;">
+                        ✅ Tu viaje se ha publicado. ¡Gracias por compartir coche!
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-large">Publicar viaje</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- PREGUNTAS FRECUENTES -->
+        <section id="preguntas">
+            <div class="container">
+                <h2>Preguntas frecuentes</h2>
+                <div class="faq">
+                    <div class="faq-item">
+                        <h3>¿Vavoy es una empresa de transporte?</h3>
+                        <p>No, Vavoy no es una empresa de transporte. Solo somos una herramienta para que vecinos y vecinas se pongan en contacto y compartan viajes. Cada viaje es un acuerdo privado entre las personas.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>¿Tengo que pagar algo por usar Vavoy?</h3>
+                        <p>No, Vavoy es completamente gratuito. Solo compartís los gastos de gasolina entre quienes viajáis juntos, si así lo acordáis.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>¿Cómo me contacto con la persona conductora?</h3>
+                        <p>Cada viaje publicado incluye un teléfono o WhatsApp. Solo tienes que escribir o llamar directamente para confirmar el viaje.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>¿Qué pasa si quiero cancelar un viaje?</h3>
+                        <p>Si necesitas cancelar, avisa cuanto antes a la otra persona por teléfono o WhatsApp para que pueda hacer otros planes.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>¿Es obligatorio compartir gastos?</h3>
+                        <p>No es obligatorio, pero es lo recomendable y justo. Normalmente se comparten los gastos de gasolina entre todos los ocupantes del coche.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <p><strong>Vavoy</strong> - Piloto en fase de prueba para mejorar la movilidad rural.</p>
+            <p class="footer-note">Por ahora solo conectamos personas. Cada viaje se acuerda directamente entre quienes comparten coche.</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
