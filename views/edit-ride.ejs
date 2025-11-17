@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar viaje - Vavoy</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="container">
+      <div class="top-bar-content">
+        <a href="/buscar" class="logo">VAVOY</a>
+        <div class="user-info">
+          <span class="user-name">Hola, <%= userName %></span>
+          <a href="/buscar" class="link-light">Buscar viajes</a>
+          <a href="/my-rides" class="link-light">Mis viajes</a>
+          <a href="/logout" class="link-light">Cerrar sesión</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>✏️ Editar viaje</h1>
+      <p class="page-subtitle">Actualiza los detalles de tu trayecto</p>
+    </div>
+
+    <!-- Messages -->
+    <% if (error) { %>
+      <div class="alert alert-error">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <% if (success) { %>
+      <div class="alert alert-success">
+        <%= success %>
+      </div>
+    <% } %>
+
+    <!-- Edit Ride Form -->
+    <div class="card">
+      <h2 class="card-header">Modificar viaje</h2>
+
+      <form method="POST" action="/rides/edit/<%= ride.id %>">
+        <div class="form-group">
+          <label for="origen">Origen *</label>
+          <input
+            type="text"
+            id="origen"
+            name="origen"
+            value="<%= ride.origen %>"
+            placeholder="Ej: Villarcayo, Villaves, Soncillo..."
+            required
+            autofocus
+          >
+          <p class="form-help">Pueblos disponibles: Villarcayo, Villaves, Soncillo, Medina de Pomar, Quincoces, Espinosa, Burgos, Benasque, Cerler, Huesca, Zaragoza</p>
+        </div>
+
+        <div class="form-group">
+          <label for="destino">Destino *</label>
+          <input
+            type="text"
+            id="destino"
+            name="destino"
+            value="<%= ride.destino %>"
+            placeholder="Ej: Medina de Pomar"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="fecha_salida">Fecha y hora de salida *</label>
+          <input
+            type="datetime-local"
+            id="fecha_salida"
+            name="fecha_salida"
+            value="<%= ride.fecha_salida.slice(0, 16) %>"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="plazas_disponibles">Plazas disponibles *</label>
+          <input
+            type="number"
+            id="plazas_disponibles"
+            name="plazas_disponibles"
+            value="<%= ride.plazas_disponibles %>"
+            min="1"
+            max="8"
+            required
+          >
+          <p class="form-help">Número de asientos que ofreces (1-8)</p>
+        </div>
+
+        <div class="form-group">
+          <label for="notas">Notas (opcional)</label>
+          <textarea
+            id="notas"
+            name="notas"
+            placeholder="Ej: Tengo que hacer recados y volveré en 1 hora aprox."
+            rows="3"
+          ><%= ride.notas || '' %></textarea>
+          <p class="form-help">Información adicional para los pasajeros</p>
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+          <button type="submit" class="btn btn-primary" style="flex: 1;">
+            Guardar cambios
+          </button>
+          <a href="/my-rides" class="btn btn-secondary">
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>Vavoy · Proyecto piloto de movilidad compartida</p>
+  </footer>
+
+  <!-- Set minimum datetime to now -->
+  <script>
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('fecha_salida').min = now.toISOString().slice(0, 16);
+  </script>
+</body>
+</html>

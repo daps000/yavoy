@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscar viaje - Vavoy</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="container">
+      <div class="top-bar-content">
+        <a href="/buscar" class="logo">VAVOY</a>
+        <div class="user-info">
+          <span class="user-name">Hola, <%= userName %></span>
+          <a href="/ofrecer" class="link-light">Ofrecer viaje</a>
+          <a href="/my-rides" class="link-light">Mis viajes</a>
+          <a href="/logout" class="link-light">Cerrar sesión</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>🔍 Buscar viaje</h1>
+      <p class="page-subtitle">Encuentra viajes cerca de ti</p>
+    </div>
+
+    <!-- Messages -->
+    <% if (error) { %>
+      <div class="alert alert-error">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <% if (success) { %>
+      <div class="alert alert-success">
+        <%= success %>
+      </div>
+    <% } %>
+
+    <!-- Search Form -->
+    <div class="card">
+      <form method="GET" action="/buscar" id="searchForm" class="filter-form">
+        <!-- Hidden fields for location -->
+        <input type="hidden" name="lat" id="userLat" value="<%= userLocation && userLocation.lat || '' %>">
+        <input type="hidden" name="lng" id="userLng" value="<%= userLocation && userLocation.lng || '' %>">
+
+        <div class="form-group">
+          <label for="origen">Origen</label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input
+              type="text"
+              id="origen"
+              name="origen"
+              placeholder="Ej: Villarcayo"
+              value="<%= filters.origen || '' %>"
+              style="flex: 1;"
+            >
+            <button
+              type="button"
+              id="geolocateBtn"
+              class="btn btn-secondary btn-small"
+              title="Usar mi ubicación"
+            >
+              📍
+            </button>
+          </div>
+          <p class="form-help" id="locationStatus">
+            <% if (userLocation && userLocation.lat) { %>
+              ✓ Ubicación detectada - mostrando viajes cercanos
+            <% } else { %>
+              Haz clic en 📍 para encontrar viajes cerca de ti
+            <% } %>
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label for="destino">Destino</label>
+          <input
+            type="text"
+            id="destino"
+            name="destino"
+            placeholder="Ej: Medina de Pomar"
+            value="<%= filters.destino || '' %>"
+          >
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 0.5rem;">
+            <input
+              type="checkbox"
+              name="extended"
+              value="true"
+              <%= filters.extended === 'true' ? 'checked' : '' %>
+            >
+            Buscar viajes más lejanos (más de 20km)
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">
+          Buscar viajes
+        </button>
+      </form>
+    </div>
+
+    <!-- Rides List -->
+    <h2 style="margin: 2rem 0 1rem 0; color: var(--primary-green);">
+      Viajes disponibles (<%= rides.length %>)
+    </h2>
+
+    <% if (rides.length === 0) { %>
+      <div class="card">
+        <div class="empty-state">
+          <div class="empty-state-icon">🚗</div>
+          <p>No hay viajes disponibles</p>
+          <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+            <% if (userLocation && userLocation.lat) { %>
+              No se encontraron viajes en un radio de <%= filters.extended === 'true' ? '1000' : '20' %>km.
+              <% if (filters.extended !== 'true') { %>
+                <br>Prueba a activar "Buscar viajes más lejanos".
+              <% } %>
+            <% } else { %>
+              Activa tu ubicación para ver viajes cerca de ti.
+            <% } %>
+          </p>
+        </div>
+      </div>
+    <% } else { %>
+      <div class="rides-list">
+        <% rides.forEach(ride => { %>
+          <div class="ride-card">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+              <div class="ride-route">
+                <%= ride.origen %> <span class="ride-arrow">→</span> <%= ride.destino %>
+              </div>
+              <% if (ride.distance !== null && ride.distance !== undefined) { %>
+                <div class="badge badge-success" style="margin-left: 1rem;">
+                  <%= ride.distance %> km
+                </div>
+              <% } %>
+            </div>
+
+            <div class="ride-details">
+              <div class="ride-detail">
+                🕒 <strong><%= formatDate(ride.fecha_salida) %></strong>
+              </div>
+              <div class="ride-detail">
+                👤 Conductor: <strong><%= ride.conductor_nombre %></strong>
+              </div>
+              <div class="ride-detail">
+                🪑 Plazas disponibles: <strong><%= ride.plazas_disponibles %></strong>
+              </div>
+            </div>
+
+            <% if (ride.notas) { %>
+              <div class="ride-notes">
+                💬 <%= ride.notas %>
+              </div>
+            <% } %>
+
+            <div class="ride-actions">
+              <form method="POST" action="/rides/book/<%= ride.id %>" style="flex: 1;">
+                <button type="submit" class="btn btn-primary btn-block">
+                  Reservar plaza
+                </button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <footer class="footer">
+    <p>Vavoy · Proyecto piloto de movilidad compartida</p>
+  </footer>
+
+  <!-- Geolocation Script -->
+  <script>
+    const geolocateBtn = document.getElementById('geolocateBtn');
+    const locationStatus = document.getElementById('locationStatus');
+    const userLatInput = document.getElementById('userLat');
+    const userLngInput = document.getElementById('userLng');
+
+    geolocateBtn.addEventListener('click', () => {
+      if (!navigator.geolocation) {
+        alert('La geolocalización no está disponible en tu navegador');
+        return;
+      }
+
+      locationStatus.textContent = 'Obteniendo ubicación...';
+      geolocateBtn.disabled = true;
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+
+          userLatInput.value = lat;
+          userLngInput.value = lng;
+
+          locationStatus.innerHTML = '✓ Ubicación detectada - envía el formulario para buscar';
+          locationStatus.style.color = 'var(--success-green)';
+          geolocateBtn.disabled = false;
+
+          // Auto-submit form
+          document.getElementById('searchForm').submit();
+        },
+        (error) => {
+          console.error('Geolocation error:', error);
+          locationStatus.textContent = '✗ No se pudo obtener la ubicación. Verifica los permisos.';
+          locationStatus.style.color = 'var(--error-red)';
+          geolocateBtn.disabled = false;
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000 // 5 minutes
+        }
+      );
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ofrecer viaje - Vavoy</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="container">
+      <div class="top-bar-content">
+        <a href="/buscar" class="logo">VAVOY</a>
+        <div class="user-info">
+          <span class="user-name">Hola, <%= userName %></span>
+          <a href="/buscar" class="link-light">Buscar viajes</a>
+          <a href="/my-rides" class="link-light">Mis viajes</a>
+          <a href="/logout" class="link-light">Cerrar sesión</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>🚗 Ofrecer viaje</h1>
+      <p class="page-subtitle">Comparte tu trayecto con otros</p>
+    </div>
+
+    <!-- Messages -->
+    <% if (error) { %>
+      <div class="alert alert-error">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <% if (success) { %>
+      <div class="alert alert-success">
+        <%= success %>
+      </div>
+    <% } %>
+
+    <!-- Offer Ride Form -->
+    <div class="card">
+      <h2 class="card-header">Crear nuevo viaje</h2>
+
+      <form method="POST" action="/rides/create">
+        <div class="form-group">
+          <label for="origen">Origen *</label>
+          <input
+            type="text"
+            id="origen"
+            name="origen"
+            placeholder="Ej: Villarcayo, Villaves, Soncillo..."
+            required
+            autofocus
+          >
+          <p class="form-help">Pueblos disponibles: Villarcayo, Villaves, Soncillo, Medina de Pomar, Quincoces, Espinosa, Burgos, Benasque, Cerler, Huesca, Zaragoza</p>
+        </div>
+
+        <div class="form-group">
+          <label for="destino">Destino *</label>
+          <input
+            type="text"
+            id="destino"
+            name="destino"
+            placeholder="Ej: Medina de Pomar"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="fecha_salida">Fecha y hora de salida *</label>
+          <input
+            type="datetime-local"
+            id="fecha_salida"
+            name="fecha_salida"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="plazas_disponibles">Plazas disponibles *</label>
+          <input
+            type="number"
+            id="plazas_disponibles"
+            name="plazas_disponibles"
+            min="1"
+            max="8"
+            value="3"
+            required
+          >
+          <p class="form-help">Número de asientos que ofreces (1-8)</p>
+        </div>
+
+        <div class="form-group">
+          <label for="notas">Notas (opcional)</label>
+          <textarea
+            id="notas"
+            name="notas"
+            placeholder="Ej: Tengo que hacer recados y volveré en 1 hora aprox."
+            rows="3"
+          ></textarea>
+          <p class="form-help">Información adicional para los pasajeros (punto de encuentro, paradas, etc.)</p>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">
+          Publicar viaje
+        </button>
+      </form>
+
+      <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+        <p style="color: var(--text-gray); font-size: 0.9rem;">
+          <strong>Importante:</strong> Al publicar un viaje, otros usuarios podrán ver tu nombre y los detalles del trayecto.
+          Asegúrate de coordinar con los pasajeros el punto exacto de encuentro.
+        </p>
+      </div>
+    </div>
+
+    <!-- Tips Card -->
+    <div class="card" style="background-color: var(--background); border-left: 4px solid var(--accent-green);">
+      <h3 style="color: var(--primary-green); margin-bottom: 1rem;">💡 Consejos para un viaje seguro</h3>
+      <ul style="margin: 0; padding-left: 1.5rem; color: var(--text-gray);">
+        <li>Confirma el punto de encuentro con antelación</li>
+        <li>Intercambia números de teléfono para coordinarte</li>
+        <li>Calcula el tiempo del trayecto considerando paradas</li>
+        <li>Respeta las normas de tráfico y seguridad vial</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>Vavoy · Proyecto piloto de movilidad compartida</p>
+  </footer>
+
+  <!-- Set default datetime to tomorrow -->
+  <script>
+    // Set minimum datetime to now
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('fecha_salida').min = now.toISOString().slice(0, 16);
+
+    // Set default to tomorrow at 10:00
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(10, 0, 0, 0);
+    tomorrow.setMinutes(tomorrow.getMinutes() - tomorrow.getTimezoneOffset());
+    document.getElementById('fecha_salida').value = tomorrow.toISOString().slice(0, 16);
+  </script>
+</body>
+</html>

@@ -4,6 +4,7 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const db = require('./db');
+const { geocodeLocation, calculateDistance } = require('./geoutils');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -66,9 +67,9 @@ app.locals.formatDate = formatDate;
 
 // Landing page (public)
 app.get('/', (req, res) => {
-  // If already logged in, redirect to dashboard
+  // If already logged in, redirect to buscar
   if (req.session.userId) {
-    return res.redirect('/dashboard');
+    return res.redirect('/buscar');
   }
   res.render('landing');
 });
@@ -76,7 +77,7 @@ app.get('/', (req, res) => {
 // Register page (public)
 app.get('/register', (req, res) => {
   if (req.session.userId) {
-    return res.redirect('/dashboard');
+    return res.redirect('/buscar');
   }
   res.render('register', { error: null });
 });
@@ -114,7 +115,7 @@ app.post('/register', async (req, res) => {
         // Auto-login after registration
         req.session.userId = this.lastID;
         req.session.userName = nombre;
-        res.redirect('/dashboard');
+        res.redirect('/buscar');
       }
     );
   } catch (err) {
@@ -126,7 +127,7 @@ app.post('/register', async (req, res) => {
 // Login page (public)
 app.get('/login', (req, res) => {
   if (req.session.userId) {
-    return res.redirect('/dashboard');
+    return res.redirect('/buscar');
   }
   res.render('login', { error: null });
 });
@@ -162,7 +163,7 @@ app.post('/login', (req, res) => {
       // Set session
       req.session.userId = user.id;
       req.session.userName = user.nombre;
-      res.redirect('/dashboard');
+      res.redirect('/buscar');
     }
   );
 });
@@ -177,10 +178,11 @@ app.get('/logout', (req, res) => {
   });
 });
 
-// Dashboard (private)
-app.get('/dashboard', requireAuth, (req, res) => {
-  // Get search parameters
-  const { origen, destino, fecha_minima } = req.query;
+// Buscar viaje page (private)
+app.get('/buscar', requireAuth, (req, res) => {
+  const { origen, destino, extended } = req.query;
+  const userLat = parseFloat(req.query.lat);
+  const userLng = parseFloat(req.query.lng);
 
   // Build query
   let query = `
@@ -201,60 +203,113 @@ app.get('/dashboard', requireAuth, (req, res) => {
     params.push(`%${destino.toLowerCase()}%`);
   }
 
-  if (fecha_minima) {
-    query += ' AND rides.fecha_salida >= ?';
-    params.push(fecha_minima);
-  }
-
-  query += ' ORDER BY rides.fecha_salida ASC LIMIT 50';
+  query += ' ORDER BY rides.fecha_salida ASC';
 
   db.all(query, params, (err, rides) => {
     if (err) {
       console.error('Error fetching rides:', err);
-      return res.render('dashboard', {
+      return res.render('buscar', {
         userName: req.session.userName,
         rides: [],
-        filters: { origen, destino, fecha_minima },
+        filters: { origen, destino, extended },
         error: 'Error al buscar viajes',
         success: null
       });
     }
 
-    res.render('dashboard', {
+    let ridesWithDistance = rides || [];
+
+    // Calculate distances if user location is available
+    if (userLat && userLng && !isNaN(userLat) && !isNaN(userLng)) {
+      ridesWithDistance = ridesWithDistance.map(ride => {
+        const distance = calculateDistance(
+          userLat,
+          userLng,
+          ride.lat_origen || 0,
+          ride.lng_origen || 0
+        );
+        return { ...ride, distance };
+      });
+
+      // Filter by distance unless extended search is enabled
+      const maxDistance = extended === 'true' ? 1000 : 20; // 20km default, 1000km for extended
+      ridesWithDistance = ridesWithDistance.filter(ride =>
+        ride.distance !== null && ride.distance <= maxDistance
+      );
+
+      // Sort by distance
+      ridesWithDistance.sort((a, b) => (a.distance || 999) - (b.distance || 999));
+    }
+
+    res.render('buscar', {
       userName: req.session.userName,
-      rides: rides || [],
-      filters: { origen, destino, fecha_minima },
-      error: null,
+      rides: ridesWithDistance,
+      filters: { origen, destino, extended },
+      userLocation: { lat: userLat, lng: userLng },
+      error: req.query.error || null,
       success: req.query.success || null
     });
   });
 });
 
+// Ofrecer viaje page (private)
+app.get('/ofrecer', requireAuth, (req, res) => {
+  res.render('ofrecer', {
+    userName: req.session.userName,
+    error: req.query.error || null,
+    success: req.query.success || null
+  });
+});
+
+// Dashboard (private) - redirect to buscar
+app.get('/dashboard', requireAuth, (req, res) => {
+  res.redirect('/buscar');
+});
+
 // Create ride POST
 app.post('/rides/create', requireAuth, (req, res) => {
-  const { origen, destino, fecha_salida, precio, plazas_disponibles, notas } = req.body;
+  const { origen, destino, fecha_salida, plazas_disponibles, notas } = req.body;
 
   // Validate inputs
-  if (!origen || !destino || !fecha_salida || !precio || !plazas_disponibles) {
-    return res.redirect('/dashboard?error=Todos los campos obligatorios deben ser completados');
+  if (!origen || !destino || !fecha_salida || !plazas_disponibles) {
+    return res.redirect('/ofrecer?error=Todos los campos obligatorios deben ser completados');
   }
 
   if (parseInt(plazas_disponibles) < 1 || parseInt(plazas_disponibles) > 8) {
-    return res.redirect('/dashboard?error=El número de plazas debe estar entre 1 y 8');
+    return res.redirect('/ofrecer?error=El número de plazas debe estar entre 1 y 8');
   }
 
-  if (parseFloat(precio) < 0) {
-    return res.redirect('/dashboard?error=El precio no puede ser negativo');
+  // Geocode locations
+  const coordsOrigen = geocodeLocation(origen);
+  const coordsDestino = geocodeLocation(destino);
+
+  if (!coordsOrigen) {
+    return res.redirect('/ofrecer?error=No se reconoce el origen. Prueba con: Villarcayo, Villaves, Soncillo, Medina de Pomar, etc.');
+  }
+
+  if (!coordsDestino) {
+    return res.redirect('/ofrecer?error=No se reconoce el destino. Prueba con: Villarcayo, Villaves, Soncillo, Medina de Pomar, etc.');
   }
 
   db.run(
-    `INSERT INTO rides (driver_id, origen, destino, fecha_salida, precio, plazas_disponibles, notas)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [req.session.userId, origen, destino, fecha_salida, parseFloat(precio), parseInt(plazas_disponibles), notas || null],
+    `INSERT INTO rides (driver_id, origen, destino, lat_origen, lng_origen, lat_destino, lng_destino, fecha_salida, plazas_disponibles, notas)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      req.session.userId,
+      coordsOrigen.name,
+      coordsDestino.name,
+      coordsOrigen.lat,
+      coordsOrigen.lng,
+      coordsDestino.lat,
+      coordsDestino.lng,
+      fecha_salida,
+      parseInt(plazas_disponibles),
+      notas || null
+    ],
     function(err) {
       if (err) {
         console.error('Error creating ride:', err);
-        return res.redirect('/dashboard?error=Error al crear el viaje');
+        return res.redirect('/ofrecer?error=Error al crear el viaje');
       }
 
       res.redirect('/my-rides?success=Viaje publicado correctamente');
@@ -315,6 +370,104 @@ app.post('/rides/delete/:id', requireAuth, (req, res) => {
 
         res.redirect('/my-rides?success=Viaje eliminado correctamente');
       });
+    }
+  );
+});
+
+// Edit ride page
+app.get('/rides/edit/:id', requireAuth, (req, res) => {
+  const rideId = req.params.id;
+
+  db.get(
+    'SELECT * FROM rides WHERE id = ? AND driver_id = ?',
+    [rideId, req.session.userId],
+    (err, ride) => {
+      if (err) {
+        console.error('Error fetching ride:', err);
+        return res.redirect('/my-rides?error=Error al cargar el viaje');
+      }
+
+      if (!ride) {
+        return res.redirect('/my-rides?error=No tienes permiso para editar este viaje');
+      }
+
+      res.render('edit-ride', {
+        userName: req.session.userName,
+        ride: ride,
+        error: null,
+        success: null
+      });
+    }
+  );
+});
+
+// Update ride POST
+app.post('/rides/edit/:id', requireAuth, (req, res) => {
+  const rideId = req.params.id;
+  const { origen, destino, fecha_salida, plazas_disponibles, notas } = req.body;
+
+  // Validate inputs
+  if (!origen || !destino || !fecha_salida || !plazas_disponibles) {
+    return res.redirect(`/rides/edit/${rideId}?error=Todos los campos obligatorios deben ser completados`);
+  }
+
+  if (parseInt(plazas_disponibles) < 1 || parseInt(plazas_disponibles) > 8) {
+    return res.redirect(`/rides/edit/${rideId}?error=El número de plazas debe estar entre 1 y 8`);
+  }
+
+  // Geocode locations
+  const coordsOrigen = geocodeLocation(origen);
+  const coordsDestino = geocodeLocation(destino);
+
+  if (!coordsOrigen) {
+    return res.redirect(`/rides/edit/${rideId}?error=No se reconoce el origen. Prueba con: Villarcayo, Villaves, Soncillo, Medina de Pomar, etc.`);
+  }
+
+  if (!coordsDestino) {
+    return res.redirect(`/rides/edit/${rideId}?error=No se reconoce el destino. Prueba con: Villarcayo, Villaves, Soncillo, Medina de Pomar, etc.`);
+  }
+
+  // First verify ownership
+  db.get(
+    'SELECT * FROM rides WHERE id = ? AND driver_id = ?',
+    [rideId, req.session.userId],
+    (err, ride) => {
+      if (err) {
+        console.error('Error checking ride ownership:', err);
+        return res.redirect('/my-rides?error=Error al actualizar el viaje');
+      }
+
+      if (!ride) {
+        return res.redirect('/my-rides?error=No tienes permiso para editar este viaje');
+      }
+
+      // Update the ride
+      db.run(
+        `UPDATE rides
+         SET origen = ?, destino = ?, lat_origen = ?, lng_origen = ?, lat_destino = ?, lng_destino = ?,
+             fecha_salida = ?, plazas_disponibles = ?, notas = ?
+         WHERE id = ?`,
+        [
+          coordsOrigen.name,
+          coordsDestino.name,
+          coordsOrigen.lat,
+          coordsOrigen.lng,
+          coordsDestino.lat,
+          coordsDestino.lng,
+          fecha_salida,
+          parseInt(plazas_disponibles),
+          notas || null,
+          rideId
+        ],
+        (err) => {
+          if (err) {
+            console.error('Error updating ride:', err);
+            return res.redirect(`/rides/edit/${rideId}?error=Error al actualizar el viaje`);
+          }
+
+          res.redirect('/my-rides?success=Viaje actualizado correctamente');
+        }
+      );
     }
   );
 });

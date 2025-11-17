@@ -11,10 +11,11 @@
   <div class="top-bar">
     <div class="container">
       <div class="top-bar-content">
-        <a href="/dashboard" class="logo">VAVOY</a>
+        <a href="/buscar" class="logo">VAVOY</a>
         <div class="user-info">
           <span class="user-name">Hola, <%= userName %></span>
-          <a href="/dashboard" class="link-light">Dashboard</a>
+          <a href="/buscar" class="link-light">Buscar viajes</a>
+          <a href="/ofrecer" class="link-light">Ofrecer viaje</a>
           <a href="/logout" class="link-light">Cerrar sesión</a>
         </div>
       </div>
@@ -48,7 +49,7 @@
           <div class="empty-state-icon">🚗</div>
           <p>Aún no has publicado ningún viaje</p>
           <p style="font-size: 0.9rem; margin-top: 0.5rem;">
-            Ve al <a href="/dashboard">dashboard</a> para ofrecer tu primer viaje.
+            <a href="/ofrecer">Ofrecer tu primer viaje</a>
           </p>
         </div>
       </div>
@@ -68,9 +69,6 @@
                 🪑 Plazas disponibles: <strong><%= ride.plazas_disponibles %></strong>
               </div>
               <div class="ride-detail">
-                💰 Precio: <strong><%= ride.precio.toFixed(2) %> €</strong>
-              </div>
-              <div class="ride-detail">
                 📅 Publicado: <strong><%= new Date(ride.created_at).toLocaleDateString('es-ES') %></strong>
               </div>
             </div>
@@ -82,6 +80,9 @@
             <% } %>
 
             <div class="ride-actions">
+              <a href="/rides/edit/<%= ride.id %>" class="btn btn-secondary" style="flex: 1;">
+                ✏️ Editar
+              </a>
               <form
                 method="POST"
                 action="/rides/delete/<%= ride.id %>"
@@ -89,7 +90,7 @@
                 style="flex: 1;"
               >
                 <button type="submit" class="btn btn-danger btn-block">
-                  Eliminar viaje
+                  🗑️ Eliminar
                 </button>
               </form>
             </div>
@@ -114,10 +115,13 @@
       </div>
     <% } %>
 
-    <!-- Back to Dashboard -->
-    <div style="margin: 2rem 0; text-align: center;">
-      <a href="/dashboard" class="btn btn-secondary">
-        ← Volver al Dashboard
+    <!-- Actions -->
+    <div style="margin: 2rem 0; text-align: center; display: flex; gap: 1rem; justify-content: center;">
+      <a href="/buscar" class="btn btn-secondary">
+        🔍 Buscar viajes
+      </a>
+      <a href="/ofrecer" class="btn btn-primary">
+        ➕ Ofrecer viaje
       </a>
     </div>
   </div>

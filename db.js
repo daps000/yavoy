@@ -32,15 +32,18 @@ function initDatabase() {
     }
   });
 
-  // Create rides table
+  // Create rides table (updated schema with geolocation, removed precio)
   db.run(`
     CREATE TABLE IF NOT EXISTS rides (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       driver_id INTEGER NOT NULL,
       origen TEXT NOT NULL,
       destino TEXT NOT NULL,
+      lat_origen REAL,
+      lng_origen REAL,
+      lat_destino REAL,
+      lng_destino REAL,
       fecha_salida DATETIME NOT NULL,
-      precio REAL NOT NULL,
       plazas_disponibles INTEGER NOT NULL,
       notas TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -51,6 +54,62 @@ function initDatabase() {
       console.error('Error creating rides table:', err.message);
     } else {
       console.log('Rides table ready');
+      migrateDatabase();
+    }
+  });
+}
+
+// Migrate existing database to add geolocation columns and remove precio
+function migrateDatabase() {
+  // Check if lat_origen column exists
+  db.all("PRAGMA table_info(rides)", (err, columns) => {
+    if (err) {
+      console.error('Error checking table schema:', err.message);
+      return;
+    }
+
+    const hasLatOrigen = columns.some(col => col.name === 'lat_origen');
+    const hasPrecio = columns.some(col => col.name === 'precio');
+
+    // Add geolocation columns if they don't exist
+    if (!hasLatOrigen) {
+      db.run('ALTER TABLE rides ADD COLUMN lat_origen REAL', (err) => {
+        if (err && !err.message.includes('duplicate')) {
+          console.error('Error adding lat_origen:', err.message);
+        } else {
+          console.log('Added lat_origen column');
+        }
+      });
+
+      db.run('ALTER TABLE rides ADD COLUMN lng_origen REAL', (err) => {
+        if (err && !err.message.includes('duplicate')) {
+          console.error('Error adding lng_origen:', err.message);
+        } else {
+          console.log('Added lng_origen column');
+        }
+      });
+
+      db.run('ALTER TABLE rides ADD COLUMN lat_destino REAL', (err) => {
+        if (err && !err.message.includes('duplicate')) {
+          console.error('Error adding lat_destino:', err.message);
+        } else {
+          console.log('Added lat_destino column');
+        }
+      });
+
+      db.run('ALTER TABLE rides ADD COLUMN lng_destino REAL', (err) => {
+        if (err && !err.message.includes('duplicate')) {
+          console.error('Error adding lng_destino:', err.message);
+        } else {
+          console.log('Added lng_destino column');
+        }
+      });
+    }
+
+    // Note: SQLite doesn't support DROP COLUMN directly
+    // precio column will remain but won't be used
+    if (hasPrecio) {
+      console.log('Note: precio column exists but will not be used (SQLite limitation)');
     }
   });
 }
