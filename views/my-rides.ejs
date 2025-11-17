@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis viajes - Vavoy</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="container">
+      <div class="top-bar-content">
+        <a href="/dashboard" class="logo">VAVOY</a>
+        <div class="user-info">
+          <span class="user-name">Hola, <%= userName %></span>
+          <a href="/dashboard" class="link-light">Dashboard</a>
+          <a href="/logout" class="link-light">Cerrar sesión</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>Mis viajes como conductor</h1>
+      <p class="page-subtitle">Gestiona los viajes que has publicado</p>
+    </div>
+
+    <!-- Messages -->
+    <% if (error) { %>
+      <div class="alert alert-error">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <% if (success) { %>
+      <div class="alert alert-success">
+        <%= success %>
+      </div>
+    <% } %>
+
+    <!-- My Rides List -->
+    <% if (rides.length === 0) { %>
+      <div class="card">
+        <div class="empty-state">
+          <div class="empty-state-icon">🚗</div>
+          <p>Aún no has publicado ningún viaje</p>
+          <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+            Ve al <a href="/dashboard">dashboard</a> para ofrecer tu primer viaje.
+          </p>
+        </div>
+      </div>
+    <% } else { %>
+      <div class="rides-list">
+        <% rides.forEach(ride => { %>
+          <div class="card">
+            <div class="ride-route">
+              <%= ride.origen %> <span class="ride-arrow">→</span> <%= ride.destino %>
+            </div>
+
+            <div class="ride-details">
+              <div class="ride-detail">
+                🕒 <strong><%= formatDate(ride.fecha_salida) %></strong>
+              </div>
+              <div class="ride-detail">
+                🪑 Plazas disponibles: <strong><%= ride.plazas_disponibles %></strong>
+              </div>
+              <div class="ride-detail">
+                💰 Precio: <strong><%= ride.precio.toFixed(2) %> €</strong>
+              </div>
+              <div class="ride-detail">
+                📅 Publicado: <strong><%= new Date(ride.created_at).toLocaleDateString('es-ES') %></strong>
+              </div>
+            </div>
+
+            <% if (ride.notas) { %>
+              <div class="ride-notes">
+                💬 <%= ride.notas %>
+              </div>
+            <% } %>
+
+            <div class="ride-actions">
+              <form
+                method="POST"
+                action="/rides/delete/<%= ride.id %>"
+                onsubmit="return confirm('¿Estás seguro de que quieres eliminar este viaje?')"
+                style="flex: 1;"
+              >
+                <button type="submit" class="btn btn-danger btn-block">
+                  Eliminar viaje
+                </button>
+              </form>
+            </div>
+
+            <!-- Status badge -->
+            <%
+              const rideDate = new Date(ride.fecha_salida);
+              const now = new Date();
+              const isPast = rideDate < now;
+            %>
+            <% if (isPast) { %>
+              <div style="margin-top: 1rem;">
+                <span class="badge badge-warning">Viaje pasado</span>
+              </div>
+            <% } else { %>
+              <div style="margin-top: 1rem;">
+                <span class="badge badge-success">Viaje activo</span>
+              </div>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <!-- Back to Dashboard -->
+    <div style="margin: 2rem 0; text-align: center;">
+      <a href="/dashboard" class="btn btn-secondary">
+        ← Volver al Dashboard
+      </a>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>Vavoy · Proyecto piloto de movilidad compartida</p>
+  </footer>
+</body>
+</html>

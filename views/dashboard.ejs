@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Vavoy</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="container">
+      <div class="top-bar-content">
+        <a href="/dashboard" class="logo">VAVOY</a>
+        <div class="user-info">
+          <span class="user-name">Hola, <%= userName %></span>
+          <a href="/my-rides" class="link-light">Mis viajes</a>
+          <a href="/logout" class="link-light">Cerrar sesión</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Messages -->
+    <% if (error) { %>
+      <div class="alert alert-error" style="margin-top: 1.5rem;">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <% if (success) { %>
+      <div class="alert alert-success" style="margin-top: 1.5rem;">
+        <%= success %>
+      </div>
+    <% } %>
+
+    <!-- Two Column Layout -->
+    <div class="sections">
+      <!-- Search Rides Section -->
+      <div class="section">
+        <h2 class="section-title">Buscar viaje</h2>
+
+        <!-- Filter Form -->
+        <form method="GET" action="/dashboard" class="filter-form">
+          <div class="form-group">
+            <label for="origen">Origen</label>
+            <input
+              type="text"
+              id="origen"
+              name="origen"
+              placeholder="Ej: Benasque"
+              value="<%= filters.origen || '' %>"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="destino">Destino</label>
+            <input
+              type="text"
+              id="destino"
+              name="destino"
+              placeholder="Ej: Huesca"
+              value="<%= filters.destino || '' %>"
+            >
+          </div>
+
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary btn-block">
+              Buscar viajes
+            </button>
+          </div>
+        </form>
+
+        <!-- Rides List -->
+        <% if (rides.length === 0) { %>
+          <div class="empty-state">
+            <div class="empty-state-icon">🚗</div>
+            <p>No hay viajes disponibles</p>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+              Prueba a ajustar los filtros o sé el primero en ofrecer un viaje.
+            </p>
+          </div>
+        <% } else { %>
+          <div class="rides-list">
+            <% rides.forEach(ride => { %>
+              <div class="ride-card">
+                <div class="ride-route">
+                  <%= ride.origen %> <span class="ride-arrow">→</span> <%= ride.destino %>
+                </div>
+
+                <div class="ride-details">
+                  <div class="ride-detail">
+                    🕒 <strong><%= formatDate(ride.fecha_salida) %></strong>
+                  </div>
+                  <div class="ride-detail">
+                    👤 Conductor: <strong><%= ride.conductor_nombre %></strong>
+                  </div>
+                  <div class="ride-detail">
+                    🪑 Plazas disponibles: <strong><%= ride.plazas_disponibles %></strong>
+                  </div>
+                </div>
+
+                <div class="ride-price">
+                  <%= ride.precio.toFixed(2) %> €
+                </div>
+
+                <% if (ride.notas) { %>
+                  <div class="ride-notes">
+                    💬 <%= ride.notas %>
+                  </div>
+                <% } %>
+
+                <div class="ride-actions">
+                  <form method="POST" action="/rides/book/<%= ride.id %>" style="flex: 1;">
+                    <button type="submit" class="btn btn-primary btn-block">
+                      Reservar plaza
+                    </button>
+                  </form>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Offer Ride Section -->
+      <div class="section">
+        <h2 class="section-title">Ofrecer viaje</h2>
+
+        <form method="POST" action="/rides/create">
+          <div class="form-group">
+            <label for="origen-create">Origen *</label>
+            <input
+              type="text"
+              id="origen-create"
+              name="origen"
+              placeholder="Ej: Benasque"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="destino-create">Destino *</label>
+            <input
+              type="text"
+              id="destino-create"
+              name="destino"
+              placeholder="Ej: Huesca"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="fecha_salida">Fecha y hora de salida *</label>
+            <input
+              type="datetime-local"
+              id="fecha_salida"
+              name="fecha_salida"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="plazas_disponibles">Plazas disponibles *</label>
+            <input
+              type="number"
+              id="plazas_disponibles"
+              name="plazas_disponibles"
+              min="1"
+              max="8"
+              value="3"
+              required
+            >
+            <p class="form-help">Número de asientos que ofreces (1-8)</p>
+          </div>
+
+          <div class="form-group">
+            <label for="precio">Precio por plaza (€) *</label>
+            <input
+              type="number"
+              id="precio"
+              name="precio"
+              min="0"
+              step="0.5"
+              value="3"
+              required
+            >
+            <p class="form-help">Precio sugerido: 2-5 € por trayecto corto</p>
+          </div>
+
+          <div class="form-group">
+            <label for="notas">Notas (opcional)</label>
+            <textarea
+              id="notas"
+              name="notas"
+              placeholder="Ej: Salgo desde la plaza del pueblo. Llevo portabicis."
+              rows="3"
+            ></textarea>
+            <p class="form-help">Información adicional para los pasajeros</p>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">
+            Publicar viaje
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>Vavoy · Proyecto piloto de movilidad compartida</p>
+  </footer>
+</body>
+</html>
