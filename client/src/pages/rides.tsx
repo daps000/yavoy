@@ -8,21 +8,24 @@ import { type Ride } from "@shared/schema";
 import { Car, MapPin, Calendar, Clock, Users, MessageCircle, Search } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Link } from "wouter";
+import { Link, useSearch } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { fetchRides } from "@/lib/api";
 
 export default function RidesPage() {
+  const searchString = useSearch();
+  const searchParams = new URLSearchParams(searchString);
+  
   const { data: rides = [], isLoading } = useQuery({
     queryKey: ["rides"],
     queryFn: fetchRides,
   });
   const [filteredRides, setFilteredRides] = useState<Ride[]>([]);
   
-  // Filter states
-  const [filterOrigin, setFilterOrigin] = useState("");
-  const [filterDest, setFilterDest] = useState("");
-  const [filterDate, setFilterDate] = useState("all");
+  // Filter states - initialize from URL params
+  const [filterOrigin, setFilterOrigin] = useState(searchParams.get("origen") || "");
+  const [filterDest, setFilterDest] = useState(searchParams.get("destino") || "");
+  const [filterDate, setFilterDate] = useState(searchParams.get("fecha") || "all");
 
   useEffect(() => {
     let result = rides;
