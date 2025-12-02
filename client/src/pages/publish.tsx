@@ -20,10 +20,13 @@ export default function PublishPage() {
     e.preventDefault();
     setIsLoading(true);
     
+    // Capture form data before await, as event properties might be lost
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 800));
     
-    const formData = new FormData(e.currentTarget);
     const newRide: Ride = {
       id: Math.random().toString(36).substr(2, 9),
       driverName: formData.get("name") as string,
