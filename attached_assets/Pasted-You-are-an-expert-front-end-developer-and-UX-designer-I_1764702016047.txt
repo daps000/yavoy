@@ -1,0 +1,95 @@
+You are an expert front-end developer and UX designer.
+I want you to create a simple MVP website for a rural ride-sharing project called **Vavoy**.
+
+CONTEXT
+- Vavoy is like a very simple, ultra-local version of BlaBlaCar, focused on **short trips between villages**, mostly in rural areas.
+- The goal is NOT to build a full product, but a quick MVP to run a pilot with a few villages.
+- Main idea: neighbours can see **rides available for today or the next days** and publish their own rides in seconds.
+- No online payments, no complex accounts. Just basic publishing and contact.
+
+GENERAL REQUIREMENTS
+- Build a **responsive website**, mobile-first.
+- All texts must be in **Spanish (Spain)**, friendly, clear and simple, addressed to rural users (not techy).
+
+DESIGN & STYLE
+- Visual style: clean, simple, with a rural vibe (think nature, pueblos, carreteras secundarias).
+- Color palette: use a main green tone and a warm neutral (e.g. beige or light sand) as background.
+- Use a **large, readable font** size for mobile (remember many people will be +40).
+- Add clear buttons and labels so the interface is self-explanatory.
+
+STRUCTURE OF THE PAGE (single-page app feel)
+
+1) HEADER
+- Logo text: `Vavoy`
+- Short tagline under logo: `Viajes compartidos entre pueblos, hoy para hoy.`
+- Navigation (simple anchors that scroll on the same page):
+  - “Cómo funciona”
+  - “Ver viajes”
+  - “Publicar viaje”
+  - “Preguntas frecuentes”
+
+2) HERO SECTION
+- Title (H1): `Muévete entre pueblos compartiendo coche`
+- Short subtitle (2 lines max) explaining the idea, in Spanish. Example:
+  “Vavoy conecta a vecinas y vecinos que necesitan ir al médico, al mercado o a la ciudad con quienes ya van en coche. Menos gastos, más comunidad.”
+- Two main buttons:
+  - Button 1: `Ver viajes disponibles` (scrolls to the list of rides)
+  - Button 2 (secondary): `Publicar un viaje` (scrolls to the form)
+
+3) SECTION: “Cómo funciona”
+- Use 3 steps in a horizontal or vertical layout:
+  1. `Publica tu viaje` – describe brevemente que la persona indica origen, destino, hora y plazas.
+  2. `Conecta por WhatsApp` – explicas que la persona interesada contacta directamente.
+  3. `Compartís el trayecto` – recordatorio de que es para compartir gastos y reducir coches vacíos.
+- Usa iconos en css y svg
+
+4) SECTION: “Ver viajes disponibles”
+- This should be an interactive component built with JavaScript.
+- Display a **table or card list** of rides, with these fields:
+  - Origen (village or town)
+  - Destino
+  - Fecha
+  - Hora
+  - Plazas libres
+  - Medio de contacto (texto tipo “Escríbeme por WhatsApp” + número ficticio o placeholder)
+  - Notas (optional text like “Paso por X pueblo”)
+- Add at the top:
+  - A small filter bar with:
+    - Campo de texto para `Origen`
+    - Campo de texto para `Destino`
+    - Select para `Fecha` (hoy / mañana / próximos días)
+  - A button `Filtrar`
+- For now, use **mock data** in JavaScript: create an array of 6–8 sample rides (for example between villages in Burgos / Cantabria, but keep names simple).
+- Implement filtering on the client side: when user clicks “Filtrar”, update the list.
+
+5) SECTION: “Publicar viaje”
+- Add a simple form with the following fields:
+  - `Nombre` (text)
+  - `Origen` (text)
+  - `Destino` (text)
+  - `Fecha` (date)
+  - `Hora` (time)
+  - `Plazas libres` (number)
+  - `Contacto (teléfono o WhatsApp)` (text)
+  - `Notas` (textarea, optional)
+- Behaviour:
+  - On submit, prevent default.
+  - Validate required fields (basic: not empty).
+  - If valid, add the new ride to the array of rides in JavaScript and re-render the rides list in the “Ver viajes disponibles” section.
+  - Show a small success message in Spanish: `Tu viaje se ha publicado. ¡Gracias por compartir coche!`
+  - Clear the form.
+- No backend needed: everything can live in memory in JavaScript for this MVP.
+  - (Optional but nice): use `localStorage` to persist rides so that page refresh doesn’t erase them.
+
+6) SECTION: “Preguntas frecuentes”
+Create a small FAQ block with 4–5 questions and short answers, in Spanish, for example:
+- “¿Vavoy es una empresa de transporte?”
+- “¿Tengo que pagar algo por usar Vavoy?”
+- “¿Cómo me contacto con la persona conductora?”
+- “¿Qué pasa si quiero cancelar un viaje?”
+- “¿Es obligatorio compartir gastos?”
+
+7) FOOTER
+- Simple footer with:
+  - Texto: `Vavoy – piloto en fase de prueba para mejorar la movilidad rural.`
+  - Un pequeño aviso: `Por ahora solo conectamos personas. Cada viaje se acuerda directamente entre quienes comparten coche.`
