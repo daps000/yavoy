@@ -5,23 +5,35 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
+import RidesPage from "@/pages/rides";
+import PublishPage from "@/pages/publish";
+import FAQPage from "@/pages/faq";
+import { Layout } from "@/components/layout";
+import { RidesProvider } from "@/lib/rides-context";
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route component={NotFound} />
-    </Switch>
+    <Layout>
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/viajes" component={RidesPage} />
+        <Route path="/publicar" component={PublishPage} />
+        <Route path="/faq" component={FAQPage} />
+        <Route component={NotFound} />
+      </Switch>
+    </Layout>
   );
 }
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <RidesProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </RidesProvider>
     </QueryClientProvider>
   );
 }
