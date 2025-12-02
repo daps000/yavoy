@@ -4,15 +4,19 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Ride } from "@/lib/mock-data";
+import { type Ride } from "@shared/schema";
 import { Car, MapPin, Calendar, Clock, Users, MessageCircle, Search } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { useRides } from "@/lib/rides-context";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import { fetchRides } from "@/lib/api";
 
 export default function RidesPage() {
-  const { rides } = useRides();
+  const { data: rides = [], isLoading } = useQuery({
+    queryKey: ["rides"],
+    queryFn: fetchRides,
+  });
   const [filteredRides, setFilteredRides] = useState<Ride[]>([]);
   
   // Filter states
@@ -50,6 +54,14 @@ export default function RidesPage() {
 
     setFilteredRides(result);
   }, [rides, filterOrigin, filterDest, filterDate]);
+
+  if (isLoading) {
+    return (
+      <div className="container px-4 md:px-6 py-12 text-center">
+        <p className="text-muted-foreground">Cargando viajes...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container px-4 md:px-6 py-12">

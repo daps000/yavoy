@@ -4,31 +4,46 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Ride } from "@/lib/mock-data";
+import { type InsertRide } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2 } from "lucide-react";
-import { useRides } from "@/lib/rides-context";
 import { useLocation } from "wouter";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createRide } from "@/lib/api";
 
 export default function PublishPage() {
-  const { addRide } = useRides();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: createRide,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["rides"] });
+      toast({
+        title: "¡Viaje publicado!",
+        description: "Tu viaje ya está visible para otros vecinos. ¡Gracias por compartir!",
+        action: <CheckCircle2 className="h-6 w-6 text-green-500" />,
+        duration: 5000,
+      });
+      setTimeout(() => setLocation("/viajes"), 1000);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo publicar el viaje. Inténtalo de nuevo.",
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
     
-    // Capture form data before await, as event properties might be lost
     const form = e.currentTarget;
     const formData = new FormData(form);
-
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 800));
     
-    const newRide: Ride = {
-      id: Math.random().toString(36).substr(2, 9),
+    const newRide: InsertRide = {
       driverName: formData.get("name") as string,
       origin: formData.get("origin") as string,
       destination: formData.get("destination") as string,
@@ -36,21 +51,11 @@ export default function PublishPage() {
       time: formData.get("time") as string,
       seats: parseInt(formData.get("seats") as string),
       contact: formData.get("contact") as string,
-      notes: formData.get("notes") as string,
+      notes: (formData.get("notes") as string) || "",
     };
 
-    addRide(newRide);
-    setIsLoading(false);
-    
-    toast({
-      title: "¡Viaje publicado!",
-      description: "Tu viaje ya está visible para otros vecinos. ¡Gracias por compartir!",
-      action: <CheckCircle2 className="h-6 w-6 text-green-500" />,
-      duration: 5000,
-    });
-
-    // Redirect to rides page to see the new ride
-    setTimeout(() => setLocation("/viajes"), 1000);
+    mutation.mutate(newRide);
+    form.reset();
   };
 
   return (
@@ -110,8 +115,8 @@ export default function PublishPage() {
               />
             </div>
 
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-lg h-12 mt-2" disabled={isLoading}>
-              {isLoading ? "Publicando..." : "Publicar viaje ahora"}
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-lg h-12 mt-2" disabled={mutation.isPending}>
+              {mutation.isPending ? "Publicando..." : "Publicar viaje ahora"}
             </Button>
           </form>
         </CardContent>
