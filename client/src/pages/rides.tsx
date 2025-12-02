@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,7 +14,14 @@ import { fetchRides } from "@/lib/api";
 
 export default function RidesPage() {
   const searchString = useSearch();
-  const searchParams = new URLSearchParams(searchString);
+  const initialParams = useMemo(() => {
+    const params = new URLSearchParams(searchString);
+    return {
+      origin: params.get("origen") || "",
+      dest: params.get("destino") || "",
+      date: params.get("fecha") || "all"
+    };
+  }, [searchString]);
   
   const { data: rides = [], isLoading } = useQuery({
     queryKey: ["rides"],
@@ -23,9 +30,16 @@ export default function RidesPage() {
   const [filteredRides, setFilteredRides] = useState<Ride[]>([]);
   
   // Filter states - initialize from URL params
-  const [filterOrigin, setFilterOrigin] = useState(searchParams.get("origen") || "");
-  const [filterDest, setFilterDest] = useState(searchParams.get("destino") || "");
-  const [filterDate, setFilterDate] = useState(searchParams.get("fecha") || "all");
+  const [filterOrigin, setFilterOrigin] = useState(initialParams.origin);
+  const [filterDest, setFilterDest] = useState(initialParams.dest);
+  const [filterDate, setFilterDate] = useState(initialParams.date);
+  
+  // Update filter states when URL params change
+  useEffect(() => {
+    setFilterOrigin(initialParams.origin);
+    setFilterDest(initialParams.dest);
+    setFilterDate(initialParams.date);
+  }, [initialParams]);
 
   useEffect(() => {
     let result = rides;
