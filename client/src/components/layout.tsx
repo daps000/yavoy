@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import logoImage from "@assets/logo-verde_1764705915286.png";
+import logoWhite from "@assets/logo-yavoy-white.png";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -90,9 +91,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="container px-4 md:px-6 text-center space-y-4">
           <div className="flex items-center justify-center gap-2 mb-4">
             <img 
-              src={logoImage} 
+              src={logoWhite} 
               alt="YaVoy" 
-              className="h-10 w-auto brightness-0 invert"
+              className="h-10 w-auto"
             />
           </div>
           <p className="text-primary-foreground/80 max-w-md mx-auto">
