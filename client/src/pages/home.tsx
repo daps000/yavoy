@@ -114,7 +114,7 @@ export default function Home() {
         <div className="container px-4 md:px-6">
           <div className="text-center mb-12">
             <h2 className="font-bold font-serif text-foreground mb-4 text-[26px]">Cómo funciona</h2>
-            <p className="text-muted-foreground text-[15px]">Tan simple como pedirle un favor a un vecino</p>
+            <p className="text-muted-foreground text-[14px]">Tan simple como pedirle un favor a un vecino</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto pt-[0px] pb-[0px]">
