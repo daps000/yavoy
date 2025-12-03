@@ -159,7 +159,7 @@ export default function Home() {
         </div>
       </section>
       {/* Publish Section */}
-      <section className="py-16 bg-[#e8f5eb]">
+      <section className="py-16 bg-[#ffffff] pt-[32px] pb-[32px]">
         <div className="container px-4 md:px-6">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-8">
