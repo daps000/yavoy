@@ -1,6 +1,7 @@
-import { users, rides, locations, type User, type InsertUser, type Ride, type InsertRide, type Location } from "@shared/schema";
+import { users, rides, locations, driverProfiles, reviews, type User, type InsertUser, type Ride, type InsertRide, type Location, type DriverProfile, type Review, type InsertReview, type DriverRating } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, ilike, sql } from "drizzle-orm";
+import { eq, desc, ilike, sql, and, avg, count } from "drizzle-orm";
+import crypto from "crypto";
 
 function normalizeLocationName(name: string): string {
   return name
@@ -8,6 +9,10 @@ function normalizeLocationName(name: string): string {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
+}
+
+function hashContact(contact: string): string {
+  return crypto.createHash('sha256').update(contact.trim().toLowerCase()).digest('hex');
 }
 
 export interface IStorage {
@@ -20,6 +25,13 @@ export interface IStorage {
   
   searchLocations(query: string): Promise<Location[]>;
   addLocation(name: string): Promise<Location | null>;
+  
+  getOrCreateDriverProfile(name: string, contact: string): Promise<DriverProfile>;
+  getDriverProfile(id: number): Promise<DriverProfile | undefined>;
+  getDriverRating(driverProfileId: number): Promise<DriverRating>;
+  getDriverReviews(driverProfileId: number, limit?: number): Promise<Review[]>;
+  createReview(review: InsertReview): Promise<Review>;
+  canUserReview(driverProfileId: number, reviewerContact: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -79,6 +91,81 @@ export class DatabaseStorage implements IStorage {
       return null;
     }
   }
+
+  async getOrCreateDriverProfile(name: string, contact: string): Promise<DriverProfile> {
+    const contactHash = hashContact(contact);
+    const [existing] = await db.select().from(driverProfiles).where(eq(driverProfiles.contactHash, contactHash));
+    if (existing) {
+      return existing;
+    }
+    const [profile] = await db
+      .insert(driverProfiles)
+      .values({ name: name.trim(), contactHash })
+      .returning();
+    return profile;
+  }
+
+  async getDriverProfile(id: number): Promise<DriverProfile | undefined> {
+    const [profile] = await db.select().from(driverProfiles).where(eq(driverProfiles.id, id));
+    return profile || undefined;
+  }
+
+  async getDriverRating(driverProfileId: number): Promise<DriverRating> {
+    const result = await db
+      .select({
+        averageStars: avg(reviews.stars),
+        totalReviews: count(reviews.id),
+      })
+      .from(reviews)
+      .where(eq(reviews.driverProfileId, driverProfileId));
+    
+    const row = result[0];
+    return {
+      averageStars: row?.averageStars ? parseFloat(row.averageStars) : 0,
+      totalReviews: row?.totalReviews || 0,
+    };
+  }
+
+  async getDriverReviews(driverProfileId: number, limit: number = 5): Promise<Review[]> {
+    return await db
+      .select()
+      .from(reviews)
+      .where(eq(reviews.driverProfileId, driverProfileId))
+      .orderBy(desc(reviews.createdAt))
+      .limit(limit);
+  }
+
+  async createReview(review: InsertReview): Promise<Review> {
+    const [newReview] = await db
+      .insert(reviews)
+      .values(review)
+      .returning();
+    return newReview;
+  }
+
+  async canUserReview(driverProfileId: number, reviewerContact: string): Promise<boolean> {
+    const reviewerHash = hashContact(reviewerContact);
+    const fourteenDaysAgo = new Date();
+    fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+    
+    const existingReviews = await db
+      .select()
+      .from(reviews)
+      .where(
+        and(
+          eq(reviews.driverProfileId, driverProfileId),
+          eq(reviews.reviewerContactHash, reviewerHash)
+        )
+      )
+      .limit(1);
+    
+    if (existingReviews.length === 0) return true;
+    
+    const lastReview = existingReviews[0];
+    return lastReview.createdAt < fourteenDaysAgo;
+  }
 }
 
 export const storage = new DatabaseStorage();
+
+export { hashContact };
