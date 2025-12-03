@@ -30,29 +30,40 @@ export default function Home() {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <section className="relative w-full pb-24 overflow-hidden">
-        <div className="relative z-0 h-[400px] md:h-[500px]">
+      <section className="relative w-full">
+        {/* Hero Image with Text Inside */}
+        <div className="relative h-[450px] md:h-[550px]">
           <img 
             src={heroImage} 
             alt="Carretera rural" 
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/70 to-transparent"></div>
+          
+          {/* Title and Intro inside hero image */}
+          <div className="absolute inset-0 flex items-center">
+            <div className="container px-4 md:px-6">
+              <div className="max-w-2xl space-y-4">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif text-foreground tracking-tight leading-tight">
+                  Muévete entre pueblos <br/><span className="text-primary">compartiendo coche</span>
+                </h1>
+                <p className="md:text-xl max-w-xl text-[14px] text-[#454545] ml-[3px] mr-[3px]">
+                  YaVoy conecta a vecinas y vecinos que necesitan ir al médico, al mercado o a la ciudad con quienes ya van en coche. Menos gastos, más comunidad.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
         
-        <div className="container relative z-10 px-4 md:px-6 -mt-32 md:-mt-40">
-          <div className="max-w-2xl space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif text-foreground tracking-tight leading-tight">
-              Muévete entre pueblos <br/><span className="text-primary">compartiendo coche</span>
-            </h1>
-            <p className="md:text-xl max-w-xl text-[14px] text-[#454545] ml-[3px] mr-[3px]">
-              YaVoy conecta a vecinas y vecinos que necesitan ir al médico, al mercado o a la ciudad con quienes ya van en coche. Menos gastos, más comunidad.
-            </p>
-            
-            {/* Search Card */}
-            <form onSubmit={handleSearch} className="pt-4">
-              <Card className="border-0 shadow-xl bg-white rounded-2xl overflow-hidden max-w-md">
+        {/* Search Card - overlapping below hero */}
+        <div className="container px-4 md:px-6 -mt-20 relative z-10 pb-8">
+          <div className="max-w-md mx-auto md:mx-0 md:ml-4">
+            <form onSubmit={handleSearch}>
+              <Card className="border-0 shadow-xl bg-white rounded-2xl overflow-hidden">
                 <CardContent className="p-0">
+                  <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+                    <h3 className="font-semibold text-foreground">Busca viajes disponibles</h3>
+                  </div>
                   <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
                     <MapPin className="h-5 w-5 text-primary" />
                     <input
