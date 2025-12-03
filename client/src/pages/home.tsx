@@ -113,7 +113,7 @@ export default function Home() {
       <section id="como-funciona" className="py-16 bg-card pt-[32px] pb-[32px]">
         <div className="container px-4 md:px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold font-serif text-foreground mb-4">Cómo funciona</h2>
+            <h2 className="font-bold font-serif text-foreground mb-4 text-[26px]">Cómo funciona</h2>
             <p className="text-muted-foreground text-[15px]">Tan simple como pedirle un favor a un vecino</p>
           </div>
           
