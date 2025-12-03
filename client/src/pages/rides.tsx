@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,6 +10,7 @@ import { es } from "date-fns/locale";
 import { Link, useSearch } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { fetchRides } from "@/lib/api";
+import { LocationAutocomplete } from "@/components/LocationAutocomplete";
 
 export default function RidesPage() {
   const searchString = useSearch();
@@ -96,30 +96,22 @@ export default function RidesPage() {
       <div className="bg-white p-4 rounded-2xl shadow-sm border border-border mb-8 grid gap-4 md:grid-cols-[1fr_1fr_auto_auto]">
         <div className="space-y-2">
           <Label htmlFor="origin" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Origen</Label>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-primary" />
-            <Input 
-              id="origin" 
-              placeholder="¿De dónde sales?" 
-              className="pl-9 border-border bg-card"
-              value={filterOrigin}
-              onChange={(e) => setFilterOrigin(e.target.value)}
-            />
-          </div>
+          <LocationAutocomplete
+            id="origin"
+            placeholder="¿De dónde sales?"
+            value={filterOrigin}
+            onChange={setFilterOrigin}
+          />
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="dest" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Destino</Label>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-primary" />
-            <Input 
-              id="dest" 
-              placeholder="¿A dónde vas?" 
-              className="pl-9 border-border bg-card"
-              value={filterDest}
-              onChange={(e) => setFilterDest(e.target.value)}
-            />
-          </div>
+          <LocationAutocomplete
+            id="dest"
+            placeholder="¿A dónde vas?"
+            value={filterDest}
+            onChange={setFilterDest}
+          />
         </div>
         
         <div className="space-y-2 min-w-[180px]">

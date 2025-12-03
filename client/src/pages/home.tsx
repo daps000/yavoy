@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Search } from "lucide-react";
+import { Search } from "lucide-react";
+import { LocationAutocomplete } from "@/components/LocationAutocomplete";
 import heroImage from "@assets/road-car_1764761779971.jpg";
 import { Link, useLocation } from "wouter";
 
@@ -129,30 +129,24 @@ export default function Home() {
                 <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
                   <div className="space-y-2">
                     <Label htmlFor="search-origin" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Origen</Label>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-primary" />
-                      <Input 
-                        id="search-origin" 
-                        placeholder="¿De dónde sales?" 
-                        className="pl-9 border-border bg-card h-12"
-                        value={searchOrigin}
-                        onChange={(e) => setSearchOrigin(e.target.value)}
-                      />
-                    </div>
+                    <LocationAutocomplete
+                      id="search-origin"
+                      placeholder="¿De dónde sales?"
+                      value={searchOrigin}
+                      onChange={setSearchOrigin}
+                      className="h-12"
+                    />
                   </div>
                   
                   <div className="space-y-2">
                     <Label htmlFor="search-dest" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Destino</Label>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-primary" />
-                      <Input 
-                        id="search-dest" 
-                        placeholder="¿A dónde vas?" 
-                        className="pl-9 border-border bg-card h-12"
-                        value={searchDest}
-                        onChange={(e) => setSearchDest(e.target.value)}
-                      />
-                    </div>
+                    <LocationAutocomplete
+                      id="search-dest"
+                      placeholder="¿A dónde vas?"
+                      value={searchDest}
+                      onChange={setSearchDest}
+                      className="h-12"
+                    />
                   </div>
                   
                   <div className="space-y-2">

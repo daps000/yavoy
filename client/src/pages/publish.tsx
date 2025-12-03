@@ -10,11 +10,14 @@ import { CheckCircle2 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createRide } from "@/lib/api";
+import { LocationAutocomplete } from "@/components/LocationAutocomplete";
 
 export default function PublishPage() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
+  const [origin, setOrigin] = useState("");
+  const [destination, setDestination] = useState("");
 
   const mutation = useMutation({
     mutationFn: createRide,
@@ -45,8 +48,8 @@ export default function PublishPage() {
     
     const newRide: InsertRide = {
       driverName: formData.get("name") as string,
-      origin: formData.get("origin") as string,
-      destination: formData.get("destination") as string,
+      origin: origin,
+      destination: destination,
       date: formData.get("date") as string,
       time: formData.get("time") as string,
       seats: parseInt(formData.get("seats") as string),
@@ -56,6 +59,8 @@ export default function PublishPage() {
 
     mutation.mutate(newRide);
     form.reset();
+    setOrigin("");
+    setDestination("");
   };
 
   return (
@@ -82,11 +87,21 @@ export default function PublishPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="origin_form">Origen</Label>
-                <Input id="origin_form" name="origin" placeholder="Pueblo de salida" required className="bg-card border-border" />
+                <LocationAutocomplete
+                  id="origin_form"
+                  placeholder="Pueblo de salida"
+                  value={origin}
+                  onChange={setOrigin}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="destination_form">Destino</Label>
-                <Input id="destination_form" name="destination" placeholder="Pueblo o ciudad de llegada" required className="bg-card border-border" />
+                <LocationAutocomplete
+                  id="destination_form"
+                  placeholder="Pueblo o ciudad de llegada"
+                  value={destination}
+                  onChange={setDestination}
+                />
               </div>
             </div>
 
