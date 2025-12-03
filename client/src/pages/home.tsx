@@ -152,10 +152,10 @@ export default function Home() {
                   <div className="space-y-2">
                     <Label htmlFor="search-date" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Fecha</Label>
                     <Select value={searchDate} onValueChange={setSearchDate}>
-                      <SelectTrigger className="bg-card border-border h-12 min-w-[160px]">
+                      <SelectTrigger className="bg-white border-border h-12 min-w-[160px]">
                         <SelectValue placeholder="Cualquier fecha" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white z-[99]">
                         <SelectItem value="all">Cualquier fecha</SelectItem>
                         <SelectItem value="today">Hoy</SelectItem>
                         <SelectItem value="tomorrow">Mañana</SelectItem>
