@@ -56,7 +56,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <VisuallyHidden>
                   <SheetTitle>Menú de navegación</SheetTitle>
                 </VisuallyHidden>
-                <div className="flex flex-col gap-6 mt-8">
+                <div className="flex flex-col gap-6 mt-8 items-start">
                   <img 
                     src={logoImage} 
                     alt="YaVoy" 
