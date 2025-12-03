@@ -48,7 +48,7 @@ Preferred communication style: Simple, everyday language.
 
 3. **Spanish Language Interface:** All UI text in Spanish (Spain) with friendly, clear language addressing rural users directly.
 
-4. **User Authentication via Replit Auth:** Users can optionally log in via Replit Auth (supports Google, GitHub, Apple, email). Authentication enables ride contact tracking and review prompts. Viewing and publishing rides does not require login. Direct WhatsApp contact links for coordination. No payment processing built in - users handle compensation directly.
+4. **User Authentication via Replit Auth:** Users log in via Replit Auth (supports Google, GitHub, Apple, email). Authentication is required for publishing rides (enables ownership and management). Viewing rides is public. Authentication enables ride contact tracking and review prompts. Direct WhatsApp contact links for coordination. No payment processing built in - users handle compensation directly.
 
 5. **Single-Page Application with Multi-Route Structure:** Uses Wouter for lightweight routing with pages for Home, View Rides, Publish Ride, and FAQ.
 
@@ -91,6 +91,7 @@ Preferred communication style: Simple, everyday language.
    - contact (text - phone number for WhatsApp)
    - notes (optional text)
    - driverProfileId (integer, nullable) - Links to driver_profiles
+   - userId (varchar, nullable) - Links to users for ownership
    - createdAt (timestamp)
 
 4. **reviews** - Driver ratings and reviews
@@ -113,7 +114,13 @@ Preferred communication style: Simple, everyday language.
 
 **GET /api/rides** - Fetch all rides, ordered by creation date (newest first)
 
-**POST /api/rides** - Create a new ride with validation via Zod schema. Automatically creates or links driver profile.
+**POST /api/rides** - Create a new ride (requires auth). Automatically creates or links driver profile.
+
+**GET /api/my-rides** - Get current user's published rides (requires auth)
+
+**PUT /api/rides/:id** - Update a ride (requires auth, must own the ride)
+
+**DELETE /api/rides/:id** - Delete a ride (requires auth, must own the ride)
 
 **GET /api/drivers/:id/rating** - Get average rating and review count for a driver
 
@@ -153,7 +160,8 @@ Preferred communication style: Simple, everyday language.
 **Routing Structure:**
 - `/` - Home page with hero section and search
 - `/viajes` - View all available rides with filtering
-- `/publicar` - Publish a new ride form
+- `/publicar` - Publish a new ride form (requires auth)
+- `/mis-viajes` - Manage user's own published rides (edit/delete)
 - `/faq` - Frequently asked questions
 
 **Component Organization:**
