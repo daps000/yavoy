@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { LocationAutocomplete } from "@/components/LocationAutocomplete";
 import { Input } from "@/components/ui/input";
 import heroImage from "@assets/road-car_1764761779971.jpg";
+import publishImage from "@assets/generated_images/green_car_with_map_route.png";
 import { Link, useLocation } from "wouter";
 
 export default function Home() {
@@ -164,14 +165,21 @@ export default function Home() {
             <p className="text-muted-foreground">¿Vas a algún sitio? Comparte tu trayecto con vecinos.</p>
           </div>
 
-          <Card className="border border-border shadow-lg bg-white">
-            <CardContent className="pt-6">
+          <Card className="border border-border shadow-lg bg-white overflow-hidden max-w-md mx-auto">
+            <div className="w-full h-48 bg-gray-50">
+              <img 
+                src={publishImage} 
+                alt="Comparte tu viaje" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <CardContent className="pt-5 pb-6">
               <div className="text-center space-y-4">
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Si vas a hacer un viaje y tienes sitio en el coche, publícalo para que otros vecinos puedan acompañarte.
                 </p>
                 <Link href="/publicar">
-                  <Button className="h-14 text-lg bg-accent hover:bg-[#d9a535] text-white rounded-full px-8">
+                  <Button className="h-12 text-base bg-primary hover:bg-[#70b681] text-white rounded-full px-8">
                     Publicar un viaje
                   </Button>
                 </Link>
