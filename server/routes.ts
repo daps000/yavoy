@@ -120,8 +120,8 @@ export async function registerRoutes(
     }
   });
 
-  // Create a new ride
-  app.post("/api/rides", async (req, res) => {
+  // Create a new ride (requires authentication for ownership tracking)
+  app.post("/api/rides", isAuthenticated, async (req, res) => {
     try {
       const validation = insertRideSchema.safeParse(req.body);
       
@@ -135,9 +135,13 @@ export async function registerRoutes(
         validation.data.contact
       );
 
+      const user = req.user as any;
+      const userId = user.claims?.sub;
+
       const ride = await storage.createRide({
         ...validation.data,
         driverProfileId: driverProfile.id,
+        userId,
       } as any);
       
       await Promise.all([
@@ -149,6 +153,71 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error creating ride:", error);
       res.status(500).json({ error: "Failed to create ride" });
+    }
+  });
+
+  // Get user's own rides
+  app.get("/api/my-rides", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const userId = user.claims?.sub;
+      const userRides = await storage.getUserRides(userId);
+      res.json(userRides);
+    } catch (error) {
+      console.error("Error fetching user rides:", error);
+      res.status(500).json({ error: "Failed to fetch user rides" });
+    }
+  });
+
+  // Update user's ride
+  app.put("/api/rides/:id", isAuthenticated, async (req, res) => {
+    try {
+      const rideId = parseInt(req.params.id);
+      if (isNaN(rideId)) {
+        return res.status(400).json({ error: "Invalid ride ID" });
+      }
+
+      const user = req.user as any;
+      const userId = user.claims?.sub;
+
+      const validation = insertRideSchema.partial().safeParse(req.body);
+      if (!validation.success) {
+        const error = fromZodError(validation.error);
+        return res.status(400).json({ error: error.message });
+      }
+
+      const updatedRide = await storage.updateRide(rideId, userId, validation.data);
+      if (!updatedRide) {
+        return res.status(404).json({ error: "Ride not found or not authorized" });
+      }
+
+      res.json(updatedRide);
+    } catch (error) {
+      console.error("Error updating ride:", error);
+      res.status(500).json({ error: "Failed to update ride" });
+    }
+  });
+
+  // Delete user's ride
+  app.delete("/api/rides/:id", isAuthenticated, async (req, res) => {
+    try {
+      const rideId = parseInt(req.params.id);
+      if (isNaN(rideId)) {
+        return res.status(400).json({ error: "Invalid ride ID" });
+      }
+
+      const user = req.user as any;
+      const userId = user.claims?.sub;
+
+      const deleted = await storage.deleteRide(rideId, userId);
+      if (!deleted) {
+        return res.status(404).json({ error: "Ride not found or not authorized" });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting ride:", error);
+      res.status(500).json({ error: "Failed to delete ride" });
     }
   });
 

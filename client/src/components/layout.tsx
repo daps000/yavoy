@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Heart, Menu, PlusCircle, User, LogOut } from "lucide-react";
+import { Heart, Menu, PlusCircle, User, LogOut, Car } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -72,6 +72,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       {user?.email}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
+                    <Link href="/mis-viajes">
+                      <DropdownMenuItem className="cursor-pointer" data-testid="button-my-rides">
+                        <Car className="h-4 w-4 mr-2" />
+                        Mis viajes
+                      </DropdownMenuItem>
+                    </Link>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={logout} className="text-red-600" data-testid="button-logout">
                       <LogOut className="h-4 w-4 mr-2" />
                       Cerrar sesión
@@ -131,6 +138,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
                             <span>{getUserDisplayName()}</span>
                           </div>
                           <span className="text-xs text-muted-foreground">{user?.email}</span>
+                          <Link 
+                            href="/mis-viajes"
+                            className="flex items-center gap-2 mt-3 text-primary font-medium"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            <Car className="h-4 w-4" />
+                            Mis viajes
+                          </Link>
                           <Button
                             variant="outline"
                             onClick={() => {

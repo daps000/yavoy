@@ -21,7 +21,11 @@ export interface IStorage {
   updateUserPhone(userId: string, phone: string): Promise<User>;
   
   getAllRides(): Promise<Ride[]>;
-  createRide(ride: InsertRide): Promise<Ride>;
+  getUserRides(userId: string): Promise<Ride[]>;
+  getRide(id: number): Promise<Ride | undefined>;
+  createRide(ride: InsertRide & { userId?: string }): Promise<Ride>;
+  updateRide(id: number, userId: string, data: Partial<InsertRide>): Promise<Ride | null>;
+  deleteRide(id: number, userId: string): Promise<boolean>;
   
   searchLocations(query: string): Promise<Location[]>;
   addLocation(name: string): Promise<Location | null>;
@@ -72,12 +76,42 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(rides).orderBy(desc(rides.createdAt));
   }
 
-  async createRide(insertRide: InsertRide): Promise<Ride> {
+  async getUserRides(userId: string): Promise<Ride[]> {
+    return await db
+      .select()
+      .from(rides)
+      .where(eq(rides.userId, userId))
+      .orderBy(desc(rides.createdAt));
+  }
+
+  async getRide(id: number): Promise<Ride | undefined> {
+    const [ride] = await db.select().from(rides).where(eq(rides.id, id));
+    return ride || undefined;
+  }
+
+  async createRide(insertRide: InsertRide & { userId?: string }): Promise<Ride> {
     const [ride] = await db
       .insert(rides)
       .values(insertRide)
       .returning();
     return ride;
+  }
+
+  async updateRide(id: number, userId: string, data: Partial<InsertRide>): Promise<Ride | null> {
+    const [ride] = await db
+      .update(rides)
+      .set(data)
+      .where(and(eq(rides.id, id), eq(rides.userId, userId)))
+      .returning();
+    return ride || null;
+  }
+
+  async deleteRide(id: number, userId: string): Promise<boolean> {
+    const result = await db
+      .delete(rides)
+      .where(and(eq(rides.id, id), eq(rides.userId, userId)))
+      .returning();
+    return result.length > 0;
   }
 
   async searchLocations(query: string): Promise<Location[]> {

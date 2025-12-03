@@ -55,6 +55,7 @@ export const rides = pgTable("rides", {
   contact: text("contact").notNull(),
   notes: text("notes"),
   driverProfileId: integer("driver_profile_id"),
+  userId: varchar("user_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -62,6 +63,7 @@ export const insertRideSchema = createInsertSchema(rides).omit({
   id: true,
   createdAt: true,
   driverProfileId: true,
+  userId: true,
 });
 
 export type InsertRide = z.infer<typeof insertRideSchema>;

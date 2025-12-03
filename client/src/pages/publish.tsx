@@ -6,11 +6,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { type InsertRide } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Car } from "lucide-react";
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createRide } from "@/lib/api";
 import { LocationAutocomplete } from "@/components/LocationAutocomplete";
+import { useAuth } from "@/lib/auth-context";
 
 export default function PublishPage() {
   const { toast } = useToast();
@@ -18,6 +19,7 @@ export default function PublishPage() {
   const queryClient = useQueryClient();
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
+  const { isAuthenticated, login, isLoading: authLoading } = useAuth();
 
   const mutation = useMutation({
     mutationFn: createRide,
@@ -62,6 +64,31 @@ export default function PublishPage() {
     setOrigin("");
     setDestination("");
   };
+
+  if (authLoading) {
+    return (
+      <div className="container px-4 md:px-6 py-12 text-center">
+        <p className="text-muted-foreground">Cargando...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="container px-4 md:px-6 py-12 max-w-2xl mx-auto">
+        <div className="text-center py-16 bg-secondary/20 rounded-xl border border-dashed">
+          <Car className="h-12 w-12 mx-auto text-muted-foreground mb-3 opacity-50" />
+          <h3 className="text-lg font-medium">Inicia sesión para publicar</h3>
+          <p className="text-muted-foreground mb-6">
+            Necesitas una cuenta para publicar viajes y gestionarlos después.
+          </p>
+          <Button onClick={login} data-testid="button-login-publish">
+            Iniciar sesión
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container px-4 md:px-6 py-12 max-w-2xl mx-auto">

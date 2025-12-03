@@ -143,7 +143,7 @@ export default function RidesPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filteredRides.length > 0 ? (
           filteredRides.map((ride) => (
-            <RideCard key={ride.id} ride={ride} />
+            <RideCard key={ride.id} ride={ride} showAsOwn={false} />
           ))
         ) : (
           <div className="col-span-full text-center py-16 bg-secondary/20 rounded-xl border border-dashed">
@@ -180,10 +180,17 @@ function DriverRatingDisplay({ driverProfileId }: { driverProfileId: number | nu
   );
 }
 
-function RideCard({ ride }: { ride: Ride }) {
+export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: { 
+  ride: Ride; 
+  showAsOwn?: boolean;
+  onEdit?: (ride: Ride) => void;
+  onDelete?: (ride: Ride) => void;
+}) {
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { toast } = useToast();
+  
+  const isOwnRide = showAsOwn || (isAuthenticated && ride.userId === user?.id);
   
   const formatDate = (dateStr: string) => {
     try {
@@ -206,9 +213,19 @@ function RideCard({ ride }: { ride: Ride }) {
 
   return (
     <>
-      <Card className="overflow-hidden hover:shadow-md transition-shadow border-border bg-white" data-testid={`card-ride-${ride.id}`}>
-        <div className="h-2 bg-primary w-full"></div>
+      <Card 
+        className={`overflow-hidden hover:shadow-md transition-shadow border-border ${
+          isOwnRide ? "bg-primary/10 border-primary/30" : "bg-white"
+        }`} 
+        data-testid={`card-ride-${ride.id}`}
+      >
+        <div className={`h-2 w-full ${isOwnRide ? "bg-primary" : "bg-primary"}`}></div>
         <CardContent className="pt-6 space-y-4">
+          {isOwnRide && (
+            <div className="text-xs font-bold text-primary uppercase tracking-wide">
+              Mi viaje publicado
+            </div>
+          )}
           <div className="flex justify-between items-start">
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-lg font-bold">
@@ -226,14 +243,14 @@ function RideCard({ ride }: { ride: Ride }) {
             </div>
           </div>
           
-          <div className="bg-card p-3 rounded-lg space-y-2 text-sm">
+          <div className={`p-3 rounded-lg space-y-2 text-sm ${isOwnRide ? "bg-white/50" : "bg-card"}`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-primary" />
                 <span className="font-medium">{ride.driverName}</span>
-                <DriverRatingDisplay driverProfileId={ride.driverProfileId} />
+                {!isOwnRide && <DriverRatingDisplay driverProfileId={ride.driverProfileId} />}
               </div>
-              {ride.driverProfileId && (
+              {!isOwnRide && ride.driverProfileId && (
                 <button
                   onClick={() => setReviewDialogOpen(true)}
                   className="text-xs text-primary hover:underline"
@@ -252,19 +269,45 @@ function RideCard({ ride }: { ride: Ride }) {
             <span className="text-sm font-medium bg-primary/15 text-primary px-3 py-1 rounded-full" data-testid={`text-seats-${ride.id}`}>
               {ride.seats} plazas libres
             </span>
-            <Button 
-              size="sm" 
-              className="bg-accent hover:bg-[#d9a535] text-white" 
-              onClick={handleContact}
-              data-testid={`button-contact-${ride.id}`}
-            >
-              <MessageCircle className="mr-2 h-4 w-4" /> Contactar
-            </Button>
+            {isOwnRide ? (
+              <div className="flex gap-2">
+                {onEdit && (
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => onEdit(ride)}
+                    data-testid={`button-edit-${ride.id}`}
+                  >
+                    Editar
+                  </Button>
+                )}
+                {onDelete && (
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    className="text-red-600 border-red-200 hover:bg-red-50"
+                    onClick={() => onDelete(ride)}
+                    data-testid={`button-delete-${ride.id}`}
+                  >
+                    Eliminar
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <Button 
+                size="sm" 
+                className="bg-accent hover:bg-[#d9a535] text-white" 
+                onClick={handleContact}
+                data-testid={`button-contact-${ride.id}`}
+              >
+                <MessageCircle className="mr-2 h-4 w-4" /> Contactar
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
       
-      {ride.driverProfileId && (
+      {!isOwnRide && ride.driverProfileId && (
         <ReviewDialog
           open={reviewDialogOpen}
           onOpenChange={setReviewDialogOpen}

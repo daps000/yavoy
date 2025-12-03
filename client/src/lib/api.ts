@@ -85,6 +85,42 @@ export async function fetchRides(): Promise<Ride[]> {
   return response.json();
 }
 
+export async function fetchMyRides(): Promise<Ride[]> {
+  const response = await fetch("/api/my-rides");
+  if (!response.ok) {
+    return [];
+  }
+  return response.json();
+}
+
+export async function updateRide(id: number, data: Partial<InsertRide>): Promise<Ride> {
+  const response = await fetch(`/api/rides/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Failed to update ride");
+  }
+  
+  return response.json();
+}
+
+export async function deleteRide(id: number): Promise<void> {
+  const response = await fetch(`/api/rides/${id}`, {
+    method: "DELETE",
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Failed to delete ride");
+  }
+}
+
 export async function createRide(ride: InsertRide): Promise<Ride> {
   const response = await fetch("/api/rides", {
     method: "POST",
