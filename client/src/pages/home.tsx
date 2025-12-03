@@ -56,7 +56,7 @@ export default function Home() {
         </div>
         
         {/* Search Card - overlapping below hero */}
-        <div className="container px-4 md:px-6 -mt-20 relative z-10 pb-8">
+        <div className="container px-4 md:px-6 -mt-[110px] relative z-10 pb-8">
           <div className="max-w-md mx-auto md:mx-0 md:ml-4">
             <form onSubmit={handleSearch}>
               <Card className="border-0 shadow-xl bg-white rounded-2xl overflow-hidden">
