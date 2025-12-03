@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { MapPin, Navigation, Loader2 } from "lucide-react";
 import municipios from "@/data/municipios.json";
@@ -9,6 +9,24 @@ interface LocationAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
   className?: string;
+}
+
+function normalizeText(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .trim();
+}
+
+function tokenize(text: string): string[] {
+  return text.split(/[\s\-\/]+/).filter(Boolean);
+}
+
+interface ScoredMunicipio {
+  name: string;
+  score: number;
 }
 
 export function LocationAutocomplete({
@@ -25,20 +43,47 @@ export function LocationAutocomplete({
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const normalizedMunicipios = useMemo(() => {
+    return (municipios as string[]).map((m) => ({
+      original: m,
+      normalized: normalizeText(m),
+      tokens: tokenize(normalizeText(m)),
+    }));
+  }, []);
+
   useEffect(() => {
     if (value.length >= 3) {
-      const searchTerm = value.toLowerCase();
-      const filtered = (municipios as string[])
-        .filter((m) => m.toLowerCase().startsWith(searchTerm))
-        .slice(0, 8);
-      setSuggestions(filtered);
+      const searchTerm = normalizeText(value);
+      
+      const scored: ScoredMunicipio[] = [];
+      
+      for (const m of normalizedMunicipios) {
+        let score = 0;
+        
+        if (m.normalized.startsWith(searchTerm)) {
+          score = 100;
+        } else if (m.tokens.some((t) => t.startsWith(searchTerm))) {
+          score = 80;
+        } else if (m.normalized.includes(searchTerm)) {
+          score = 50;
+        }
+        
+        if (score > 0) {
+          const lengthBonus = Math.max(0, 20 - m.original.length);
+          scored.push({ name: m.original, score: score + lengthBonus });
+        }
+      }
+      
+      scored.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name, "es"));
+      
+      setSuggestions(scored.slice(0, 10).map((s) => s.name));
       setIsOpen(true);
     } else {
       setSuggestions([]);
       setIsOpen(false);
     }
     setHighlightedIndex(-1);
-  }, [value]);
+  }, [value, normalizedMunicipios]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
