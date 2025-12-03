@@ -48,8 +48,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <div className="md:hidden">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-6 w-6" />
+                <Button variant="ghost" size="icon" className="h-10 w-10">
+                  <Menu className="h-7 w-7" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
