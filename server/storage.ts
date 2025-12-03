@@ -47,18 +47,25 @@ export class DatabaseStorage implements IStorage {
 
   async searchLocations(query: string): Promise<Location[]> {
     if (!query || query.length < 2) return [];
-    return await db
-      .select()
-      .from(locations)
-      .where(ilike(locations.name, `%${query}%`))
-      .orderBy(locations.name)
-      .limit(10);
+    const results = await db.execute(
+      sql`SELECT * FROM locations 
+          WHERE unaccent(lower(name)) LIKE '%' || unaccent(lower(${query})) || '%' 
+          ORDER BY name 
+          LIMIT 10`
+    );
+    return results.rows as Location[];
   }
 
   async addLocation(name: string): Promise<Location | null> {
     if (!name || name.trim().length === 0) return null;
     const trimmedName = name.trim();
+    const normalizedCheck = trimmedName.toLowerCase();
     try {
+      const existing = await db.execute(
+        sql`SELECT * FROM locations WHERE unaccent(lower(name)) = unaccent(lower(${normalizedCheck})) LIMIT 1`
+      );
+      if (existing.rows.length > 0) return null;
+      
       const [location] = await db
         .insert(locations)
         .values({ name: trimmedName })
