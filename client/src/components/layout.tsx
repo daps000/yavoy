@@ -60,7 +60,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   <img 
                     src={logoImage} 
                     alt="YaVoy" 
-                    className="h-10 w-auto"
+                    className="h-10 w-auto object-contain"
                   />
                   <nav className="flex flex-col gap-4">
                     {navItems.map((item) => (
