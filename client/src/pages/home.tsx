@@ -39,8 +39,8 @@ export default function Home() {
             alt="Carretera rural" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/40 to-transparent"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-white/70 via-white/30 to-transparent"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.85)_0%,rgba(255,255,255,0.5)_30%,rgba(255,255,255,0.2)_60%,transparent_100%)]"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.7)_0%,rgba(255,255,255,0.4)_30%,transparent_60%)]"></div>
           
           {/* Title and Intro inside hero image */}
           <div className="absolute inset-0 flex items-start pt-[35px]">
