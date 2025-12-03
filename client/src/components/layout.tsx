@@ -67,7 +67,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       <Link 
                         key={item.href} 
                         href={item.href}
-                        className={`text-lg font-medium hover:text-primary transition-colors ${location === item.href ? "text-primary" : "text-foreground/80"}`}
+                        className="font-medium hover:text-primary transition-colors text-foreground/80 text-[16px]"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         {item.label}
@@ -80,12 +80,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </header>
-
       {/* Main Content */}
       <main className="flex-1">
         {children}
       </main>
-
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground py-12 mt-auto">
         <div className="container px-4 md:px-6 text-center space-y-4">
