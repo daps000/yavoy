@@ -3,14 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { type Ride } from "@shared/schema";
-import { Car, MapPin, Calendar, Clock, Users, MessageCircle, Search } from "lucide-react";
+import { type Ride, type DriverRating } from "@shared/schema";
+import { Car, MapPin, Calendar, Clock, Users, MessageCircle, Search, Star } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Link, useSearch } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { fetchRides } from "@/lib/api";
+import { fetchRides, fetchDriverRating } from "@/lib/api";
 import { LocationAutocomplete } from "@/components/LocationAutocomplete";
+import { ReviewDialog } from "@/components/ReviewDialog";
 
 export default function RidesPage() {
   const searchString = useSearch();
@@ -157,7 +158,29 @@ export default function RidesPage() {
   );
 }
 
+function DriverRatingDisplay({ driverProfileId }: { driverProfileId: number | null }) {
+  const { data: rating } = useQuery({
+    queryKey: ["driverRating", driverProfileId],
+    queryFn: () => driverProfileId ? fetchDriverRating(driverProfileId) : Promise.resolve({ averageStars: 0, totalReviews: 0 }),
+    enabled: !!driverProfileId,
+  });
+
+  if (!driverProfileId || !rating || rating.totalReviews === 0) {
+    return <span className="text-xs text-muted-foreground">(nuevo)</span>;
+  }
+
+  return (
+    <span className="flex items-center gap-1 text-xs text-amber-600">
+      <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+      <span>{rating.averageStars.toFixed(1)}</span>
+      <span className="text-muted-foreground">({rating.totalReviews})</span>
+    </span>
+  );
+}
+
 function RideCard({ ride }: { ride: Ride }) {
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  
   const formatDate = (dateStr: string) => {
     try {
       return format(new Date(dateStr), "d 'de' MMMM", { locale: es });
@@ -167,47 +190,70 @@ function RideCard({ ride }: { ride: Ride }) {
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow border-border bg-white">
-      <div className="h-2 bg-primary w-full"></div>
-      <CardContent className="pt-6 space-y-4">
-        <div className="flex justify-between items-start">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-lg font-bold">
-              <span className="text-foreground">{ride.origin}</span>
-              <span className="text-primary">→</span>
-              <span className="text-foreground">{ride.destination}</span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
-              <Calendar className="h-4 w-4 text-primary" />
-              <span>{formatDate(ride.date)}</span>
-              <span className="mx-1">•</span>
-              <Clock className="h-4 w-4 text-primary" />
-              <span>{ride.time}</span>
+    <>
+      <Card className="overflow-hidden hover:shadow-md transition-shadow border-border bg-white" data-testid={`card-ride-${ride.id}`}>
+        <div className="h-2 bg-primary w-full"></div>
+        <CardContent className="pt-6 space-y-4">
+          <div className="flex justify-between items-start">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-lg font-bold">
+                <span className="text-foreground">{ride.origin}</span>
+                <span className="text-primary">→</span>
+                <span className="text-foreground">{ride.destination}</span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
+                <Calendar className="h-4 w-4 text-primary" />
+                <span>{formatDate(ride.date)}</span>
+                <span className="mx-1">•</span>
+                <Clock className="h-4 w-4 text-primary" />
+                <span>{ride.time}</span>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div className="bg-card p-3 rounded-lg space-y-2 text-sm">
-          <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-primary" />
-            <span className="font-medium">{ride.driverName}</span>
+          
+          <div className="bg-card p-3 rounded-lg space-y-2 text-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-primary" />
+                <span className="font-medium">{ride.driverName}</span>
+                <DriverRatingDisplay driverProfileId={ride.driverProfileId} />
+              </div>
+              {ride.driverProfileId && (
+                <button
+                  onClick={() => setReviewDialogOpen(true)}
+                  className="text-xs text-primary hover:underline"
+                  data-testid={`button-review-${ride.id}`}
+                >
+                  Valorar
+                </button>
+              )}
+            </div>
+            {ride.notes && (
+              <p className="text-muted-foreground text-xs italic">"{ride.notes}"</p>
+            )}
           </div>
-          {ride.notes && (
-            <p className="text-muted-foreground text-xs italic">"{ride.notes}"</p>
-          )}
-        </div>
 
-        <div className="flex items-center justify-between pt-2">
-          <span className="text-sm font-medium bg-primary/15 text-primary px-3 py-1 rounded-full">
-            {ride.seats} plazas libres
-          </span>
-          <Button size="sm" className="bg-accent hover:bg-[#d9a535] text-white" asChild>
-            <a href={`https://wa.me/34${ride.contact.replace(/\s/g, '')}`} target="_blank" rel="noopener noreferrer">
-              <MessageCircle className="mr-2 h-4 w-4" /> Contactar
-            </a>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+          <div className="flex items-center justify-between pt-2">
+            <span className="text-sm font-medium bg-primary/15 text-primary px-3 py-1 rounded-full" data-testid={`text-seats-${ride.id}`}>
+              {ride.seats} plazas libres
+            </span>
+            <Button size="sm" className="bg-accent hover:bg-[#d9a535] text-white" asChild data-testid={`button-contact-${ride.id}`}>
+              <a href={`https://wa.me/34${ride.contact.replace(/\s/g, '')}`} target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="mr-2 h-4 w-4" /> Contactar
+              </a>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {ride.driverProfileId && (
+        <ReviewDialog
+          open={reviewDialogOpen}
+          onOpenChange={setReviewDialogOpen}
+          driverProfileId={ride.driverProfileId}
+          driverName={ride.driverName}
+        />
+      )}
+    </>
   );
 }
