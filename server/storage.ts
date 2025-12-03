@@ -157,6 +157,7 @@ export class DatabaseStorage implements IStorage {
           eq(reviews.reviewerContactHash, reviewerHash)
         )
       )
+      .orderBy(desc(reviews.createdAt))
       .limit(1);
     
     if (existingReviews.length === 0) return true;
