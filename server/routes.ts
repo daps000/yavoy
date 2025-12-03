@@ -30,10 +30,28 @@ export async function registerRoutes(
       }
 
       const ride = await storage.createRide(validation.data);
+      
+      await Promise.all([
+        storage.addLocation(validation.data.origin),
+        storage.addLocation(validation.data.destination),
+      ]);
+
       res.status(201).json(ride);
     } catch (error) {
       console.error("Error creating ride:", error);
       res.status(500).json({ error: "Failed to create ride" });
+    }
+  });
+
+  // Search locations
+  app.get("/api/locations", async (req, res) => {
+    try {
+      const query = req.query.q as string || "";
+      const locations = await storage.searchLocations(query);
+      res.json(locations.map(l => l.name));
+    } catch (error) {
+      console.error("Error searching locations:", error);
+      res.status(500).json({ error: "Failed to search locations" });
     }
   });
 

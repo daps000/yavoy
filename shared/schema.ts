@@ -17,6 +17,14 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
+export const locations = pgTable("locations", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type Location = typeof locations.$inferSelect;
+
 export const rides = pgTable("rides", {
   id: serial("id").primaryKey(),
   driverName: text("driver_name").notNull(),

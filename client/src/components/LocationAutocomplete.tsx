@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { MapPin, Navigation, Loader2 } from "lucide-react";
-import municipios from "@/data/municipios.json";
 
 interface LocationAutocompleteProps {
   id: string;
@@ -9,24 +8,6 @@ interface LocationAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
   className?: string;
-}
-
-function normalizeText(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9\s]/g, " ")
-    .trim();
-}
-
-function tokenize(text: string): string[] {
-  return text.split(/[\s\-\/]+/).filter(Boolean);
-}
-
-interface ScoredMunicipio {
-  name: string;
-  score: number;
 }
 
 export function LocationAutocomplete({
@@ -39,51 +20,38 @@ export function LocationAutocomplete({
   const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const normalizedMunicipios = useMemo(() => {
-    return (municipios as string[]).map((m) => ({
-      original: m,
-      normalized: normalizeText(m),
-      tokens: tokenize(normalizeText(m)),
-    }));
-  }, []);
-
   useEffect(() => {
-    if (value.length >= 3) {
-      const searchTerm = normalizeText(value);
-      
-      const scored: ScoredMunicipio[] = [];
-      
-      for (const m of normalizedMunicipios) {
-        let score = 0;
-        
-        if (m.normalized.startsWith(searchTerm)) {
-          score = 100;
-        } else if (m.tokens.some((t) => t.startsWith(searchTerm))) {
-          score = 80;
-        } else if (m.normalized.includes(searchTerm)) {
-          score = 50;
+    if (value.length >= 2) {
+      const fetchSuggestions = async () => {
+        setIsLoadingSuggestions(true);
+        try {
+          const response = await fetch(`/api/locations?q=${encodeURIComponent(value)}`);
+          if (response.ok) {
+            const data = await response.json();
+            setSuggestions(data);
+          }
+        } catch (error) {
+          console.error("Error fetching locations:", error);
+          setSuggestions([]);
+        } finally {
+          setIsLoadingSuggestions(false);
         }
-        
-        if (score > 0) {
-          const lengthBonus = Math.max(0, 20 - m.original.length);
-          scored.push({ name: m.original, score: score + lengthBonus });
-        }
-      }
+      };
       
-      scored.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name, "es"));
-      
-      setSuggestions(scored.slice(0, 10).map((s) => s.name));
+      const debounceTimer = setTimeout(fetchSuggestions, 200);
       setIsOpen(true);
+      return () => clearTimeout(debounceTimer);
     } else {
       setSuggestions([]);
       setIsOpen(false);
     }
     setHighlightedIndex(-1);
-  }, [value, normalizedMunicipios]);
+  }, [value]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -157,8 +125,8 @@ export function LocationAutocomplete({
     }
   };
 
-  const handleSelect = (municipio: string) => {
-    onChange(municipio);
+  const handleSelect = (location: string) => {
+    onChange(location);
     setIsOpen(false);
     inputRef.current?.blur();
   };
@@ -186,7 +154,7 @@ export function LocationAutocomplete({
     }
   };
 
-  const showDropdown = isOpen && (value.length >= 3 || isLoadingLocation);
+  const showDropdown = isOpen && value.length >= 2;
 
   return (
     <div ref={containerRef} className="relative">
@@ -198,7 +166,7 @@ export function LocationAutocomplete({
         className={`pl-9 border-border bg-card ${className}`}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        onFocus={() => value.length >= 3 && setIsOpen(true)}
+        onFocus={() => value.length >= 2 && setIsOpen(true)}
         onKeyDown={handleKeyDown}
         autoComplete="off"
         data-testid={`input-${id}`}
@@ -225,27 +193,34 @@ export function LocationAutocomplete({
             </span>
           </button>
           
-          {suggestions.length > 0 && (
+          {isLoadingSuggestions && (
+            <div className="px-3 py-2.5 text-muted-foreground text-sm border-t border-border flex items-center gap-2">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Buscando...
+            </div>
+          )}
+          
+          {!isLoadingSuggestions && suggestions.length > 0 && (
             <>
               <div className="border-t border-border" />
-              {suggestions.map((municipio, index) => (
+              {suggestions.map((location, index) => (
                 <button
-                  key={municipio}
+                  key={location}
                   type="button"
                   className={`w-full px-3 py-2.5 flex items-center gap-3 text-left transition-colors ${
                     highlightedIndex === index + 1 ? "bg-primary/10" : "hover:bg-muted"
                   }`}
-                  onClick={() => handleSelect(municipio)}
+                  onClick={() => handleSelect(location)}
                   data-testid={`suggestion-${index}`}
                 >
                   <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span>{municipio}</span>
+                  <span>{location}</span>
                 </button>
               ))}
             </>
           )}
           
-          {suggestions.length === 0 && value.length >= 3 && (
+          {!isLoadingSuggestions && suggestions.length === 0 && value.length >= 2 && (
             <div className="px-3 py-2.5 text-muted-foreground text-sm border-t border-border">
               Escribe el nombre de tu pueblo
             </div>
