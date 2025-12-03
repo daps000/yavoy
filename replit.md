@@ -1,8 +1,8 @@
-# Vavoy - Rural Ride-Sharing Platform
+# YaVoy - Rural Ride-Sharing Platform
 
 ## Overview
 
-Vavoy is a simple, ultra-local ride-sharing MVP designed for short trips between villages in rural Spain. The platform connects neighbors who need transportation (to doctors, markets, or the city) with those already traveling by car. The focus is on quick publishing and discovery of rides, with direct contact via WhatsApp, no online payments, and minimal complexity to serve rural users aged 40+.
+YaVoy is a simple, ultra-local ride-sharing MVP designed for short trips between villages in rural Spain. The platform connects neighbors who need transportation (to doctors, markets, or the city) with those already traveling by car. The focus is on quick publishing and discovery of rides, with direct contact via WhatsApp, no online payments, and minimal complexity to serve rural users aged 40+.
 
 ## User Preferences
 
@@ -99,14 +99,25 @@ Preferred communication style: Simple, everyday language.
 **Component Organization:**
 - `/components/ui` - shadcn/ui component library
 - `/components/layout.tsx` - Main layout with header and navigation
+- `/components/LocationAutocomplete.tsx` - Reusable location input with Spanish municipality autocomplete and geolocation
 - `/pages` - Route-specific page components
 - `/lib` - Utilities, API client, query client configuration
+- `/data/municipios.json` - Static list of 8,124 Spanish municipalities from INE (CodeForSpain)
 
 **Theming:**
-- Custom CSS variables for rural aesthetic
-- Primary color: Natural earthy green (#3A7D44)
-- Background: Soft warm beige/sand (#FAF9F5)
+- Custom CSS variables for modern rural aesthetic
+- Primary color: Salvia green (#7dc891), darker shade (#70b681)
+- Accent color: Orange (#f3b118), darker shade (#d9a535)
+- Background: Urban gray (#F4F4F4) for cards
+- Foreground: Petrol gray (#2F2F2F) for titles
 - Large, readable fonts optimized for mobile and older users
+
+**Location Autocomplete:**
+- Spanish municipality autocomplete with 8,124+ towns from INE data
+- Suggestions appear after typing 3+ characters
+- First option: "Utilizar ubicación actual" with browser geolocation
+- Uses Nominatim (OpenStreetMap) for reverse geocoding GPS coordinates to town names
+- Keyboard navigation support (arrows, enter, escape)
 
 ## External Dependencies
 
@@ -116,6 +127,11 @@ Preferred communication style: Simple, everyday language.
 - Connection via `@neondatabase/serverless` package
 - WebSocket-based connections using `ws` library
 - Requires `DATABASE_URL` environment variable
+
+**Nominatim (OpenStreetMap)** - Reverse geocoding service
+- Used for "Utilizar ubicación actual" feature
+- Converts GPS coordinates to municipality names
+- Free API with User-Agent identification requirement
 
 **Replit Platform Services** (Development/Deployment)
 - `@replit/vite-plugin-cartographer` - Development tooling
