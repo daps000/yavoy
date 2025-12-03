@@ -65,7 +65,13 @@ Preferred communication style: Simple, everyday language.
    - username (unique)
    - password
 
-2. **rides** - Core ride-sharing data
+2. **driver_profiles** - Driver identity for rating aggregation
+   - id (serial, primary key)
+   - name (text)
+   - contactHash (text, unique) - SHA-256 hash of phone for privacy
+   - createdAt (timestamp)
+
+3. **rides** - Core ride-sharing data
    - id (serial, primary key)
    - driverName (text)
    - origin (text)
@@ -75,13 +81,30 @@ Preferred communication style: Simple, everyday language.
    - seats (integer)
    - contact (text - phone number for WhatsApp)
    - notes (optional text)
+   - driverProfileId (integer, nullable) - Links to driver_profiles
+   - createdAt (timestamp)
+
+4. **reviews** - Driver ratings and reviews
+   - id (serial, primary key)
+   - driverProfileId (integer) - Links to driver_profiles
+   - stars (integer, 1-5)
+   - comment (text, optional but required for <3 stars)
+   - reviewerContactHash (text) - SHA-256 hash for duplicate prevention
    - createdAt (timestamp)
 
 ### API Endpoints
 
 **GET /api/rides** - Fetch all rides, ordered by creation date (newest first)
 
-**POST /api/rides** - Create a new ride with validation via Zod schema
+**POST /api/rides** - Create a new ride with validation via Zod schema. Automatically creates or links driver profile.
+
+**GET /api/drivers/:id/rating** - Get average rating and review count for a driver
+
+**GET /api/drivers/:id/reviews** - Get recent reviews for a driver (optional limit param)
+
+**POST /api/reviews** - Submit a review (requires stars 1-5, comment if <3 stars, reviewer phone)
+
+**GET /api/reviews/can-review** - Check if user can review (14-day limit per driver/reviewer pair)
 
 ### Frontend Architecture
 
@@ -100,9 +123,18 @@ Preferred communication style: Simple, everyday language.
 - `/components/ui` - shadcn/ui component library
 - `/components/layout.tsx` - Main layout with header and navigation
 - `/components/LocationAutocomplete.tsx` - Reusable location input with Spanish municipality autocomplete and geolocation
+- `/components/ReviewDialog.tsx` - Modal dialog for submitting driver reviews with star rating
 - `/pages` - Route-specific page components
 - `/lib` - Utilities, API client, query client configuration
 - `/data/municipios.json` - Static list of 8,124 Spanish municipalities from INE (CodeForSpain)
+
+**Driver Rating System:**
+- Drivers automatically get a profile when publishing their first ride (linked via phone hash)
+- Ride cards show average rating (stars) and review count when available
+- Users can click "Valorar" to submit a review with 1-5 stars
+- Reviews with <3 stars require a comment explanation
+- Phone number used to prevent duplicate reviews (14-day cooldown per driver/reviewer pair)
+- Privacy: phone numbers are hashed using SHA-256 before storage
 
 **Theming:**
 - Custom CSS variables for modern rural aesthetic

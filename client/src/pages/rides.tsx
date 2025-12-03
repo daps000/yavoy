@@ -15,34 +15,34 @@ import { ReviewDialog } from "@/components/ReviewDialog";
 
 export default function RidesPage() {
   const searchString = useSearch();
-  const initialParams = useMemo(() => {
+  
+  const urlOrigin = useMemo(() => {
     const params = new URLSearchParams(searchString);
-    return {
-      origin: params.get("origen") || "",
-      dest: params.get("destino") || "",
-      date: params.get("fecha") || "all"
-    };
+    return params.get("origen") || "";
+  }, [searchString]);
+  
+  const urlDest = useMemo(() => {
+    const params = new URLSearchParams(searchString);
+    return params.get("destino") || "";
+  }, [searchString]);
+  
+  const urlDate = useMemo(() => {
+    const params = new URLSearchParams(searchString);
+    return params.get("fecha") || "all";
   }, [searchString]);
   
   const { data: rides = [], isLoading } = useQuery({
     queryKey: ["rides"],
     queryFn: fetchRides,
   });
-  const [filteredRides, setFilteredRides] = useState<Ride[]>([]);
   
   // Filter states - initialize from URL params
-  const [filterOrigin, setFilterOrigin] = useState(initialParams.origin);
-  const [filterDest, setFilterDest] = useState(initialParams.dest);
-  const [filterDate, setFilterDate] = useState(initialParams.date);
+  const [filterOrigin, setFilterOrigin] = useState(urlOrigin);
+  const [filterDest, setFilterDest] = useState(urlDest);
+  const [filterDate, setFilterDate] = useState(urlDate);
   
-  // Update filter states when URL params change
-  useEffect(() => {
-    setFilterOrigin(initialParams.origin);
-    setFilterDest(initialParams.dest);
-    setFilterDate(initialParams.date);
-  }, [initialParams]);
-
-  useEffect(() => {
+  // Compute filtered rides using useMemo instead of useEffect
+  const filteredRides = useMemo(() => {
     let result = rides;
 
     if (filterOrigin) {
@@ -70,7 +70,7 @@ export default function RidesPage() {
       }
     }
 
-    setFilteredRides(result);
+    return result;
   }, [rides, filterOrigin, filterDest, filterDate]);
 
   if (isLoading) {
