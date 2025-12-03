@@ -247,7 +247,7 @@ export function LocationAutocomplete({
           
           {suggestions.length === 0 && value.length >= 3 && (
             <div className="px-3 py-2.5 text-muted-foreground text-sm border-t border-border">
-              No se encontraron municipios
+              Escribe el nombre de tu pueblo
             </div>
           )}
         </div>
