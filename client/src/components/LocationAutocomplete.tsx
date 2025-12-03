@@ -75,11 +75,17 @@ export function LocationAutocomplete({
         {
           headers: {
             "Accept-Language": "es",
+            "User-Agent": "YaVoy-RuralRideshare/1.0 (contact@yavoy.es)",
           },
         }
       );
 
-      if (!response.ok) throw new Error("Error al obtener ubicación");
+      if (!response.ok) {
+        if (response.status === 403 || response.status === 429) {
+          throw new Error("Servicio de ubicación temporalmente no disponible");
+        }
+        throw new Error("Error al obtener ubicación");
+      }
 
       const data = await response.json();
       const address = data.address;
@@ -95,7 +101,12 @@ export function LocationAutocomplete({
       onChange(locationName);
     } catch (error) {
       console.error("Error getting location:", error);
-      alert("No se pudo obtener tu ubicación. Asegúrate de permitir el acceso.");
+      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+      if (errorMessage.includes("temporalmente")) {
+        alert(errorMessage);
+      } else {
+        alert("No se pudo obtener tu ubicación. Asegúrate de permitir el acceso.");
+      }
     } finally {
       setIsLoadingLocation(false);
     }
