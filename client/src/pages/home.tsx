@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Circle, Calendar } from "lucide-react";
+import { Search, MapPin, Calendar } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { LocationAutocomplete } from "@/components/LocationAutocomplete";
 import { Input } from "@/components/ui/input";
 import heroImage from "@assets/road-car_1764761779971.jpg";
@@ -29,8 +30,8 @@ export default function Home() {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <section className="relative w-full py-16 md:py-28 lg:py-36 overflow-hidden">
-        <div className="absolute inset-0 z-0">
+      <section className="relative w-full pb-24 overflow-hidden">
+        <div className="relative z-0 h-[400px] md:h-[500px]">
           <img 
             src={heroImage} 
             alt="Carretera rural" 
@@ -39,7 +40,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/70 to-transparent"></div>
         </div>
         
-        <div className="container relative z-10 px-4 md:px-6">
+        <div className="container relative z-10 px-4 md:px-6 -mt-32 md:-mt-40">
           <div className="max-w-2xl space-y-6">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif text-foreground tracking-tight leading-tight">
               Muévete entre pueblos <br/><span className="text-primary">compartiendo coche</span>
@@ -53,7 +54,7 @@ export default function Home() {
               <Card className="border-0 shadow-xl bg-white rounded-2xl overflow-hidden max-w-md">
                 <CardContent className="p-0">
                   <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
-                    <Circle className="h-5 w-5 text-primary" />
+                    <MapPin className="h-5 w-5 text-primary" />
                     <input
                       type="text"
                       placeholder="De"
@@ -64,7 +65,7 @@ export default function Home() {
                     />
                   </div>
                   <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
-                    <Circle className="h-5 w-5 text-primary" />
+                    <MapPin className="h-5 w-5 text-primary" />
                     <input
                       type="text"
                       placeholder="A"
@@ -94,18 +95,6 @@ export default function Home() {
                 </CardContent>
               </Card>
             </form>
-            
-            <div className="pt-2">
-              <Link href="/publicar">
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  className="text-lg px-8 h-14 shadow-sm bg-white text-primary border-primary border-2 hover:bg-primary/10 rounded-full"
-                >
-                  Publicar un viaje
-                </Button>
-              </Link>
-            </div>
           </div>
         </div>
       </section>
@@ -156,62 +145,28 @@ export default function Home() {
           </div>
         </div>
       </section>
-      {/* Search Section */}
+      {/* Publish Section */}
       <section className="py-16 container px-4 md:px-6">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold font-serif text-foreground mb-4">Busca tu viaje</h2>
-            <p className="text-muted-foreground">Encuentra vecinos que vayan a tu destino.</p>
+            <h2 className="text-3xl font-bold font-serif text-foreground mb-4">Publica tu viaje</h2>
+            <p className="text-muted-foreground">¿Vas a algún sitio? Comparte tu trayecto con vecinos.</p>
           </div>
 
-          <form onSubmit={handleSearch}>
-            <Card className="border border-border shadow-lg bg-white">
-              <CardContent className="pt-6">
-                <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
-                  <div className="space-y-2">
-                    <Label htmlFor="search-origin" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Origen</Label>
-                    <LocationAutocomplete
-                      id="search-origin"
-                      placeholder="¿De dónde sales?"
-                      value={searchOrigin}
-                      onChange={setSearchOrigin}
-                      className="h-12"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="search-dest" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Destino</Label>
-                    <LocationAutocomplete
-                      id="search-dest"
-                      placeholder="¿A dónde vas?"
-                      value={searchDest}
-                      onChange={setSearchDest}
-                      className="h-12"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="search-date" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Fecha</Label>
-                    <Select value={searchDate} onValueChange={setSearchDate}>
-                      <SelectTrigger className="bg-white border-border h-12 min-w-[160px]">
-                        <SelectValue placeholder="Cualquier fecha" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white z-[99]">
-                        <SelectItem value="all">Cualquier fecha</SelectItem>
-                        <SelectItem value="today">Hoy</SelectItem>
-                        <SelectItem value="tomorrow">Mañana</SelectItem>
-                        <SelectItem value="upcoming">Próximos días</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <Button type="submit" className="w-full mt-6 h-14 text-lg bg-accent hover:bg-[#d9a535] text-white rounded-full">
-                  <Search className="mr-2 h-5 w-5" /> Buscar viajes
-                </Button>
-              </CardContent>
-            </Card>
-          </form>
+          <Card className="border border-border shadow-lg bg-white">
+            <CardContent className="pt-6">
+              <div className="text-center space-y-4">
+                <p className="text-muted-foreground">
+                  Si vas a hacer un viaje y tienes sitio en el coche, publícalo para que otros vecinos puedan acompañarte.
+                </p>
+                <Link href="/publicar">
+                  <Button className="h-14 text-lg bg-accent hover:bg-[#d9a535] text-white rounded-full px-8">
+                    Publicar un viaje
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
     </div>
