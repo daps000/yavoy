@@ -73,10 +73,10 @@ export default function Home() {
         <div className="container px-4 md:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold font-serif text-foreground mb-4">Cómo funciona</h2>
-            <p className="text-muted-foreground">Tan simple como hablar con un vecino.</p>
+            <p className="text-muted-foreground text-[15px]">Tan simple como pedirle un favor a un vecino</p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto pt-6">
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto pt-[0px] pb-[0px]">
             <Card className="border border-border shadow-sm bg-white relative">
               <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold shadow-md">
                 1
