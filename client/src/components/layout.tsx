@@ -94,9 +94,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="container px-4 md:px-6 text-center space-y-4">
           <div className="flex items-center justify-center gap-2 mb-4">
             <img 
-              src={logoWhite} 
+              src={logoImage} 
               alt="YaVoy" 
-              className="h-10 w-auto"
+              className="h-10 w-auto brightness-0 invert"
             />
           </div>
           <p className="text-primary-foreground/80 max-w-md mx-auto">
