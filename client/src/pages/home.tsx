@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search } from "lucide-react";
+import { Search, Circle, Calendar } from "lucide-react";
 import { LocationAutocomplete } from "@/components/LocationAutocomplete";
+import { Input } from "@/components/ui/input";
 import heroImage from "@assets/road-car_1764761779971.jpg";
 import { Link, useLocation } from "wouter";
 
@@ -46,20 +47,60 @@ export default function Home() {
             <p className="md:text-xl max-w-xl text-[14px] text-[#454545] ml-[3px] mr-[3px]">
               YaVoy conecta a vecinas y vecinos que necesitan ir al médico, al mercado o a la ciudad con quienes ya van en coche. Menos gastos, más comunidad.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link href="/viajes" className="w-full sm:w-auto">
-                <Button 
-                  size="lg" 
-                  className="text-lg px-8 h-14 shadow-lg bg-primary hover:bg-[#70b681] rounded-full w-full"
-                >
-                  Ver viajes disponibles
-                </Button>
-              </Link>
-              <Link href="/publicar" className="w-full sm:w-auto">
+            
+            {/* Search Card */}
+            <form onSubmit={handleSearch} className="pt-4">
+              <Card className="border-0 shadow-xl bg-white rounded-2xl overflow-hidden max-w-md">
+                <CardContent className="p-0">
+                  <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+                    <Circle className="h-5 w-5 text-primary" />
+                    <input
+                      type="text"
+                      placeholder="De"
+                      value={searchOrigin}
+                      onChange={(e) => setSearchOrigin(e.target.value)}
+                      className="flex-1 bg-transparent border-0 outline-none text-foreground placeholder:text-muted-foreground"
+                      data-testid="input-hero-origin"
+                    />
+                  </div>
+                  <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+                    <Circle className="h-5 w-5 text-primary" />
+                    <input
+                      type="text"
+                      placeholder="A"
+                      value={searchDest}
+                      onChange={(e) => setSearchDest(e.target.value)}
+                      className="flex-1 bg-transparent border-0 outline-none text-foreground placeholder:text-muted-foreground"
+                      data-testid="input-hero-dest"
+                    />
+                  </div>
+                  <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+                    <Calendar className="h-5 w-5 text-primary" />
+                    <Select value={searchDate} onValueChange={setSearchDate}>
+                      <SelectTrigger className="flex-1 border-0 bg-transparent shadow-none p-0 h-auto focus:ring-0">
+                        <SelectValue placeholder="Hoy" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white z-[99]">
+                        <SelectItem value="all">Cualquier fecha</SelectItem>
+                        <SelectItem value="today">Hoy</SelectItem>
+                        <SelectItem value="tomorrow">Mañana</SelectItem>
+                        <SelectItem value="upcoming">Próximos días</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button type="submit" className="w-full h-12 text-lg bg-primary hover:bg-[#70b681] text-white rounded-none">
+                    Buscar
+                  </Button>
+                </CardContent>
+              </Card>
+            </form>
+            
+            <div className="pt-2">
+              <Link href="/publicar">
                 <Button 
                   size="lg" 
                   variant="outline"
-                  className="text-lg px-8 h-14 shadow-sm bg-white text-primary border-primary border-2 hover:bg-primary/10 rounded-full w-full"
+                  className="text-lg px-8 h-14 shadow-sm bg-white text-primary border-primary border-2 hover:bg-primary/10 rounded-full"
                 >
                   Publicar un viaje
                 </Button>
