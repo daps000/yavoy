@@ -42,7 +42,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/70 to-transparent"></div>
           
           {/* Title and Intro inside hero image */}
-          <div className="absolute inset-0 flex items-start pt-[25px]">
+          <div className="absolute inset-0 flex items-start pt-[35px]">
             <div className="container px-4 md:px-6">
               <div className="max-w-2xl space-y-4">
                 <h1 className="md:text-5xl lg:text-6xl font-bold font-serif text-foreground tracking-tight text-[30px] leading-[1.1]">
@@ -57,7 +57,7 @@ export default function Home() {
         </div>
         
         {/* Search Card - overlapping below hero */}
-        <div className="container px-4 md:px-6 -mt-[110px] relative z-10 pb-8">
+        <div className="container px-4 md:px-6 -mt-[120px] relative z-10 pb-8">
           <div className="max-w-md mx-auto md:mx-0 md:ml-4">
             <form onSubmit={handleSearch}>
               <Card className="border-0 shadow-xl bg-white rounded-2xl overflow-hidden">
