@@ -164,7 +164,7 @@ export default function Home() {
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold font-serif text-foreground mb-4">Publica tu viaje</h2>
-              <p className="text-muted-foreground">¿Vas a algún sitio? Comparte tu trayecto con vecinos.</p>
+              <p className="text-muted-foreground text-[14px]">¿Vas a algún sitio? Comparte tu trayecto con vecinos.</p>
             </div>
 
             <Card className="border border-border shadow-lg bg-white overflow-hidden max-w-md mx-auto">
