@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,32 +6,44 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { type InsertRide } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, Car } from "lucide-react";
+import { CheckCircle2, LogIn } from "lucide-react";
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createRide } from "@/lib/api";
 import { LocationAutocomplete } from "@/components/LocationAutocomplete";
 import { useAuth } from "@/lib/auth-context";
+import { saveDraft, loadDraft, isDraftPending, clearDraft } from "@/lib/publish-draft";
 
 export default function PublishPage() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
+  const { isAuthenticated, login, isLoading: authLoading } = useAuth();
+  const hasAttemptedAutoSubmit = useRef(false);
+  
+  const [driverName, setDriverName] = useState("");
+  const [contact, setContact] = useState("");
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
-  const { isAuthenticated, login, isLoading: authLoading } = useAuth();
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [seats, setSeats] = useState(3);
+  const [notes, setNotes] = useState("");
+  const [isRestoringDraft, setIsRestoringDraft] = useState(true);
 
   const mutation = useMutation({
     mutationFn: createRide,
     onSuccess: () => {
+      clearDraft();
       queryClient.invalidateQueries({ queryKey: ["rides"] });
+      queryClient.invalidateQueries({ queryKey: ["my-rides"] });
       toast({
         title: "¡Viaje publicado!",
         description: "Tu viaje ya está visible para otros vecinos. ¡Gracias por compartir!",
         action: <CheckCircle2 className="h-6 w-6 text-green-500" />,
         duration: 5000,
       });
-      setTimeout(() => setLocation("/viajes"), 1000);
+      setTimeout(() => setLocation("/mis-viajes"), 1000);
     },
     onError: (error) => {
       toast({
@@ -42,50 +54,85 @@ export default function PublishPage() {
     },
   });
 
+  useEffect(() => {
+    const draft = loadDraft();
+    if (draft) {
+      setDriverName(draft.driverName);
+      setContact(draft.contact);
+      setOrigin(draft.origin);
+      setDestination(draft.destination);
+      setDate(draft.date);
+      setTime(draft.time);
+      setSeats(draft.seats);
+      setNotes(draft.notes);
+      
+      if (isAuthenticated && isDraftPending() && !hasAttemptedAutoSubmit.current) {
+        hasAttemptedAutoSubmit.current = true;
+        toast({
+          title: "Borrador restaurado",
+          description: "Pulsa 'Publicar' para completar la publicación de tu viaje.",
+          duration: 5000,
+        });
+      }
+    }
+    setIsRestoringDraft(false);
+  }, [isAuthenticated]);
+
+  const validateForm = (): boolean => {
+    if (!driverName || !contact || !origin || !destination || !date || !time) {
+      toast({
+        title: "Faltan datos",
+        description: "Por favor, rellena todos los campos obligatorios.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    
+    if (!validateForm()) return;
+
+    if (!isAuthenticated) {
+      saveDraft({
+        driverName,
+        contact,
+        origin,
+        destination,
+        date,
+        time,
+        seats,
+        notes,
+      });
+      toast({
+        title: "Inicia sesión para publicar",
+        description: "Tus datos se han guardado. Después de iniciar sesión podrás publicar tu viaje.",
+        duration: 4000,
+      });
+      setTimeout(() => login(), 500);
+      return;
+    }
+
     const newRide: InsertRide = {
-      driverName: formData.get("name") as string,
-      origin: origin,
-      destination: destination,
-      date: formData.get("date") as string,
-      time: formData.get("time") as string,
-      seats: parseInt(formData.get("seats") as string),
-      contact: formData.get("contact") as string,
-      notes: (formData.get("notes") as string) || "",
+      driverName,
+      origin,
+      destination,
+      date,
+      time,
+      seats,
+      contact,
+      notes: notes || "",
     };
 
     mutation.mutate(newRide);
-    form.reset();
-    setOrigin("");
-    setDestination("");
   };
 
-  if (authLoading) {
+  if (authLoading || isRestoringDraft) {
     return (
       <div className="container px-4 md:px-6 py-12 text-center">
         <p className="text-muted-foreground">Cargando...</p>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="container px-4 md:px-6 py-12 max-w-2xl mx-auto">
-        <div className="text-center py-16 bg-secondary/20 rounded-xl border border-dashed">
-          <Car className="h-12 w-12 mx-auto text-muted-foreground mb-3 opacity-50" />
-          <h3 className="text-lg font-medium">Inicia sesión para publicar</h3>
-          <p className="text-muted-foreground mb-6">
-            Necesitas una cuenta para publicar viajes y gestionarlos después.
-          </p>
-          <Button onClick={login} data-testid="button-login-publish">
-            Iniciar sesión
-          </Button>
-        </div>
       </div>
     );
   }
@@ -97,17 +144,44 @@ export default function PublishPage() {
         <p className="text-muted-foreground">Comparte tu coche y ayuda a tus vecinos a moverse.</p>
       </div>
 
+      {!isAuthenticated && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 flex items-center gap-3">
+          <LogIn className="h-5 w-5 text-amber-600 shrink-0" />
+          <p className="text-sm text-amber-800">
+            Rellena los datos de tu viaje. Al pulsar publicar te pediremos iniciar sesión para gestionar tu viaje después.
+          </p>
+        </div>
+      )}
+
       <Card className="border border-border shadow-lg bg-white">
         <CardContent className="pt-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Tu Nombre</Label>
-                <Input id="name" name="name" placeholder="Ej. María" required className="bg-card border-border" />
+                <Input 
+                  id="name" 
+                  name="name" 
+                  placeholder="Ej. María" 
+                  required 
+                  className="bg-card border-border"
+                  value={driverName}
+                  onChange={(e) => setDriverName(e.target.value)}
+                  data-testid="input-driver-name"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="contact">Teléfono / WhatsApp</Label>
-                <Input id="contact" name="contact" placeholder="600 000 000" required className="bg-card border-border" />
+                <Input 
+                  id="contact" 
+                  name="contact" 
+                  placeholder="600 000 000" 
+                  required 
+                  className="bg-card border-border"
+                  value={contact}
+                  onChange={(e) => setContact(e.target.value)}
+                  data-testid="input-contact"
+                />
               </div>
             </div>
 
@@ -135,15 +209,45 @@ export default function PublishPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="date_form">Fecha</Label>
-                <Input id="date_form" name="date" type="date" required min={new Date().toISOString().split('T')[0]} className="bg-card border-border" />
+                <Input 
+                  id="date_form" 
+                  name="date" 
+                  type="date" 
+                  required 
+                  min={new Date().toISOString().split('T')[0]} 
+                  className="bg-card border-border"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  data-testid="input-date"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="time_form">Hora</Label>
-                <Input id="time_form" name="time" type="time" required className="bg-card border-border" />
+                <Input 
+                  id="time_form" 
+                  name="time" 
+                  type="time" 
+                  required 
+                  className="bg-card border-border"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  data-testid="input-time"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="seats">Plazas libres</Label>
-                <Input id="seats" name="seats" type="number" min="1" max="8" defaultValue="3" required className="bg-card border-border" />
+                <Input 
+                  id="seats" 
+                  name="seats" 
+                  type="number" 
+                  min="1" 
+                  max="8" 
+                  required 
+                  className="bg-card border-border"
+                  value={seats}
+                  onChange={(e) => setSeats(parseInt(e.target.value) || 3)}
+                  data-testid="input-seats"
+                />
               </div>
             </div>
 
@@ -154,10 +258,18 @@ export default function PublishPage() {
                 name="notes" 
                 placeholder="Ej. Vuelvo sobre las 18h, salgo de la plaza, llevo maletero vacío..." 
                 className="resize-none bg-card border-border"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                data-testid="input-notes"
               />
             </div>
 
-            <Button type="submit" className="w-full bg-primary hover:bg-[#70b681] text-lg h-12 mt-2 rounded-full" disabled={mutation.isPending}>
+            <Button 
+              type="submit" 
+              className="w-full bg-primary hover:bg-[#70b681] text-lg h-12 mt-2 rounded-full" 
+              disabled={mutation.isPending}
+              data-testid="button-publish"
+            >
               {mutation.isPending ? "Publicando..." : "Publicar viaje ahora"}
             </Button>
           </form>
