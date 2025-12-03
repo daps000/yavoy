@@ -99,9 +99,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               className="h-10 w-auto brightness-0 invert"
             />
           </div>
-          <p className="text-primary-foreground/80 max-w-md mx-auto">
-            YaVoy – piloto en fase de prueba para mejorar la movilidad rural.
-          </p>
+          <p className="text-primary-foreground/80 max-w-md mx-auto text-[14px]">Vavoy es un piloto en fase de pruebas. Conectamos personas, no operamos transporte</p>
           <div className="pt-4 text-xs opacity-50">
             Hecho con <Heart className="inline h-3 w-3 mx-1 fill-current" /> para nuestros pueblos
           </div>
