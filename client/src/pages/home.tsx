@@ -47,7 +47,7 @@ export default function Home() {
                 <h1 className="md:text-5xl lg:text-6xl font-bold font-serif text-foreground tracking-tight text-[32px]">
                   Muévete entre pueblos <br/><span className="text-primary">compartiendo coche</span>
                 </h1>
-                <p className="md:text-xl max-w-xl text-[14px] text-[#454545] ml-[3px] mr-[3px]">
+                <p className="md:text-xl max-w-xl text-[14px] text-[#454545] ml-[3px] pr-[100px]">
                   YaVoy conecta a vecinas y vecinos que necesitan ir al médico, al mercado o a la ciudad con quienes ya van en coche. Menos gastos, más comunidad.
                 </p>
               </div>
