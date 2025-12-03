@@ -76,38 +76,38 @@ export default function Home() {
             <p className="text-muted-foreground">Tan simple como hablar con un vecino.</p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <Card className="border border-border shadow-sm bg-white">
-              <CardContent className="pt-6 flex flex-col items-center text-center space-y-4">
-                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold">
-                  1
-                </div>
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto pt-6">
+            <Card className="border border-border shadow-sm bg-white relative">
+              <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold shadow-md">
+                1
+              </div>
+              <CardContent className="pt-8 pb-6 flex flex-col items-center text-center space-y-3">
                 <h3 className="text-xl font-bold text-foreground">Publica tu viaje</h3>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Indica de dónde sales, a dónde vas y cuántos sitios libres tienes en el coche.
                 </p>
               </CardContent>
             </Card>
             
-            <Card className="border border-border shadow-sm bg-white">
-              <CardContent className="pt-6 flex flex-col items-center text-center space-y-4">
-                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold">
-                  2
-                </div>
+            <Card className="border border-border shadow-sm bg-white relative">
+              <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold shadow-md">
+                2
+              </div>
+              <CardContent className="pt-8 pb-6 flex flex-col items-center text-center space-y-3">
                 <h3 className="text-xl font-bold text-foreground">Conecta por WhatsApp</h3>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Las personas interesadas verán tu viaje y te escribirán directamente.
                 </p>
               </CardContent>
             </Card>
             
-            <Card className="border border-border shadow-sm bg-white">
-              <CardContent className="pt-6 flex flex-col items-center text-center space-y-4">
-                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold">
-                  3
-                </div>
+            <Card className="border border-border shadow-sm bg-white relative">
+              <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold shadow-md">
+                3
+              </div>
+              <CardContent className="pt-8 pb-6 flex flex-col items-center text-center space-y-3">
                 <h3 className="text-xl font-bold text-foreground">Compartís el trayecto</h3>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Viajáis juntos, os hacéis compañía y compartís los gastos de gasolina.
                 </p>
               </CardContent>
