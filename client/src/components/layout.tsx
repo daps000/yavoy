@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import logoImage from "@assets/logo-verde_1764705915286.png";
+import logoImage from "@assets/logo-verde.png";
 import logoWhite from "@assets/logo-yavoy-white.png";
 
 export function Layout({ children }: { children: React.ReactNode }) {
