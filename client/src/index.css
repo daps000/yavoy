@@ -142,3 +142,23 @@
 .border-salvia-dark {
   border-color: #70b681;
 }
+
+/* Date picker styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+input[type="date"]::-webkit-datetime-edit {
+  background-color: white;
+}
+
+/* Native date/time picker dropdown - white background */
+::-webkit-datetime-edit-fields-wrapper {
+  background-color: white;
+}
+
+input[type="date"],
+input[type="time"] {
+  background-color: white !important;
+  color-scheme: light;
+}
