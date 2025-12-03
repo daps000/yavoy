@@ -41,7 +41,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/70 to-transparent"></div>
           
           {/* Title and Intro inside hero image */}
-          <div className="absolute inset-0 flex items-center">
+          <div className="absolute inset-0 flex items-start pt-[40px]">
             <div className="container px-4 md:px-6">
               <div className="max-w-2xl space-y-4">
                 <h1 className="md:text-5xl lg:text-6xl font-bold font-serif text-foreground tracking-tight text-[32px]">
