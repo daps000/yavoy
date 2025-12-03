@@ -158,34 +158,36 @@ export default function Home() {
         </div>
       </section>
       {/* Publish Section */}
-      <section className="py-16 container px-4 md:px-6">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold font-serif text-foreground mb-4">Publica tu viaje</h2>
-            <p className="text-muted-foreground">¿Vas a algún sitio? Comparte tu trayecto con vecinos.</p>
-          </div>
-
-          <Card className="border border-border shadow-lg bg-white overflow-hidden max-w-md mx-auto">
-            <div className="w-full h-48 bg-gray-50">
-              <img 
-                src={publishImage} 
-                alt="Comparte tu viaje" 
-                className="w-full h-full object-cover"
-              />
+      <section className="py-16 bg-[#e8f5eb]">
+        <div className="container px-4 md:px-6">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold font-serif text-foreground mb-4">Publica tu viaje</h2>
+              <p className="text-muted-foreground">¿Vas a algún sitio? Comparte tu trayecto con vecinos.</p>
             </div>
-            <CardContent className="pt-5 pb-6">
-              <div className="text-center space-y-4">
-                <p className="text-muted-foreground text-sm">
-                  Si vas a hacer un viaje y tienes sitio en el coche, publícalo para que otros vecinos puedan acompañarte.
-                </p>
-                <Link href="/publicar">
-                  <Button className="h-12 text-base bg-primary hover:bg-[#70b681] text-white rounded-full px-8">
-                    Publicar un viaje
-                  </Button>
-                </Link>
+
+            <Card className="border border-border shadow-lg bg-white overflow-hidden max-w-md mx-auto">
+              <div className="w-full h-48 bg-gray-50">
+                <img 
+                  src={publishImage} 
+                  alt="Comparte tu viaje" 
+                  className="w-full h-full object-cover"
+                />
               </div>
-            </CardContent>
-          </Card>
+              <CardContent className="pt-5 pb-6">
+                <div className="text-center space-y-4">
+                  <p className="text-muted-foreground text-sm">
+                    Si vas a hacer un viaje y tienes sitio en el coche, publícalo para que otros vecinos puedan acompañarte.
+                  </p>
+                  <Link href="/publicar">
+                    <Button className="h-12 text-base bg-primary hover:bg-[#70b681] text-white rounded-full px-8">
+                      Publicar un viaje
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </section>
     </div>
