@@ -1,9 +1,10 @@
 import { Link, useLocation } from "wouter";
-import { Leaf, Heart, Menu } from "lucide-react";
+import { Heart, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import logoImage from "@assets/logo-verde_1764705915286.png";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -19,14 +20,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-sans">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
-          <Link href="/" className="flex flex-col cursor-pointer hover:opacity-90 transition-opacity">
-            <div className="flex items-center gap-2">
-              <Leaf className="h-6 w-6 text-primary" />
-              <span className="text-2xl font-bold text-primary font-serif tracking-tight">Vavoy</span>
-            </div>
-            <span className="text-[10px] text-muted-foreground hidden sm:inline-block -mt-1 ml-8">Viajes compartidos entre pueblos</span>
+          <Link href="/" className="flex items-center cursor-pointer hover:opacity-90 transition-opacity">
+            <img 
+              src={logoImage} 
+              alt="YaVoy" 
+              className="h-10 md:h-12 w-auto"
+            />
           </Link>
           
           {/* Desktop Nav */}
@@ -55,10 +56,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   <SheetTitle>Menú de navegación</SheetTitle>
                 </VisuallyHidden>
                 <div className="flex flex-col gap-6 mt-8">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Leaf className="h-6 w-6 text-primary" />
-                    <span className="text-2xl font-bold text-primary font-serif">Vavoy</span>
-                  </div>
+                  <img 
+                    src={logoImage} 
+                    alt="YaVoy" 
+                    className="h-10 w-auto"
+                  />
                   <nav className="flex flex-col gap-4">
                     {navItems.map((item) => (
                       <Link 
@@ -87,15 +89,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <footer className="bg-primary text-primary-foreground py-12 mt-auto">
         <div className="container px-4 md:px-6 text-center space-y-4">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Leaf className="h-6 w-6" />
-            <span className="text-2xl font-bold font-serif">Vavoy</span>
+            <img 
+              src={logoImage} 
+              alt="YaVoy" 
+              className="h-10 w-auto brightness-0 invert"
+            />
           </div>
           <p className="text-primary-foreground/80 max-w-md mx-auto">
-            Vavoy – piloto en fase de prueba para mejorar la movilidad rural.
+            YaVoy – piloto en fase de prueba para mejorar la movilidad rural.
           </p>
-          <div className="pt-4 border-t border-primary-foreground/20 text-sm text-primary-foreground/60 max-w-2xl mx-auto">
-            <p>Por ahora solo conectamos personas. Cada viaje se acuerda directamente entre quienes comparten coche. Vavoy no se hace responsable de cancelaciones o incidencias.</p>
-          </div>
           <div className="pt-4 text-xs opacity-50">
             Hecho con <Heart className="inline h-3 w-3 mx-1 fill-current" /> para nuestros pueblos
           </div>

@@ -33,68 +33,73 @@
 }
 
 :root {
-  /* Rural Theme: Green & Warm Beige */
+  /* New Color Palette: Salvia Green + Orange Accent */
   
-  /* Background: Soft warm beige/sand */
-  --background: 45 29% 97%; /* #FAF9F5 */
-  --foreground: 150 40% 15%; /* Dark green-black text */
+  /* Background: Clean urban gray */
+  --background: 0 0% 98%; /* Very light gray, almost white */
+  --foreground: 0 0% 18%; /* Petrol gray #2F2F2F for text */
 
-  /* Card: White with a hint of warmth */
-  --card: 0 0% 100%;
-  --card-foreground: 150 40% 15%;
+  /* Card: Urban gray with white */
+  --card: 0 0% 96%; /* #F4F4F4 */
+  --card-foreground: 0 0% 18%;
 
-  /* Primary: Natural Earthy Green */
-  --primary: 142 35% 35%; /* #3A7D44 */
+  /* Primary: Salvia Green */
+  --primary: 139 40% 63%; /* #7dc891 */
   --primary-foreground: 0 0% 100%;
 
-  /* Secondary: Warm Earth/Sand tone */
-  --secondary: 35 30% 90%; /* #F2EDE6 */
-  --secondary-foreground: 25 30% 30%;
+  /* Secondary: Lighter salvia for backgrounds */
+  --secondary: 139 25% 92%; /* Very light salvia tint */
+  --secondary-foreground: 139 33% 40%;
 
-  /* Muted: Soft grays/greens */
-  --muted: 120 10% 92%;
-  --muted-foreground: 120 10% 40%;
+  /* Muted: Medium grays */
+  --muted: 0 0% 92%;
+  --muted-foreground: 0 0% 45%; /* Medium gray for subtexts */
 
-  /* Accent: A pop of terracotta or warm orange for emphasis */
-  --accent: 30 60% 94%;
-  --accent-foreground: 25 70% 40%;
+  /* Accent: Orange */
+  --accent: 43 91% 52%; /* #f3b118 */
+  --accent-foreground: 0 0% 100%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
 
-  --border: 120 10% 85%;
-  --input: 120 10% 85%;
-  --ring: 142 35% 35%;
+  --border: 0 0% 88%;
+  --input: 0 0% 88%;
+  --ring: 139 40% 63%;
 
-  --radius: 0.75rem; /* Softer, friendlier corners */
+  --radius: 0.75rem;
+  
+  /* Custom colors for direct use */
+  --salvia: 139 40% 63%;
+  --salvia-dark: 139 33% 58%;
+  --orange: 43 91% 52%;
+  --orange-dark: 43 70% 53%;
 }
 
 .dark {
-  /* Dark mode - Deep Forest Night */
-  --background: 150 40% 5%;
-  --foreground: 45 20% 90%;
+  --background: 0 0% 8%;
+  --foreground: 0 0% 95%;
 
-  --card: 150 40% 8%;
-  --card-foreground: 45 20% 90%;
+  --card: 0 0% 12%;
+  --card-foreground: 0 0% 95%;
 
-  --primary: 142 40% 45%;
+  --primary: 139 40% 55%;
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 150 20% 15%;
-  --secondary-foreground: 45 20% 90%;
+  --secondary: 139 20% 15%;
+  --secondary-foreground: 139 20% 90%;
 
-  --muted: 150 20% 15%;
-  --muted-foreground: 150 10% 65%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 65%;
 
-  --accent: 150 20% 15%;
-  --accent-foreground: 45 20% 90%;
+  --accent: 43 80% 50%;
+  --accent-foreground: 0 0% 100%;
 
   --destructive: 0 62% 30%;
   --destructive-foreground: 0 0% 98%;
 
-  --border: 150 20% 15%;
-  --input: 150 20% 15%;
-  --ring: 142 40% 45%;
+  --border: 0 0% 20%;
+  --input: 0 0% 20%;
+  --ring: 139 40% 55%;
 }
 
 @layer base {
@@ -107,4 +112,33 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
   }
+}
+
+/* Custom utility classes for the new palette */
+.bg-salvia {
+  background-color: #7dc891;
+}
+.bg-salvia-dark {
+  background-color: #70b681;
+}
+.text-salvia {
+  color: #7dc891;
+}
+.text-salvia-dark {
+  color: #70b681;
+}
+.bg-orange-accent {
+  background-color: #f3b118;
+}
+.bg-orange-dark {
+  background-color: #d9a535;
+}
+.text-orange-accent {
+  color: #f3b118;
+}
+.border-salvia {
+  border-color: #7dc891;
+}
+.border-salvia-dark {
+  border-color: #70b681;
 }

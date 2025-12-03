@@ -61,47 +61,47 @@ export default function PublishPage() {
   return (
     <div className="container px-4 md:px-6 py-12 max-w-2xl mx-auto">
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold font-serif text-primary mb-3">Publicar un viaje</h1>
+        <h1 className="text-3xl font-bold font-serif text-foreground mb-3">Publicar un viaje</h1>
         <p className="text-muted-foreground">Comparte tu coche y ayuda a tus vecinos a moverse.</p>
       </div>
 
-      <Card className="border-none shadow-lg bg-white">
+      <Card className="border border-border shadow-lg bg-white">
         <CardContent className="pt-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Tu Nombre</Label>
-                <Input id="name" name="name" placeholder="Ej. María" required />
+                <Input id="name" name="name" placeholder="Ej. María" required className="bg-card border-border" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="contact">Teléfono / WhatsApp</Label>
-                <Input id="contact" name="contact" placeholder="600 000 000" required />
+                <Input id="contact" name="contact" placeholder="600 000 000" required className="bg-card border-border" />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="origin_form">Origen</Label>
-                <Input id="origin_form" name="origin" placeholder="Pueblo de salida" required />
+                <Input id="origin_form" name="origin" placeholder="Pueblo de salida" required className="bg-card border-border" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="destination_form">Destino</Label>
-                <Input id="destination_form" name="destination" placeholder="Pueblo o ciudad de llegada" required />
+                <Input id="destination_form" name="destination" placeholder="Pueblo o ciudad de llegada" required className="bg-card border-border" />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="date_form">Fecha</Label>
-                <Input id="date_form" name="date" type="date" required min={new Date().toISOString().split('T')[0]} />
+                <Input id="date_form" name="date" type="date" required min={new Date().toISOString().split('T')[0]} className="bg-card border-border" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="time_form">Hora</Label>
-                <Input id="time_form" name="time" type="time" required />
+                <Input id="time_form" name="time" type="time" required className="bg-card border-border" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="seats">Plazas libres</Label>
-                <Input id="seats" name="seats" type="number" min="1" max="8" defaultValue="3" required />
+                <Input id="seats" name="seats" type="number" min="1" max="8" defaultValue="3" required className="bg-card border-border" />
               </div>
             </div>
 
@@ -111,11 +111,11 @@ export default function PublishPage() {
                 id="notes" 
                 name="notes" 
                 placeholder="Ej. Salgo de la plaza, paso por X pueblo, llevo maletero vacío..." 
-                className="resize-none"
+                className="resize-none bg-card border-border"
               />
             </div>
 
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-lg h-12 mt-2" disabled={mutation.isPending}>
+            <Button type="submit" className="w-full bg-primary hover:bg-[#70b681] text-lg h-12 mt-2 rounded-full" disabled={mutation.isPending}>
               {mutation.isPending ? "Publicando..." : "Publicar viaje ahora"}
             </Button>
           </form>

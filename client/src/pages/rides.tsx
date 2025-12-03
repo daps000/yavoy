@@ -93,15 +93,15 @@ export default function RidesPage() {
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white p-4 rounded-2xl shadow-sm border mb-8 grid gap-4 md:grid-cols-[1fr_1fr_auto_auto]">
+      <div className="bg-white p-4 rounded-2xl shadow-sm border border-border mb-8 grid gap-4 md:grid-cols-[1fr_1fr_auto_auto]">
         <div className="space-y-2">
           <Label htmlFor="origin" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Origen</Label>
           <div className="relative">
-            <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-primary" />
             <Input 
               id="origin" 
               placeholder="¿De dónde sales?" 
-              className="pl-9 border-muted bg-secondary/20"
+              className="pl-9 border-border bg-card"
               value={filterOrigin}
               onChange={(e) => setFilterOrigin(e.target.value)}
             />
@@ -111,11 +111,11 @@ export default function RidesPage() {
         <div className="space-y-2">
           <Label htmlFor="dest" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Destino</Label>
           <div className="relative">
-            <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-primary" />
             <Input 
               id="dest" 
               placeholder="¿A dónde vas?" 
-              className="pl-9 border-muted bg-secondary/20"
+              className="pl-9 border-border bg-card"
               value={filterDest}
               onChange={(e) => setFilterDest(e.target.value)}
             />
@@ -125,7 +125,7 @@ export default function RidesPage() {
         <div className="space-y-2 min-w-[180px]">
           <Label htmlFor="date" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Fecha</Label>
           <Select value={filterDate} onValueChange={setFilterDate}>
-            <SelectTrigger className="bg-secondary/20 border-muted">
+            <SelectTrigger className="bg-card border-border">
               <SelectValue placeholder="Cualquier fecha" />
             </SelectTrigger>
             <SelectContent>
@@ -138,7 +138,7 @@ export default function RidesPage() {
         </div>
 
         <div className="flex items-end">
-          <Button className="w-full md:w-auto bg-primary hover:bg-primary/90">
+          <Button className="w-full md:w-auto bg-primary hover:bg-[#70b681]">
             <Search className="mr-2 h-4 w-4" /> Filtrar
           </Button>
         </div>
@@ -175,29 +175,29 @@ function RideCard({ ride }: { ride: Ride }) {
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow border-muted">
-      <div className="h-2 bg-primary/20 w-full"></div>
+    <Card className="overflow-hidden hover:shadow-md transition-shadow border-border bg-white">
+      <div className="h-2 bg-primary w-full"></div>
       <CardContent className="pt-6 space-y-4">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-lg font-bold">
-              <span className="text-primary">{ride.origin}</span>
-              <span className="text-muted-foreground">→</span>
-              <span className="text-primary">{ride.destination}</span>
+              <span className="text-foreground">{ride.origin}</span>
+              <span className="text-primary">→</span>
+              <span className="text-foreground">{ride.destination}</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
-              <Calendar className="h-4 w-4" />
+              <Calendar className="h-4 w-4 text-primary" />
               <span>{formatDate(ride.date)}</span>
               <span className="mx-1">•</span>
-              <Clock className="h-4 w-4" />
+              <Clock className="h-4 w-4 text-primary" />
               <span>{ride.time}</span>
             </div>
           </div>
         </div>
         
-        <div className="bg-secondary/30 p-3 rounded-lg space-y-2 text-sm">
+        <div className="bg-card p-3 rounded-lg space-y-2 text-sm">
           <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-primary" />
             <span className="font-medium">{ride.driverName}</span>
           </div>
           {ride.notes && (
@@ -206,10 +206,10 @@ function RideCard({ ride }: { ride: Ride }) {
         </div>
 
         <div className="flex items-center justify-between pt-2">
-          <span className="text-sm font-medium bg-primary/10 text-primary px-2 py-1 rounded-full">
+          <span className="text-sm font-medium bg-primary/15 text-primary px-3 py-1 rounded-full">
             {ride.seats} plazas libres
           </span>
-          <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-white" asChild>
+          <Button size="sm" className="bg-accent hover:bg-[#d9a535] text-white" asChild>
             <a href={`https://wa.me/34${ride.contact.replace(/\s/g, '')}`} target="_blank" rel="noopener noreferrer">
               <MessageCircle className="mr-2 h-4 w-4" /> Contactar
             </a>

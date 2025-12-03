@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Search } from "lucide-react";
-import heroImage from "@assets/generated_images/sunny_spanish_rural_road_with_green_fields.png";
+import heroImage from "@assets/road-car_1764761779971.jpg";
 import { Link, useLocation } from "wouter";
 
 export default function Home() {
@@ -28,29 +28,29 @@ export default function Home() {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <section className="relative w-full py-12 md:py-24 lg:py-32 overflow-hidden">
+      <section className="relative w-full py-16 md:py-28 lg:py-36 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
             src={heroImage} 
             alt="Carretera rural" 
-            className="w-full h-full object-cover opacity-25"
+            className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/80 to-background"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/70 to-transparent"></div>
         </div>
         
-        <div className="container relative z-10 px-4 md:px-6 text-center">
-          <div className="max-w-3xl mx-auto space-y-6">
+        <div className="container relative z-10 px-4 md:px-6">
+          <div className="max-w-2xl space-y-6">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif text-foreground tracking-tight leading-tight">
               Muévete entre pueblos <br/><span className="text-primary">compartiendo coche</span>
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Vavoy conecta a vecinas y vecinos que necesitan ir al médico, al mercado o a la ciudad con quienes ya van en coche. Menos gastos, más comunidad.
+            <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
+              YaVoy conecta a vecinas y vecinos que necesitan ir al médico, al mercado o a la ciudad con quienes ya van en coche. Menos gastos, más comunidad.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Link href="/viajes" className="w-full sm:w-auto">
                 <Button 
                   size="lg" 
-                  className="text-lg px-8 h-14 shadow-lg bg-primary hover:bg-primary/90 rounded-full w-full"
+                  className="text-lg px-8 h-14 shadow-lg bg-primary hover:bg-[#70b681] rounded-full w-full"
                 >
                   Ver viajes disponibles
                 </Button>
@@ -58,8 +58,8 @@ export default function Home() {
               <Link href="/publicar" className="w-full sm:w-auto">
                 <Button 
                   size="lg" 
-                  variant="secondary"
-                  className="text-lg px-8 h-14 shadow-sm bg-white text-primary border-primary/20 border hover:bg-secondary/50 rounded-full w-full"
+                  variant="outline"
+                  className="text-lg px-8 h-14 shadow-sm bg-white text-primary border-primary border-2 hover:bg-primary/10 rounded-full w-full"
                 >
                   Publicar un viaje
                 </Button>
@@ -70,44 +70,44 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section id="como-funciona" className="py-16 bg-secondary/30">
+      <section id="como-funciona" className="py-16 bg-card">
         <div className="container px-4 md:px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold font-serif text-primary mb-4">Cómo funciona</h2>
+            <h2 className="text-3xl font-bold font-serif text-foreground mb-4">Cómo funciona</h2>
             <p className="text-muted-foreground">Tan simple como hablar con un vecino.</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <Card className="border-none shadow-md bg-white/80 backdrop-blur">
+            <Card className="border border-border shadow-sm bg-white">
               <CardContent className="pt-6 flex flex-col items-center text-center space-y-4">
                 <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold">
                   1
                 </div>
-                <h3 className="text-xl font-bold">Publica tu viaje</h3>
+                <h3 className="text-xl font-bold text-foreground">Publica tu viaje</h3>
                 <p className="text-muted-foreground">
                   Indica de dónde sales, a dónde vas y cuántos sitios libres tienes en el coche.
                 </p>
               </CardContent>
             </Card>
             
-            <Card className="border-none shadow-md bg-white/80 backdrop-blur">
+            <Card className="border border-border shadow-sm bg-white">
               <CardContent className="pt-6 flex flex-col items-center text-center space-y-4">
                 <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold">
                   2
                 </div>
-                <h3 className="text-xl font-bold">Conecta por WhatsApp</h3>
+                <h3 className="text-xl font-bold text-foreground">Conecta por WhatsApp</h3>
                 <p className="text-muted-foreground">
                   Las personas interesadas verán tu viaje y te escribirán directamente.
                 </p>
               </CardContent>
             </Card>
             
-            <Card className="border-none shadow-md bg-white/80 backdrop-blur">
+            <Card className="border border-border shadow-sm bg-white">
               <CardContent className="pt-6 flex flex-col items-center text-center space-y-4">
                 <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold">
                   3
                 </div>
-                <h3 className="text-xl font-bold">Compartís el trayecto</h3>
+                <h3 className="text-xl font-bold text-foreground">Compartís el trayecto</h3>
                 <p className="text-muted-foreground">
                   Viajáis juntos, os hacéis compañía y compartís los gastos de gasolina.
                 </p>
@@ -126,17 +126,17 @@ export default function Home() {
           </div>
 
           <form onSubmit={handleSearch}>
-            <Card className="border-none shadow-lg bg-white">
+            <Card className="border border-border shadow-lg bg-white">
               <CardContent className="pt-6">
                 <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
                   <div className="space-y-2">
                     <Label htmlFor="search-origin" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Origen</Label>
                     <div className="relative">
-                      <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-primary" />
                       <Input 
                         id="search-origin" 
                         placeholder="¿De dónde sales?" 
-                        className="pl-9 border-muted bg-secondary/20 h-12"
+                        className="pl-9 border-border bg-card h-12"
                         value={searchOrigin}
                         onChange={(e) => setSearchOrigin(e.target.value)}
                       />
@@ -146,11 +146,11 @@ export default function Home() {
                   <div className="space-y-2">
                     <Label htmlFor="search-dest" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Destino</Label>
                     <div className="relative">
-                      <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-primary" />
                       <Input 
                         id="search-dest" 
                         placeholder="¿A dónde vas?" 
-                        className="pl-9 border-muted bg-secondary/20 h-12"
+                        className="pl-9 border-border bg-card h-12"
                         value={searchDest}
                         onChange={(e) => setSearchDest(e.target.value)}
                       />
@@ -160,7 +160,7 @@ export default function Home() {
                   <div className="space-y-2">
                     <Label htmlFor="search-date" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Fecha</Label>
                     <Select value={searchDate} onValueChange={setSearchDate}>
-                      <SelectTrigger className="bg-secondary/20 border-muted h-12 min-w-[160px]">
+                      <SelectTrigger className="bg-card border-border h-12 min-w-[160px]">
                         <SelectValue placeholder="Cualquier fecha" />
                       </SelectTrigger>
                       <SelectContent>
@@ -173,7 +173,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full mt-6 h-14 text-lg bg-primary hover:bg-primary/90 rounded-full">
+                <Button type="submit" className="w-full mt-6 h-14 text-lg bg-accent hover:bg-[#d9a535] text-white rounded-full">
                   <Search className="mr-2 h-5 w-5" /> Buscar viajes
                 </Button>
               </CardContent>
