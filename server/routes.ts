@@ -4,11 +4,111 @@ import { storage, hashContact } from "./storage";
 import { insertRideSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import { z } from "zod";
+import { isAuthenticated } from "./replitAuth";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  
+  // Get current user session
+  app.get("/api/auth/user", (req, res) => {
+    if (req.isAuthenticated() && req.user) {
+      const user = req.user as any;
+      return res.json({
+        id: user.claims?.sub,
+        email: user.claims?.email,
+        firstName: user.claims?.first_name,
+        lastName: user.claims?.last_name,
+      });
+    }
+    res.json(null);
+  });
+  
+  // Get user profile (including phone)
+  app.get("/api/user/profile", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const userId = user.claims?.sub;
+      const profile = await storage.getUser(userId);
+      res.json(profile);
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      res.status(500).json({ error: "Failed to fetch user profile" });
+    }
+  });
+  
+  // Update user phone
+  app.put("/api/user/phone", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const userId = user.claims?.sub;
+      const { phone } = req.body;
+      
+      if (!phone || phone.trim().length < 9) {
+        return res.status(400).json({ error: "Invalid phone number" });
+      }
+      
+      const updatedUser = await storage.updateUserPhone(userId, phone.trim());
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user phone:", error);
+      res.status(500).json({ error: "Failed to update phone number" });
+    }
+  });
+  
+  // Record ride contact (when user clicks "Contactar")
+  app.post("/api/ride-contacts", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const userId = user.claims?.sub;
+      const { rideId, driverProfileId } = req.body;
+      
+      if (!rideId || !driverProfileId) {
+        return res.status(400).json({ error: "Missing rideId or driverProfileId" });
+      }
+      
+      const contact = await storage.createRideContact({
+        userId,
+        rideId,
+        driverProfileId,
+      });
+      
+      res.status(201).json(contact);
+    } catch (error) {
+      console.error("Error recording ride contact:", error);
+      res.status(500).json({ error: "Failed to record ride contact" });
+    }
+  });
+  
+  // Get pending review contacts for current user
+  app.get("/api/pending-reviews", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const userId = user.claims?.sub;
+      const pendingContacts = await storage.getPendingReviewContacts(userId);
+      res.json(pendingContacts);
+    } catch (error) {
+      console.error("Error fetching pending reviews:", error);
+      res.status(500).json({ error: "Failed to fetch pending reviews" });
+    }
+  });
+  
+  // Mark contact as reviewed
+  app.put("/api/ride-contacts/:id/reviewed", isAuthenticated, async (req, res) => {
+    try {
+      const contactId = parseInt(req.params.id);
+      if (isNaN(contactId)) {
+        return res.status(400).json({ error: "Invalid contact ID" });
+      }
+      await storage.markContactReviewed(contactId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error marking contact as reviewed:", error);
+      res.status(500).json({ error: "Failed to mark contact as reviewed" });
+    }
+  });
+
   // Get all rides
   app.get("/api/rides", async (req, res) => {
     try {

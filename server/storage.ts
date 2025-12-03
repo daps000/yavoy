@@ -1,4 +1,4 @@
-import { users, rides, locations, driverProfiles, reviews, type User, type InsertUser, type Ride, type InsertRide, type Location, type DriverProfile, type Review, type InsertReview, type DriverRating } from "@shared/schema";
+import { users, rides, locations, driverProfiles, reviews, rideContacts, type User, type UpsertUser, type Ride, type InsertRide, type Location, type DriverProfile, type Review, type InsertReview, type DriverRating, type RideContact, type InsertRideContact } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, ilike, sql, and, avg, count } from "drizzle-orm";
 import crypto from "crypto";
@@ -17,8 +17,8 @@ function hashContact(contact: string): string {
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  updateUserPhone(userId: string, phone: string): Promise<User>;
   
   getAllRides(): Promise<Ride[]>;
   createRide(ride: InsertRide): Promise<Ride>;
@@ -32,6 +32,10 @@ export interface IStorage {
   getDriverReviews(driverProfileId: number, limit?: number): Promise<Review[]>;
   createReview(review: InsertReview): Promise<Review>;
   canUserReview(driverProfileId: number, reviewerContact: string): Promise<boolean>;
+  
+  createRideContact(contact: InsertRideContact): Promise<RideContact>;
+  getPendingReviewContacts(userId: string): Promise<(RideContact & { driverName: string | null })[]>;
+  markContactReviewed(contactId: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -40,15 +44,26 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async upsertUser(userData: UpsertUser): Promise<User> {
     const [user] = await db
       .insert(users)
-      .values(insertUser)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
+  }
+
+  async updateUserPhone(userId: string, phone: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ phone, updatedAt: new Date() })
+      .where(eq(users.id, userId))
       .returning();
     return user;
   }
@@ -164,6 +179,44 @@ export class DatabaseStorage implements IStorage {
     
     const lastReview = existingReviews[0];
     return lastReview.createdAt < fourteenDaysAgo;
+  }
+
+  async createRideContact(contact: InsertRideContact): Promise<RideContact> {
+    const [newContact] = await db
+      .insert(rideContacts)
+      .values(contact)
+      .returning();
+    return newContact;
+  }
+
+  async getPendingReviewContacts(userId: string): Promise<(RideContact & { driverName: string | null })[]> {
+    const result = await db
+      .select({
+        id: rideContacts.id,
+        userId: rideContacts.userId,
+        rideId: rideContacts.rideId,
+        driverProfileId: rideContacts.driverProfileId,
+        reviewSubmitted: rideContacts.reviewSubmitted,
+        createdAt: rideContacts.createdAt,
+        driverName: driverProfiles.name,
+      })
+      .from(rideContacts)
+      .leftJoin(driverProfiles, eq(rideContacts.driverProfileId, driverProfiles.id))
+      .where(
+        and(
+          eq(rideContacts.userId, userId),
+          eq(rideContacts.reviewSubmitted, 0)
+        )
+      )
+      .orderBy(desc(rideContacts.createdAt));
+    return result;
+  }
+
+  async markContactReviewed(contactId: number): Promise<void> {
+    await db
+      .update(rideContacts)
+      .set({ reviewSubmitted: 1 })
+      .where(eq(rideContacts.id, contactId));
   }
 }
 

@@ -1,15 +1,24 @@
 import { Link, useLocation } from "wouter";
-import { Heart, Menu, PlusCircle } from "lucide-react";
+import { Heart, Menu, PlusCircle, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import logoImage from "@assets/logo-verde.png";
 import logoWhite from "@assets/logo-yavoy-white.png";
+import { useAuth } from "@/lib/auth-context";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, isAuthenticated, isLoading, login, logout } = useAuth();
 
   const navItems = [
     { label: "Inicio", href: "/" },
@@ -17,6 +26,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
     { label: "Publicar viaje", href: "/publicar" },
     { label: "Preguntas frecuentes", href: "/faq" },
   ];
+
+  const getUserDisplayName = () => {
+    if (user?.firstName) return user.firstName;
+    if (user?.email) return user.email.split("@")[0];
+    return "Usuario";
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-sans">
@@ -32,7 +47,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </Link>
           
           {/* Desktop Nav */}
-          <nav className="hidden md:flex gap-6 text-sm font-medium text-muted-foreground">
+          <nav className="hidden md:flex gap-6 text-sm font-medium text-muted-foreground items-center">
             {navItems.map((item) => (
               <Link 
                 key={item.href} 
@@ -42,6 +57,33 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 {item.label}
               </Link>
             ))}
+            
+            {!isLoading && (
+              isAuthenticated ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center gap-2" data-testid="button-user-menu">
+                      <User className="h-4 w-4" />
+                      <span>{getUserDisplayName()}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem className="text-muted-foreground">
+                      {user?.email}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout} className="text-red-600" data-testid="button-logout">
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Cerrar sesión
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button variant="outline" onClick={login} className="ml-2" data-testid="button-login">
+                  Iniciar sesión
+                </Button>
+              )
+            )}
           </nav>
 
           {/* Mobile Nav */}
@@ -79,6 +121,43 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       </Link>
                     ))}
                   </nav>
+                  
+                  <div className="border-t pt-4 w-full">
+                    {!isLoading && (
+                      isAuthenticated ? (
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <User className="h-4 w-4" />
+                            <span>{getUserDisplayName()}</span>
+                          </div>
+                          <span className="text-xs text-muted-foreground">{user?.email}</span>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setIsMobileMenuOpen(false);
+                              logout();
+                            }}
+                            className="mt-2 text-red-600 border-red-200"
+                            data-testid="button-mobile-logout"
+                          >
+                            <LogOut className="h-4 w-4 mr-2" />
+                            Cerrar sesión
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            login();
+                          }}
+                          className="w-full"
+                          data-testid="button-mobile-login"
+                        >
+                          Iniciar sesión
+                        </Button>
+                      )
+                    )}
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>

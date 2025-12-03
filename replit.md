@@ -48,7 +48,7 @@ Preferred communication style: Simple, everyday language.
 
 3. **Spanish Language Interface:** All UI text in Spanish (Spain) with friendly, clear language addressing rural users directly.
 
-4. **Simplified User Flow:** No authentication required for viewing or publishing rides. Direct WhatsApp contact links for coordination. No payment processing built in - users handle compensation directly.
+4. **User Authentication via Replit Auth:** Users can optionally log in via Replit Auth (supports Google, GitHub, Apple, email). Authentication enables ride contact tracking and review prompts. Viewing and publishing rides does not require login. Direct WhatsApp contact links for coordination. No payment processing built in - users handle compensation directly.
 
 5. **Single-Page Application with Multi-Route Structure:** Uses Wouter for lightweight routing with pages for Home, View Rides, Publish Ride, and FAQ.
 
@@ -60,12 +60,21 @@ Preferred communication style: Simple, everyday language.
 
 **Tables:**
 
-1. **users** - User authentication (currently defined but not actively used in MVP)
-   - id (UUID, primary key)
-   - username (unique)
-   - password
+1. **sessions** - Session storage for authentication
+   - sid (varchar, primary key)
+   - sess (jsonb) - Session data
+   - expire (timestamp)
 
-2. **driver_profiles** - Driver identity for rating aggregation
+2. **users** - User accounts from Replit Auth
+   - id (varchar, primary key) - Replit user ID
+   - email (varchar, unique)
+   - firstName (varchar)
+   - lastName (varchar)
+   - phone (varchar) - Optional phone number
+   - createdAt (timestamp)
+   - updatedAt (timestamp)
+
+3. **driver_profiles** - Driver identity for rating aggregation
    - id (serial, primary key)
    - name (text)
    - contactHash (text, unique) - SHA-256 hash of phone for privacy
@@ -92,6 +101,14 @@ Preferred communication style: Simple, everyday language.
    - reviewerContactHash (text) - SHA-256 hash for duplicate prevention
    - createdAt (timestamp)
 
+5. **ride_contacts** - Tracks when users contact drivers (for review prompts)
+   - id (serial, primary key)
+   - userId (varchar) - Links to users
+   - rideId (integer) - Links to rides
+   - driverProfileId (integer) - Links to driver_profiles
+   - reviewSubmitted (integer, 0 or 1)
+   - createdAt (timestamp)
+
 ### API Endpoints
 
 **GET /api/rides** - Fetch all rides, ordered by creation date (newest first)
@@ -105,6 +122,26 @@ Preferred communication style: Simple, everyday language.
 **POST /api/reviews** - Submit a review (requires stars 1-5, comment if <3 stars, reviewer phone)
 
 **GET /api/reviews/can-review** - Check if user can review (14-day limit per driver/reviewer pair)
+
+**Authentication Endpoints:**
+
+**GET /api/login** - Redirects to Replit Auth login page
+
+**GET /api/callback** - OAuth callback handler
+
+**GET /api/logout** - Logs out user and redirects to home
+
+**GET /api/auth/user** - Returns current authenticated user or null
+
+**GET /api/user/profile** - Returns full user profile (requires auth)
+
+**PUT /api/user/phone** - Update user phone number (requires auth)
+
+**POST /api/ride-contacts** - Record when user contacts a driver (requires auth)
+
+**GET /api/pending-reviews** - Get ride contacts pending review (requires auth)
+
+**PUT /api/ride-contacts/:id/reviewed** - Mark contact as reviewed (requires auth)
 
 ### Frontend Architecture
 
@@ -124,8 +161,10 @@ Preferred communication style: Simple, everyday language.
 - `/components/layout.tsx` - Main layout with header and navigation
 - `/components/LocationAutocomplete.tsx` - Reusable location input with Spanish municipality autocomplete and geolocation
 - `/components/ReviewDialog.tsx` - Modal dialog for submitting driver reviews with star rating
+- `/components/PendingReviewPrompt.tsx` - Dialog that prompts users to review drivers they've contacted
 - `/pages` - Route-specific page components
 - `/lib` - Utilities, API client, query client configuration
+- `/lib/auth-context.tsx` - React context for authentication state management
 - `/data/municipios.json` - Static list of 8,124 Spanish municipalities from INE (CodeForSpain)
 
 **Driver Rating System:**

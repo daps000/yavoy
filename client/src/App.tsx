@@ -9,6 +9,8 @@ import RidesPage from "@/pages/rides";
 import PublishPage from "@/pages/publish";
 import FAQPage from "@/pages/faq";
 import { Layout } from "@/components/layout";
+import { AuthProvider } from "@/lib/auth-context";
+import { PendingReviewPrompt } from "@/components/PendingReviewPrompt";
 
 function Router() {
   return (
@@ -27,10 +29,13 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <PendingReviewPrompt />
+          <Router />
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

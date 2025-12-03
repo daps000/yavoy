@@ -9,9 +9,11 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Link, useSearch } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { fetchRides, fetchDriverRating } from "@/lib/api";
+import { fetchRides, fetchDriverRating, recordRideContact } from "@/lib/api";
 import { LocationAutocomplete } from "@/components/LocationAutocomplete";
 import { ReviewDialog } from "@/components/ReviewDialog";
+import { useAuth } from "@/lib/auth-context";
+import { useToast } from "@/hooks/use-toast";
 
 export default function RidesPage() {
   const searchString = useSearch();
@@ -180,6 +182,8 @@ function DriverRatingDisplay({ driverProfileId }: { driverProfileId: number | nu
 
 function RideCard({ ride }: { ride: Ride }) {
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const { isAuthenticated, login } = useAuth();
+  const { toast } = useToast();
   
   const formatDate = (dateStr: string) => {
     try {
@@ -187,6 +191,17 @@ function RideCard({ ride }: { ride: Ride }) {
     } catch (e) {
       return dateStr;
     }
+  };
+
+  const handleContact = async () => {
+    if (isAuthenticated && ride.driverProfileId) {
+      try {
+        await recordRideContact(ride.id, ride.driverProfileId);
+      } catch (error) {
+        console.error("Error recording ride contact:", error);
+      }
+    }
+    window.open(`https://wa.me/34${ride.contact.replace(/\s/g, '')}`, '_blank');
   };
 
   return (
@@ -237,10 +252,13 @@ function RideCard({ ride }: { ride: Ride }) {
             <span className="text-sm font-medium bg-primary/15 text-primary px-3 py-1 rounded-full" data-testid={`text-seats-${ride.id}`}>
               {ride.seats} plazas libres
             </span>
-            <Button size="sm" className="bg-accent hover:bg-[#d9a535] text-white" asChild data-testid={`button-contact-${ride.id}`}>
-              <a href={`https://wa.me/34${ride.contact.replace(/\s/g, '')}`} target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="mr-2 h-4 w-4" /> Contactar
-              </a>
+            <Button 
+              size="sm" 
+              className="bg-accent hover:bg-[#d9a535] text-white" 
+              onClick={handleContact}
+              data-testid={`button-contact-${ride.id}`}
+            >
+              <MessageCircle className="mr-2 h-4 w-4" /> Contactar
             </Button>
           </div>
         </CardContent>
