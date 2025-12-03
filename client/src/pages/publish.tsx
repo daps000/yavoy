@@ -125,7 +125,7 @@ export default function PublishPage() {
               <Textarea 
                 id="notes" 
                 name="notes" 
-                placeholder="Ej. Salgo de la plaza, paso por X pueblo, llevo maletero vacío..." 
+                placeholder="Ej. Vuelvo sobre las 18h, salgo de la plaza, llevo maletero vacío..." 
                 className="resize-none bg-card border-border"
               />
             </div>
