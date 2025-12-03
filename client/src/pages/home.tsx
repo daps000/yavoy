@@ -43,7 +43,7 @@ export default function Home() {
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif text-foreground tracking-tight leading-tight">
               Muévete entre pueblos <br/><span className="text-primary">compartiendo coche</span>
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
+            <p className="md:text-xl max-w-xl text-[14px] text-[#454545] ml-[3px] mr-[3px]">
               YaVoy conecta a vecinas y vecinos que necesitan ir al médico, al mercado o a la ciudad con quienes ya van en coche. Menos gastos, más comunidad.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -68,7 +68,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* How it works */}
       <section id="como-funciona" className="py-16 bg-card">
         <div className="container px-4 md:px-6">
@@ -116,7 +115,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Search Section */}
       <section className="py-16 container px-4 md:px-6">
         <div className="max-w-3xl mx-auto">
