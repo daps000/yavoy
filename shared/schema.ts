@@ -19,7 +19,8 @@ export type User = typeof users.$inferSelect;
 
 export const locations = pgTable("locations", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull().unique(),
+  name: text("name").notNull(),
+  normalized: text("normalized").notNull().unique(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

@@ -2,6 +2,14 @@ import { users, rides, locations, type User, type InsertUser, type Ride, type In
 import { db } from "./db";
 import { eq, desc, ilike, sql } from "drizzle-orm";
 
+function normalizeLocationName(name: string): string {
+  return name
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -47,28 +55,23 @@ export class DatabaseStorage implements IStorage {
 
   async searchLocations(query: string): Promise<Location[]> {
     if (!query || query.length < 2) return [];
-    const results = await db.execute(
-      sql`SELECT * FROM locations 
-          WHERE unaccent(lower(name)) LIKE '%' || unaccent(lower(${query})) || '%' 
-          ORDER BY name 
-          LIMIT 10`
-    );
-    return results.rows as Location[];
+    const normalizedQuery = normalizeLocationName(query);
+    return await db
+      .select()
+      .from(locations)
+      .where(ilike(locations.normalized, `%${normalizedQuery}%`))
+      .orderBy(locations.name)
+      .limit(10);
   }
 
   async addLocation(name: string): Promise<Location | null> {
     if (!name || name.trim().length === 0) return null;
     const trimmedName = name.trim();
-    const normalizedCheck = trimmedName.toLowerCase();
+    const normalized = normalizeLocationName(trimmedName);
     try {
-      const existing = await db.execute(
-        sql`SELECT * FROM locations WHERE unaccent(lower(name)) = unaccent(lower(${normalizedCheck})) LIMIT 1`
-      );
-      if (existing.rows.length > 0) return null;
-      
       const [location] = await db
         .insert(locations)
-        .values({ name: trimmedName })
+        .values({ name: trimmedName, normalized })
         .onConflictDoNothing()
         .returning();
       return location || null;
