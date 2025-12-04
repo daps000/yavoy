@@ -271,16 +271,6 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
             </span>
             {isOwnRide ? (
               <div className="flex gap-2">
-                {onEdit && (
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={() => onEdit(ride)}
-                    data-testid={`button-edit-${ride.id}`}
-                  >
-                    Editar
-                  </Button>
-                )}
                 {onDelete && (
                   <Button 
                     size="sm" 
@@ -290,6 +280,16 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
                     data-testid={`button-delete-${ride.id}`}
                   >
                     Eliminar
+                  </Button>
+                )}
+                {onEdit && (
+                  <Button 
+                    size="sm" 
+                    className="bg-primary hover:bg-[#70b681] text-white"
+                    onClick={() => onEdit(ride)}
+                    data-testid={`button-edit-${ride.id}`}
+                  >
+                    Editar
                   </Button>
                 )}
               </div>
