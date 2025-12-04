@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getSupabase } from "./supabase";
+import { getSupabase, getSiteUrl } from "./supabase";
 import type { User as SupabaseUser, Session } from "@supabase/supabase-js";
 import type { User } from "@shared/schema";
 
@@ -114,10 +114,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     const supabase = await getSupabase();
+    
+    // Use the site URL from the server (REPLIT_DEV_DOMAIN) if available
+    // This ensures OAuth works even when viewing from localhost proxy
+    const siteUrl = getSiteUrl();
+    const redirectUrl = siteUrl || window.location.origin;
+    
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/`,
+        redirectTo: `${redirectUrl}/`,
       },
     });
     if (error) {

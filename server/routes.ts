@@ -14,9 +14,16 @@ export async function registerRoutes(
   
   // Supabase config endpoint for client
   app.get("/api/config/supabase", (req, res) => {
+    // Construct the redirect URL for OAuth
+    let siteUrl: string | undefined;
+    if (process.env.REPLIT_DEV_DOMAIN) {
+      siteUrl = `https://${process.env.REPLIT_DEV_DOMAIN}`;
+    }
+    
     res.json({
       url: process.env.SUPABASE_URL,
       anonKey: process.env.SUPABASE_ANON_KEY,
+      siteUrl,
     });
   });
 
