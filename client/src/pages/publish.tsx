@@ -207,6 +207,8 @@ export default function PublishPage() {
                   <Input 
                     id="contact" 
                     name="contact" 
+                    type="tel"
+                    inputMode="tel"
                     placeholder="600 000 000" 
                     required 
                     className="bg-card border-border"

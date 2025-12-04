@@ -142,6 +142,8 @@ export default function ProfilePage() {
               </Label>
               <Input
                 id="phone"
+                type="tel"
+                inputMode="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="600 000 000"

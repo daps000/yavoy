@@ -92,9 +92,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button variant="outline" onClick={login} className="ml-2" data-testid="button-login">
-                  Iniciar sesión
-                </Button>
+                <Link href="/entrar">
+                  <Button variant="outline" className="ml-2" data-testid="button-login">
+                    Iniciar sesión
+                  </Button>
+                </Link>
               )
             )}
           </nav>
@@ -170,16 +172,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
                           </Button>
                         </div>
                       ) : (
-                        <Button
-                          onClick={() => {
-                            setIsMobileMenuOpen(false);
-                            login();
-                          }}
+                        <Link 
+                          href="/entrar"
+                          onClick={() => setIsMobileMenuOpen(false)}
                           className="w-full"
-                          data-testid="button-mobile-login"
                         >
-                          Iniciar sesión
-                        </Button>
+                          <Button
+                            className="w-full"
+                            data-testid="button-mobile-login"
+                          >
+                            Iniciar sesión
+                          </Button>
+                        </Link>
                       )
                     )}
                   </div>

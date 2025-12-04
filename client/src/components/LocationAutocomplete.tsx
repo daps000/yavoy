@@ -154,7 +154,9 @@ export function LocationAutocomplete({
     }
   };
 
-  const showDropdown = isOpen && value.length >= 2;
+  // Hide dropdown if 5+ chars typed and no suggestions found (let user proceed with custom text)
+  const hasNoResults = !isLoadingSuggestions && suggestions.length === 0 && value.length >= 5;
+  const showDropdown = isOpen && value.length >= 2 && !hasNoResults;
 
   return (
     <div ref={containerRef} className="relative">
