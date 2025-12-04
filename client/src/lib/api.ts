@@ -1,4 +1,5 @@
 import { type Ride, type InsertRide, type DriverRating, type Review, type User, type RideContact } from "@shared/schema";
+import { getSupabase } from "./supabase";
 
 export type AuthUser = {
   id: string;
@@ -7,8 +8,25 @@ export type AuthUser = {
   lastName?: string;
 } | null;
 
+async function getAuthHeaders(): Promise<HeadersInit> {
+  const supabase = await getSupabase();
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  if (session?.access_token) {
+    return {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${session.access_token}`,
+    };
+  }
+  
+  return {
+    "Content-Type": "application/json",
+  };
+}
+
 export async function fetchAuthUser(): Promise<AuthUser> {
-  const response = await fetch("/api/auth/user");
+  const headers = await getAuthHeaders();
+  const response = await fetch("/api/auth/user", { headers });
   if (!response.ok) {
     return null;
   }
@@ -16,7 +34,8 @@ export async function fetchAuthUser(): Promise<AuthUser> {
 }
 
 export async function fetchUserProfile(): Promise<User | null> {
-  const response = await fetch("/api/user/profile");
+  const headers = await getAuthHeaders();
+  const response = await fetch("/api/user/profile", { headers });
   if (!response.ok) {
     return null;
   }
@@ -24,11 +43,10 @@ export async function fetchUserProfile(): Promise<User | null> {
 }
 
 export async function updateUserPhone(phone: string): Promise<User> {
+  const headers = await getAuthHeaders();
   const response = await fetch("/api/user/phone", {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify({ phone }),
   });
   
@@ -41,11 +59,10 @@ export async function updateUserPhone(phone: string): Promise<User> {
 }
 
 export async function recordRideContact(rideId: number, driverProfileId: number): Promise<RideContact> {
+  const headers = await getAuthHeaders();
   const response = await fetch("/api/ride-contacts", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify({ rideId, driverProfileId }),
   });
   
@@ -60,7 +77,8 @@ export async function recordRideContact(rideId: number, driverProfileId: number)
 export type PendingReviewContact = RideContact & { driverName: string | null };
 
 export async function fetchPendingReviews(): Promise<PendingReviewContact[]> {
-  const response = await fetch("/api/pending-reviews");
+  const headers = await getAuthHeaders();
+  const response = await fetch("/api/pending-reviews", { headers });
   if (!response.ok) {
     return [];
   }
@@ -68,8 +86,10 @@ export async function fetchPendingReviews(): Promise<PendingReviewContact[]> {
 }
 
 export async function markContactReviewed(contactId: number): Promise<void> {
+  const headers = await getAuthHeaders();
   const response = await fetch(`/api/ride-contacts/${contactId}/reviewed`, {
     method: "PUT",
+    headers,
   });
   
   if (!response.ok) {
@@ -86,7 +106,8 @@ export async function fetchRides(): Promise<Ride[]> {
 }
 
 export async function fetchMyRides(): Promise<Ride[]> {
-  const response = await fetch("/api/my-rides");
+  const headers = await getAuthHeaders();
+  const response = await fetch("/api/my-rides", { headers });
   if (!response.ok) {
     return [];
   }
@@ -94,11 +115,10 @@ export async function fetchMyRides(): Promise<Ride[]> {
 }
 
 export async function updateRide(id: number, data: Partial<InsertRide>): Promise<Ride> {
+  const headers = await getAuthHeaders();
   const response = await fetch(`/api/rides/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(data),
   });
   
@@ -111,8 +131,10 @@ export async function updateRide(id: number, data: Partial<InsertRide>): Promise
 }
 
 export async function deleteRide(id: number): Promise<void> {
+  const headers = await getAuthHeaders();
   const response = await fetch(`/api/rides/${id}`, {
     method: "DELETE",
+    headers,
   });
   
   if (!response.ok) {
@@ -122,11 +144,10 @@ export async function deleteRide(id: number): Promise<void> {
 }
 
 export async function createRide(ride: InsertRide): Promise<Ride> {
+  const headers = await getAuthHeaders();
   const response = await fetch("/api/rides", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(ride),
   });
   
