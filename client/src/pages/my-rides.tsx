@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchMyRides, deleteRide, updateRide } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { RideCard } from "./rides";
 import { Button } from "@/components/ui/button";
-import { Car, Plus } from "lucide-react";
-import { Link, useLocation } from "wouter";
+import { Car, Plus, PartyPopper } from "lucide-react";
+import { Link, useLocation, useSearch } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
@@ -31,13 +31,30 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Ride } from "@shared/schema";
 
 export default function MyRidesPage() {
-  const { isAuthenticated, login, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, profile, isLoading: authLoading } = useAuth();
   const [, navigate] = useLocation();
+  const searchString = useSearch();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   
   const [editingRide, setEditingRide] = useState<Ride | null>(null);
   const [deleteConfirmRide, setDeleteConfirmRide] = useState<Ride | null>(null);
+  const [hasShownWelcome, setHasShownWelcome] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchString);
+    if (params.get("bienvenido") === "1" && !hasShownWelcome && isAuthenticated) {
+      setHasShownWelcome(true);
+      const userName = profile?.firstName || "vecino";
+      toast({
+        title: `¡Bienvenido, ${userName}!`,
+        description: "Ya puedes publicar y gestionar tus viajes.",
+        action: <PartyPopper className="h-6 w-6 text-primary" />,
+        duration: 5000,
+      });
+      navigate("/mis-viajes", { replace: true });
+    }
+  }, [searchString, hasShownWelcome, isAuthenticated, profile, toast, navigate]);
   
   const { data: myRides = [], isLoading } = useQuery({
     queryKey: ["my-rides"],
@@ -127,7 +144,7 @@ export default function MyRidesPage() {
           <p className="text-muted-foreground mb-6">
             Necesitas una cuenta para gestionar tus viajes publicados.
           </p>
-          <Button onClick={login} data-testid="button-login-myrides">
+          <Button onClick={() => navigate("/entrar")} data-testid="button-login-myrides">
             Iniciar sesión
           </Button>
         </div>

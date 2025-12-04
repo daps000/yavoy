@@ -134,12 +134,7 @@ export default function PublishPage() {
         seats,
         notes,
       });
-      toast({
-        title: "Inicia sesión para publicar",
-        description: "Tus datos se han guardado. Después de iniciar sesión podrás publicar tu viaje.",
-        duration: 4000,
-      });
-      setTimeout(() => setLocation("/entrar"), 500);
+      setLocation("/entrar?from=publicar");
       return;
     }
 

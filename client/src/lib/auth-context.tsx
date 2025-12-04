@@ -120,10 +120,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const siteUrl = getSiteUrl();
     const redirectUrl = siteUrl || window.location.origin;
     
+    // Redirect to /entrar after OAuth so the login page can handle proper routing
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${redirectUrl}/`,
+        redirectTo: `${redirectUrl}/entrar`,
       },
     });
     if (error) {
