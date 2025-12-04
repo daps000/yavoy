@@ -285,7 +285,7 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
                   <Button 
                     size="sm" 
                     variant="outline"
-                    className="text-red-600 border-red-200 hover:bg-red-50"
+                    className="bg-white text-accent border-accent hover:bg-accent/10"
                     onClick={() => onDelete(ride)}
                     data-testid={`button-delete-${ride.id}`}
                   >
