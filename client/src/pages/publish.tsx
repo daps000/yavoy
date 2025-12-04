@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { type InsertRide } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, LogIn } from "lucide-react";
+import { CheckCircle2, LogIn, User } from "lucide-react";
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createRide } from "@/lib/api";
@@ -18,7 +18,7 @@ export default function PublishPage() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
-  const { isAuthenticated, login, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, login, profile, isLoading: authLoading } = useAuth();
   const hasAttemptedAutoSubmit = useRef(false);
   
   const [driverName, setDriverName] = useState("");
@@ -30,6 +30,9 @@ export default function PublishPage() {
   const [seats, setSeats] = useState(3);
   const [notes, setNotes] = useState("");
   const [isRestoringDraft, setIsRestoringDraft] = useState(true);
+
+  const profileName = profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : '';
+  const profilePhone = profile?.phone || '';
 
   const mutation = useMutation({
     mutationFn: createRide,
@@ -79,7 +82,10 @@ export default function PublishPage() {
   }, [isAuthenticated]);
 
   const validateForm = (): boolean => {
-    if (!driverName || !contact || !origin || !destination || !date || !time) {
+    const finalName = isAuthenticated ? profileName : driverName;
+    const finalPhone = isAuthenticated ? profilePhone : contact;
+    
+    if (!finalName || !origin || !destination || !date || !time) {
       toast({
         title: "Faltan datos",
         description: "Por favor, rellena todos los campos obligatorios.",
@@ -87,6 +93,25 @@ export default function PublishPage() {
       });
       return false;
     }
+    
+    if (isAuthenticated && !profilePhone) {
+      toast({
+        title: "Falta tu teléfono",
+        description: "Por favor, añade tu número de teléfono para que puedan contactarte.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
+    if (!isAuthenticated && !contact) {
+      toast({
+        title: "Falta el teléfono",
+        description: "Por favor, añade un número de teléfono para que puedan contactarte.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
     return true;
   };
 
@@ -116,13 +141,13 @@ export default function PublishPage() {
     }
 
     const newRide: InsertRide = {
-      driverName,
+      driverName: isAuthenticated ? profileName : driverName,
       origin,
       destination,
       date,
       time,
       seats,
-      contact,
+      contact: isAuthenticated ? profilePhone : contact,
       notes: notes || "",
     };
 
@@ -147,34 +172,48 @@ export default function PublishPage() {
       <Card className="border border-border shadow-lg bg-white">
         <CardContent className="pt-6">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Tu Nombre</Label>
-                <Input 
-                  id="name" 
-                  name="name" 
-                  placeholder="Ej. María" 
-                  required 
-                  className="bg-card border-border"
-                  value={driverName}
-                  onChange={(e) => setDriverName(e.target.value)}
-                  data-testid="input-driver-name"
-                />
+            {isAuthenticated ? (
+              <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 flex items-center gap-3">
+                <User className="h-5 w-5 text-primary shrink-0" />
+                <div className="text-sm">
+                  <p className="font-medium text-foreground">Publicando como: {profileName}</p>
+                  {profilePhone ? (
+                    <p className="text-muted-foreground">Teléfono: {profilePhone}</p>
+                  ) : (
+                    <p className="text-amber-600">Añade tu teléfono en tu perfil para que puedan contactarte</p>
+                  )}
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="contact">Teléfono / WhatsApp</Label>
-                <Input 
-                  id="contact" 
-                  name="contact" 
-                  placeholder="600 000 000" 
-                  required 
-                  className="bg-card border-border"
-                  value={contact}
-                  onChange={(e) => setContact(e.target.value)}
-                  data-testid="input-contact"
-                />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Tu Nombre</Label>
+                  <Input 
+                    id="name" 
+                    name="name" 
+                    placeholder="Ej. María" 
+                    required 
+                    className="bg-card border-border"
+                    value={driverName}
+                    onChange={(e) => setDriverName(e.target.value)}
+                    data-testid="input-driver-name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contact">Teléfono / WhatsApp</Label>
+                  <Input 
+                    id="contact" 
+                    name="contact" 
+                    placeholder="600 000 000" 
+                    required 
+                    className="bg-card border-border"
+                    value={contact}
+                    onChange={(e) => setContact(e.target.value)}
+                    data-testid="input-contact"
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
