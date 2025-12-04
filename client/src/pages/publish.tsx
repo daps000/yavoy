@@ -144,15 +144,6 @@ export default function PublishPage() {
         <p className="text-muted-foreground">Comparte tu coche y ayuda a tus vecinos a moverse.</p>
       </div>
 
-      {!isAuthenticated && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 flex items-center gap-3">
-          <LogIn className="h-5 w-5 text-amber-600 shrink-0" />
-          <p className="text-sm text-amber-800">
-            Rellena los datos de tu viaje. Al pulsar publicar te pediremos iniciar sesión para gestionar tu viaje después.
-          </p>
-        </div>
-      )}
-
       <Card className="border border-border shadow-lg bg-white">
         <CardContent className="pt-6">
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -272,6 +263,13 @@ export default function PublishPage() {
             >
               {mutation.isPending ? "Publicando..." : "Publicar viaje ahora"}
             </Button>
+
+            {!isAuthenticated && (
+              <div className="flex items-center gap-2 justify-center text-sm text-muted-foreground mt-3">
+                <LogIn className="h-4 w-4" />
+                <p>Al pulsar publicar te pediremos iniciar sesión para gestionar tu viaje después.</p>
+              </div>
+            )}
           </form>
         </CardContent>
       </Card>
