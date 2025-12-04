@@ -34,7 +34,7 @@ export async function registerRoutes(
       res.json(profile);
     } catch (error) {
       console.error("Error fetching user profile:", error);
-      res.status(500).json({ error: "Failed to fetch user profile" });
+      res.status(500).json({ error: "No se pudo cargar el perfil" });
     }
   });
   
@@ -46,14 +46,14 @@ export async function registerRoutes(
       const { phone } = req.body;
       
       if (!phone || phone.trim().length < 9) {
-        return res.status(400).json({ error: "Invalid phone number" });
+        return res.status(400).json({ error: "Número de teléfono no válido" });
       }
       
       const updatedUser = await storage.updateUserPhone(userId, phone.trim());
       res.json(updatedUser);
     } catch (error) {
       console.error("Error updating user phone:", error);
-      res.status(500).json({ error: "Failed to update phone number" });
+      res.status(500).json({ error: "No se pudo actualizar el teléfono" });
     }
   });
   
@@ -65,7 +65,7 @@ export async function registerRoutes(
       const { rideId, driverProfileId } = req.body;
       
       if (!rideId || !driverProfileId) {
-        return res.status(400).json({ error: "Missing rideId or driverProfileId" });
+        return res.status(400).json({ error: "Faltan datos del viaje" });
       }
       
       const contact = await storage.createRideContact({
@@ -77,7 +77,7 @@ export async function registerRoutes(
       res.status(201).json(contact);
     } catch (error) {
       console.error("Error recording ride contact:", error);
-      res.status(500).json({ error: "Failed to record ride contact" });
+      res.status(500).json({ error: "No se pudo registrar el contacto" });
     }
   });
   
@@ -90,7 +90,7 @@ export async function registerRoutes(
       res.json(pendingContacts);
     } catch (error) {
       console.error("Error fetching pending reviews:", error);
-      res.status(500).json({ error: "Failed to fetch pending reviews" });
+      res.status(500).json({ error: "No se pudieron cargar las valoraciones pendientes" });
     }
   });
   
@@ -99,13 +99,13 @@ export async function registerRoutes(
     try {
       const contactId = parseInt(req.params.id);
       if (isNaN(contactId)) {
-        return res.status(400).json({ error: "Invalid contact ID" });
+        return res.status(400).json({ error: "ID de contacto no válido" });
       }
       await storage.markContactReviewed(contactId);
       res.json({ success: true });
     } catch (error) {
       console.error("Error marking contact as reviewed:", error);
-      res.status(500).json({ error: "Failed to mark contact as reviewed" });
+      res.status(500).json({ error: "No se pudo marcar como valorado" });
     }
   });
 
@@ -116,7 +116,7 @@ export async function registerRoutes(
       res.json(rides);
     } catch (error) {
       console.error("Error fetching rides:", error);
-      res.status(500).json({ error: "Failed to fetch rides" });
+      res.status(500).json({ error: "No se pudieron cargar los viajes" });
     }
   });
 
@@ -152,7 +152,7 @@ export async function registerRoutes(
       res.status(201).json(ride);
     } catch (error) {
       console.error("Error creating ride:", error);
-      res.status(500).json({ error: "Failed to create ride" });
+      res.status(500).json({ error: "No se pudo crear el viaje. Inténtalo de nuevo." });
     }
   });
 
@@ -165,7 +165,7 @@ export async function registerRoutes(
       res.json(userRides);
     } catch (error) {
       console.error("Error fetching user rides:", error);
-      res.status(500).json({ error: "Failed to fetch user rides" });
+      res.status(500).json({ error: "No se pudieron cargar tus viajes" });
     }
   });
 
@@ -174,7 +174,7 @@ export async function registerRoutes(
     try {
       const rideId = parseInt(req.params.id);
       if (isNaN(rideId)) {
-        return res.status(400).json({ error: "Invalid ride ID" });
+        return res.status(400).json({ error: "ID de viaje no válido" });
       }
 
       const user = req.user as any;
@@ -188,13 +188,13 @@ export async function registerRoutes(
 
       const updatedRide = await storage.updateRide(rideId, userId, validation.data);
       if (!updatedRide) {
-        return res.status(404).json({ error: "Ride not found or not authorized" });
+        return res.status(404).json({ error: "Viaje no encontrado o no tienes permiso" });
       }
 
       res.json(updatedRide);
     } catch (error) {
       console.error("Error updating ride:", error);
-      res.status(500).json({ error: "Failed to update ride" });
+      res.status(500).json({ error: "No se pudo actualizar el viaje" });
     }
   });
 
@@ -203,7 +203,7 @@ export async function registerRoutes(
     try {
       const rideId = parseInt(req.params.id);
       if (isNaN(rideId)) {
-        return res.status(400).json({ error: "Invalid ride ID" });
+        return res.status(400).json({ error: "ID de viaje no válido" });
       }
 
       const user = req.user as any;
@@ -211,13 +211,13 @@ export async function registerRoutes(
 
       const deleted = await storage.deleteRide(rideId, userId);
       if (!deleted) {
-        return res.status(404).json({ error: "Ride not found or not authorized" });
+        return res.status(404).json({ error: "Viaje no encontrado o no tienes permiso" });
       }
 
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting ride:", error);
-      res.status(500).json({ error: "Failed to delete ride" });
+      res.status(500).json({ error: "No se pudo eliminar el viaje" });
     }
   });
 
@@ -229,7 +229,7 @@ export async function registerRoutes(
       res.json(locations.map(l => l.name));
     } catch (error) {
       console.error("Error searching locations:", error);
-      res.status(500).json({ error: "Failed to search locations" });
+      res.status(500).json({ error: "No se pudieron buscar ubicaciones" });
     }
   });
 
@@ -238,13 +238,13 @@ export async function registerRoutes(
     try {
       const driverProfileId = parseInt(req.params.id);
       if (isNaN(driverProfileId)) {
-        return res.status(400).json({ error: "Invalid driver ID" });
+        return res.status(400).json({ error: "ID de conductor no válido" });
       }
       const rating = await storage.getDriverRating(driverProfileId);
       res.json(rating);
     } catch (error) {
       console.error("Error fetching driver rating:", error);
-      res.status(500).json({ error: "Failed to fetch driver rating" });
+      res.status(500).json({ error: "No se pudo cargar la valoración del conductor" });
     }
   });
 
@@ -253,14 +253,14 @@ export async function registerRoutes(
     try {
       const driverProfileId = parseInt(req.params.id);
       if (isNaN(driverProfileId)) {
-        return res.status(400).json({ error: "Invalid driver ID" });
+        return res.status(400).json({ error: "ID de conductor no válido" });
       }
       const limit = parseInt(req.query.limit as string) || 5;
       const reviews = await storage.getDriverReviews(driverProfileId, limit);
       res.json(reviews);
     } catch (error) {
       console.error("Error fetching driver reviews:", error);
-      res.status(500).json({ error: "Failed to fetch driver reviews" });
+      res.status(500).json({ error: "No se pudieron cargar las valoraciones" });
     }
   });
 
@@ -302,7 +302,7 @@ export async function registerRoutes(
       res.status(201).json(review);
     } catch (error) {
       console.error("Error creating review:", error);
-      res.status(500).json({ error: "Failed to create review" });
+      res.status(500).json({ error: "No se pudo crear la valoración" });
     }
   });
 
@@ -313,14 +313,14 @@ export async function registerRoutes(
       const reviewerContact = req.query.reviewerContact as string;
       
       if (isNaN(driverProfileId) || !reviewerContact) {
-        return res.status(400).json({ error: "Missing parameters" });
+        return res.status(400).json({ error: "Faltan parámetros" });
       }
 
       const canReview = await storage.canUserReview(driverProfileId, reviewerContact);
       res.json({ canReview });
     } catch (error) {
       console.error("Error checking review eligibility:", error);
-      res.status(500).json({ error: "Failed to check review eligibility" });
+      res.status(500).json({ error: "No se pudo verificar si puedes valorar" });
     }
   });
 
