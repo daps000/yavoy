@@ -86,7 +86,7 @@ export default function PublishPage() {
 
   const validateForm = (): boolean => {
     const finalName = isAuthenticated ? profileName : driverName;
-    const finalPhone = isAuthenticated ? profilePhone : contact;
+    const finalPhone = isAuthenticated ? effectivePhone : contact;
     
     if (!finalName || !origin || !destination || !date || !time) {
       toast({
@@ -97,16 +97,7 @@ export default function PublishPage() {
       return false;
     }
     
-    if (isAuthenticated && !profilePhone) {
-      toast({
-        title: "Falta tu teléfono",
-        description: "Por favor, añade tu número de teléfono para que puedan contactarte.",
-        variant: "destructive",
-      });
-      return false;
-    }
-    
-    if (!isAuthenticated && !contact) {
+    if (!finalPhone) {
       toast({
         title: "Falta el teléfono",
         description: "Por favor, añade un número de teléfono para que puedan contactarte.",

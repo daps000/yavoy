@@ -1,8 +1,10 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, useRef, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSupabase, getSiteUrl } from "./supabase";
 import type { User as SupabaseUser, Session } from "@supabase/supabase-js";
 import type { User } from "@shared/schema";
+
+const RETURN_URL_KEY = "yavoy_login_return";
 
 export type AuthUser = {
   id: string;
@@ -50,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const [session, setSession] = useState<Session | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
+  const hasHandledRedirect = useRef(false);
 
   useEffect(() => {
     let mounted = true;
@@ -62,17 +65,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (mounted) {
           setSession(initialSession);
           setIsInitializing(false);
+          
+          // Handle redirect after OAuth callback (session exists on first load)
+          if (initialSession && !hasHandledRedirect.current) {
+            hasHandledRedirect.current = true;
+            const savedReturnUrl = sessionStorage.getItem(RETURN_URL_KEY);
+            if (savedReturnUrl) {
+              sessionStorage.removeItem(RETURN_URL_KEY);
+              // Only redirect if we're not already on the target page
+              if (!window.location.pathname.startsWith(savedReturnUrl)) {
+                window.location.href = savedReturnUrl;
+              }
+            }
+          }
         }
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
           if (mounted) {
             setSession(newSession);
             if (newSession) {
               queryClient.invalidateQueries({ queryKey: ["auth-user"] });
               queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+              
+              // Handle redirect after sign in (only on SIGNED_IN event)
+              if (event === 'SIGNED_IN' && !hasHandledRedirect.current) {
+                hasHandledRedirect.current = true;
+                const savedReturnUrl = sessionStorage.getItem(RETURN_URL_KEY);
+                if (savedReturnUrl) {
+                  sessionStorage.removeItem(RETURN_URL_KEY);
+                  // Only redirect if we're not already on the target page
+                  if (!window.location.pathname.startsWith(savedReturnUrl)) {
+                    window.location.href = savedReturnUrl;
+                  }
+                }
+              }
             } else {
               queryClient.setQueryData(["auth-user"], null);
               queryClient.setQueryData(["user-profile"], null);
+              hasHandledRedirect.current = false;
             }
           }
         });
