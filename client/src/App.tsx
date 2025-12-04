@@ -9,6 +9,7 @@ import RidesPage from "@/pages/rides";
 import PublishPage from "@/pages/publish";
 import FAQPage from "@/pages/faq";
 import MyRidesPage from "@/pages/my-rides";
+import ProfilePage from "@/pages/profile";
 import { Layout } from "@/components/layout";
 import { AuthProvider } from "@/lib/auth-context";
 import { PendingReviewPrompt } from "@/components/PendingReviewPrompt";
@@ -21,6 +22,7 @@ function Router() {
         <Route path="/viajes" component={RidesPage} />
         <Route path="/publicar" component={PublishPage} />
         <Route path="/mis-viajes" component={MyRidesPage} />
+        <Route path="/mi-perfil" component={ProfilePage} />
         <Route path="/faq" component={FAQPage} />
         <Route component={NotFound} />
       </Switch>

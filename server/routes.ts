@@ -57,6 +57,25 @@ export async function registerRoutes(
     }
   });
   
+  // Update user profile (name and phone)
+  app.put("/api/user/profile", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const userId = user.claims?.sub;
+      const { firstName, lastName, phone } = req.body;
+      
+      const updatedUser = await storage.updateUserProfile(userId, {
+        firstName: firstName?.trim() || null,
+        lastName: lastName?.trim() || null,
+        phone: phone?.trim() || null,
+      });
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      res.status(500).json({ error: "No se pudo actualizar el perfil" });
+    }
+  });
+  
   // Record ride contact (when user clicks "Contactar")
   app.post("/api/ride-contacts", isAuthenticated, async (req, res) => {
     try {

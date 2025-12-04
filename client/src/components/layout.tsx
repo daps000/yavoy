@@ -68,7 +68,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem className="text-muted-foreground">
+                    <Link href="/mi-perfil">
+                      <DropdownMenuItem className="cursor-pointer font-medium" data-testid="button-my-profile">
+                        <User className="h-4 w-4 mr-2" />
+                        {getUserDisplayName()}
+                      </DropdownMenuItem>
+                    </Link>
+                    <DropdownMenuItem className="text-muted-foreground text-xs">
                       {user?.email}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -133,10 +139,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     {!isLoading && (
                       isAuthenticated ? (
                         <div className="flex flex-col gap-2">
-                          <div className="flex items-center gap-2 text-muted-foreground">
+                          <Link 
+                            href="/mi-perfil"
+                            className="flex items-center gap-2 text-foreground font-medium"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
                             <User className="h-4 w-4" />
                             <span>{getUserDisplayName()}</span>
-                          </div>
+                          </Link>
                           <span className="text-xs text-muted-foreground">{user?.email}</span>
                           <Link 
                             href="/mis-viajes"
