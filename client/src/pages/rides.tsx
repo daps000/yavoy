@@ -243,30 +243,37 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
             </div>
           </div>
           
-          <div className={`p-3 rounded-lg space-y-2 text-sm ${isOwnRide ? "bg-white/50" : "bg-card"}`}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-primary" />
-                <span className="font-medium">{ride.driverName}</span>
-                {!isOwnRide && <DriverRatingDisplay driverProfileId={ride.driverProfileId} />}
+          {!isOwnRide && (
+            <div className={`p-3 rounded-lg space-y-2 text-sm bg-card`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-primary" />
+                  <span className="font-medium">{ride.driverName}</span>
+                  <DriverRatingDisplay driverProfileId={ride.driverProfileId} />
+                </div>
+                {ride.driverProfileId && (
+                  <button
+                    onClick={() => setReviewDialogOpen(true)}
+                    className="text-xs text-primary hover:underline"
+                    data-testid={`button-review-${ride.id}`}
+                  >
+                    Valorar
+                  </button>
+                )}
               </div>
-              {!isOwnRide && ride.driverProfileId && (
-                <button
-                  onClick={() => setReviewDialogOpen(true)}
-                  className="text-xs text-primary hover:underline"
-                  data-testid={`button-review-${ride.id}`}
-                >
-                  Valorar
-                </button>
+              {ride.notes && (
+                <p className="text-muted-foreground text-xs italic">"{ride.notes}"</p>
               )}
             </div>
-            {ride.notes && (
+          )}
+          {isOwnRide && ride.notes && (
+            <div className="p-3 rounded-lg bg-white/50 text-sm">
               <p className="text-muted-foreground text-xs italic">"{ride.notes}"</p>
-            )}
-          </div>
+            </div>
+          )}
 
           <div className="flex items-center justify-between pt-2">
-            <span className="text-sm font-medium bg-primary/15 text-primary px-3 py-1 rounded-full" data-testid={`text-seats-${ride.id}`}>
+            <span className={`text-sm font-medium px-3 py-1 rounded-full ${isOwnRide ? "bg-white text-primary" : "bg-primary/15 text-primary"}`} data-testid={`text-seats-${ride.id}`}>
               {ride.seats} plazas libres
             </span>
             {isOwnRide ? (
