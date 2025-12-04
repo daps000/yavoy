@@ -162,16 +162,34 @@ export default function PublishPage() {
         <CardContent className="pt-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             {isAuthenticated ? (
-              <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 flex items-center gap-3">
-                <User className="h-5 w-5 text-primary shrink-0" />
-                <div className="text-sm">
-                  <p className="font-medium text-foreground">Publicando como: {profileName}</p>
-                  {effectivePhone ? (
-                    <p className="text-muted-foreground">Teléfono: {effectivePhone}</p>
-                  ) : (
-                    <p className="text-amber-600">Añade tu teléfono en tu perfil para que puedan contactarte</p>
-                  )}
+              <div className="space-y-4">
+                <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 flex items-center gap-3">
+                  <User className="h-5 w-5 text-primary shrink-0" />
+                  <div className="text-sm">
+                    <p className="font-medium text-foreground">Publicando como: {profileName}</p>
+                    {profilePhone && (
+                      <p className="text-muted-foreground">Teléfono: {profilePhone}</p>
+                    )}
+                  </div>
                 </div>
+                {!profilePhone && (
+                  <div className="space-y-2">
+                    <Label htmlFor="contact-auth">Teléfono / WhatsApp</Label>
+                    <Input 
+                      id="contact-auth" 
+                      name="contact" 
+                      type="tel"
+                      inputMode="tel"
+                      placeholder="600 000 000" 
+                      required 
+                      className="bg-card border-border"
+                      value={contact}
+                      onChange={(e) => setContact(e.target.value)}
+                      data-testid="input-contact-auth"
+                    />
+                    <p className="text-xs text-muted-foreground">Este número se guardará en tu perfil para futuros viajes.</p>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
