@@ -4,32 +4,60 @@ import { storage, hashContact } from "./storage";
 import { insertRideSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import { z } from "zod";
-import { isAuthenticated } from "./replitAuth";
+import { requireAuth, upsertUserFromSupabase } from "./supabaseAuth";
+import { supabaseAdmin } from "./supabase";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
   
-  // Get current user session
-  app.get("/api/auth/user", (req, res) => {
-    if (req.isAuthenticated() && req.user) {
-      const user = req.user as any;
+  // Supabase config endpoint for client
+  app.get("/api/config/supabase", (req, res) => {
+    res.json({
+      url: process.env.SUPABASE_URL,
+      anonKey: process.env.SUPABASE_ANON_KEY,
+    });
+  });
+
+  // Get current user from Supabase token
+  app.get("/api/auth/user", async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.json(null);
+      }
+
+      const token = authHeader.split(' ')[1];
+      const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
+      
+      if (error || !user) {
+        return res.json(null);
+      }
+
+      // Upsert user in our database
+      await upsertUserFromSupabase(user.id, user.email, user.user_metadata);
+
+      // Get user profile from our database
+      const profile = await storage.getUser(user.id);
+
       return res.json({
-        id: user.claims?.sub,
-        email: user.claims?.email,
-        firstName: user.claims?.first_name,
-        lastName: user.claims?.last_name,
+        id: user.id,
+        email: user.email,
+        firstName: profile?.firstName || user.user_metadata?.first_name || user.user_metadata?.full_name?.split(' ')[0] || null,
+        lastName: profile?.lastName || user.user_metadata?.last_name || user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || null,
       });
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.json(null);
     }
-    res.json(null);
   });
   
   // Get user profile (including phone)
-  app.get("/api/user/profile", isAuthenticated, async (req, res) => {
+  app.get("/api/user/profile", requireAuth, async (req, res) => {
     try {
-      const user = req.user as any;
-      const userId = user.claims?.sub;
+      const userId = req.userId!;
       const profile = await storage.getUser(userId);
       res.json(profile);
     } catch (error) {
@@ -39,10 +67,9 @@ export async function registerRoutes(
   });
   
   // Update user phone
-  app.put("/api/user/phone", isAuthenticated, async (req, res) => {
+  app.put("/api/user/phone", requireAuth, async (req, res) => {
     try {
-      const user = req.user as any;
-      const userId = user.claims?.sub;
+      const userId = req.userId!;
       const { phone } = req.body;
       
       if (!phone || phone.trim().length < 9) {
@@ -58,10 +85,9 @@ export async function registerRoutes(
   });
   
   // Update user profile (name and phone)
-  app.put("/api/user/profile", isAuthenticated, async (req, res) => {
+  app.put("/api/user/profile", requireAuth, async (req, res) => {
     try {
-      const user = req.user as any;
-      const userId = user.claims?.sub;
+      const userId = req.userId!;
       const { firstName, lastName, phone } = req.body;
       
       const updatedUser = await storage.updateUserProfile(userId, {
@@ -77,10 +103,9 @@ export async function registerRoutes(
   });
   
   // Record ride contact (when user clicks "Contactar")
-  app.post("/api/ride-contacts", isAuthenticated, async (req, res) => {
+  app.post("/api/ride-contacts", requireAuth, async (req, res) => {
     try {
-      const user = req.user as any;
-      const userId = user.claims?.sub;
+      const userId = req.userId!;
       const { rideId, driverProfileId } = req.body;
       
       if (!rideId || !driverProfileId) {
@@ -101,10 +126,9 @@ export async function registerRoutes(
   });
   
   // Get pending review contacts for current user
-  app.get("/api/pending-reviews", isAuthenticated, async (req, res) => {
+  app.get("/api/pending-reviews", requireAuth, async (req, res) => {
     try {
-      const user = req.user as any;
-      const userId = user.claims?.sub;
+      const userId = req.userId!;
       const pendingContacts = await storage.getPendingReviewContacts(userId);
       res.json(pendingContacts);
     } catch (error) {
@@ -114,7 +138,7 @@ export async function registerRoutes(
   });
   
   // Mark contact as reviewed
-  app.put("/api/ride-contacts/:id/reviewed", isAuthenticated, async (req, res) => {
+  app.put("/api/ride-contacts/:id/reviewed", requireAuth, async (req, res) => {
     try {
       const contactId = parseInt(req.params.id);
       if (isNaN(contactId)) {
@@ -140,7 +164,7 @@ export async function registerRoutes(
   });
 
   // Create a new ride (requires authentication for ownership tracking)
-  app.post("/api/rides", isAuthenticated, async (req, res) => {
+  app.post("/api/rides", requireAuth, async (req, res) => {
     try {
       const validation = insertRideSchema.safeParse(req.body);
       
@@ -154,8 +178,7 @@ export async function registerRoutes(
         validation.data.contact
       );
 
-      const user = req.user as any;
-      const userId = user.claims?.sub;
+      const userId = req.userId!;
 
       // Save phone to user profile if not already set
       const userProfile = await storage.getUser(userId);
@@ -182,10 +205,9 @@ export async function registerRoutes(
   });
 
   // Get user's own rides
-  app.get("/api/my-rides", isAuthenticated, async (req, res) => {
+  app.get("/api/my-rides", requireAuth, async (req, res) => {
     try {
-      const user = req.user as any;
-      const userId = user.claims?.sub;
+      const userId = req.userId!;
       const userRides = await storage.getUserRides(userId);
       res.json(userRides);
     } catch (error) {
@@ -195,15 +217,14 @@ export async function registerRoutes(
   });
 
   // Update user's ride
-  app.put("/api/rides/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/rides/:id", requireAuth, async (req, res) => {
     try {
       const rideId = parseInt(req.params.id);
       if (isNaN(rideId)) {
         return res.status(400).json({ error: "ID de viaje no válido" });
       }
 
-      const user = req.user as any;
-      const userId = user.claims?.sub;
+      const userId = req.userId!;
 
       const validation = insertRideSchema.partial().safeParse(req.body);
       if (!validation.success) {
@@ -224,15 +245,14 @@ export async function registerRoutes(
   });
 
   // Delete user's ride
-  app.delete("/api/rides/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/rides/:id", requireAuth, async (req, res) => {
     try {
       const rideId = parseInt(req.params.id);
       if (isNaN(rideId)) {
         return res.status(400).json({ error: "ID de viaje no válido" });
       }
 
-      const user = req.user as any;
-      const userId = user.claims?.sub;
+      const userId = req.userId!;
 
       const deleted = await storage.deleteRide(rideId, userId);
       if (!deleted) {

@@ -29,8 +29,14 @@ Preferred communication style: Simple, everyday language.
 
 **Data Layer:**
 - Drizzle ORM with PostgreSQL dialect
-- Neon serverless PostgreSQL (via `@neondatabase/serverless`)
+- Supabase PostgreSQL (via `@neondatabase/serverless` for compatibility)
 - Schema-first approach with shared type definitions
+
+**Authentication:**
+- Supabase Auth with custom branded UI
+- Supports Google OAuth and email/password authentication
+- JWT-based session management with server-side verification
+- Spanish language interface with YaVoy corporate branding
 
 ### Application Structure
 
@@ -48,7 +54,7 @@ Preferred communication style: Simple, everyday language.
 
 3. **Spanish Language Interface:** All UI text in Spanish (Spain) with friendly, clear language addressing rural users directly.
 
-4. **User Authentication via Replit Auth:** Users log in via Replit Auth (supports Google, GitHub, Apple, email). Authentication is required for publishing rides (enables ownership and management). Viewing rides is public. Authentication enables ride contact tracking and review prompts. Direct WhatsApp contact links for coordination. No payment processing built in - users handle compensation directly.
+4. **User Authentication via Supabase Auth:** Users log in via Supabase Auth with a custom branded login page at `/entrar`. Supports Google OAuth and email/password authentication with Spanish language UI and YaVoy corporate colors (green/orange). Authentication is required for publishing rides (enables ownership and management). Viewing rides is public. Authentication enables ride contact tracking and review prompts. Direct WhatsApp contact links for coordination. No payment processing built in - users handle compensation directly.
 
 5. **Single-Page Application with Multi-Route Structure:** Uses Wouter for lightweight routing with pages for Home, View Rides, Publish Ride, and FAQ.
 
@@ -60,13 +66,8 @@ Preferred communication style: Simple, everyday language.
 
 **Tables:**
 
-1. **sessions** - Session storage for authentication
-   - sid (varchar, primary key)
-   - sess (jsonb) - Session data
-   - expire (timestamp)
-
-2. **users** - User accounts from Replit Auth
-   - id (varchar, primary key) - Replit user ID
+1. **users** - User accounts from Supabase Auth
+   - id (varchar, primary key) - Supabase user ID
    - email (varchar, unique)
    - firstName (varchar)
    - lastName (varchar)
@@ -74,7 +75,7 @@ Preferred communication style: Simple, everyday language.
    - createdAt (timestamp)
    - updatedAt (timestamp)
 
-3. **driver_profiles** - Driver identity for rating aggregation
+2. **driver_profiles** - Driver identity for rating aggregation
    - id (serial, primary key)
    - name (text)
    - contactHash (text, unique) - SHA-256 hash of phone for privacy
@@ -132,13 +133,9 @@ Preferred communication style: Simple, everyday language.
 
 **Authentication Endpoints:**
 
-**GET /api/login** - Redirects to Replit Auth login page
+**GET /api/config/supabase** - Returns Supabase URL and anon key for client initialization
 
-**GET /api/callback** - OAuth callback handler
-
-**GET /api/logout** - Logs out user and redirects to home
-
-**GET /api/auth/user** - Returns current authenticated user or null
+**GET /api/auth/user** - Returns current authenticated user or null (requires Bearer token)
 
 **GET /api/user/profile** - Returns full user profile (requires auth)
 

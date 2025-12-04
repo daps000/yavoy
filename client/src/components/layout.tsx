@@ -18,7 +18,7 @@ import {
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, isAuthenticated, isLoading, login, logout } = useAuth();
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
 
   const navItems = [
     { label: "Inicio", href: "/" },

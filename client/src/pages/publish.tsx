@@ -18,7 +18,7 @@ export default function PublishPage() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
-  const { isAuthenticated, login, profile, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, profile, isLoading: authLoading } = useAuth();
   const hasAttemptedAutoSubmit = useRef(false);
   
   const [driverName, setDriverName] = useState("");
@@ -139,7 +139,7 @@ export default function PublishPage() {
         description: "Tus datos se han guardado. Después de iniciar sesión podrás publicar tu viaje.",
         duration: 4000,
       });
-      setTimeout(() => login(), 500);
+      setTimeout(() => setLocation("/entrar"), 500);
       return;
     }
 

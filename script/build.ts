@@ -22,8 +22,6 @@ const allowlist = [
   "nanoid",
   "nodemailer",
   "openai",
-  "passport",
-  "passport-local",
   "stripe",
   "uuid",
   "ws",
