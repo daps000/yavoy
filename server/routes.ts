@@ -138,6 +138,12 @@ export async function registerRoutes(
       const user = req.user as any;
       const userId = user.claims?.sub;
 
+      // Save phone to user profile if not already set
+      const userProfile = await storage.getUser(userId);
+      if (userProfile && !userProfile.phone && validation.data.contact) {
+        await storage.updateUserPhone(userId, validation.data.contact);
+      }
+
       const ride = await storage.createRide({
         ...validation.data,
         driverProfileId: driverProfile.id,

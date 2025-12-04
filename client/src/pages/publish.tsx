@@ -33,6 +33,9 @@ export default function PublishPage() {
 
   const profileName = profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : '';
   const profilePhone = profile?.phone || '';
+  
+  // Use draft contact if profile phone is empty (for users who just logged in after filling form)
+  const effectivePhone = profilePhone || contact;
 
   const mutation = useMutation({
     mutationFn: createRide,
@@ -147,7 +150,7 @@ export default function PublishPage() {
       date,
       time,
       seats,
-      contact: isAuthenticated ? profilePhone : contact,
+      contact: isAuthenticated ? effectivePhone : contact,
       notes: notes || "",
     };
 
@@ -177,8 +180,8 @@ export default function PublishPage() {
                 <User className="h-5 w-5 text-primary shrink-0" />
                 <div className="text-sm">
                   <p className="font-medium text-foreground">Publicando como: {profileName}</p>
-                  {profilePhone ? (
-                    <p className="text-muted-foreground">Teléfono: {profilePhone}</p>
+                  {effectivePhone ? (
+                    <p className="text-muted-foreground">Teléfono: {effectivePhone}</p>
                   ) : (
                     <p className="text-amber-600">Añade tu teléfono en tu perfil para que puedan contactarte</p>
                   )}
