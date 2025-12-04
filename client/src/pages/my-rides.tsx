@@ -259,7 +259,7 @@ export default function MyRidesPage() {
                   data-testid="input-edit-notes"
                 />
               </div>
-              <DialogFooter>
+              <DialogFooter className="gap-3 sm:gap-4">
                 <Button
                   type="button"
                   variant="outline"
