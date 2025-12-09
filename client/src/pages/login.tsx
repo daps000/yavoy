@@ -352,11 +352,6 @@ export default function LoginPage() {
     <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-12 bg-gradient-to-b from-primary/5 to-background">
       <div className="max-w-md w-full space-y-6">
         <div className="text-center">
-          <img 
-            src={logoImage} 
-            alt="YaVoy" 
-            className="h-16 mx-auto mb-6"
-          />
           <h1 className="text-3xl font-bold font-serif text-foreground mb-3">
             Bienvenido a YaVoy
           </h1>
