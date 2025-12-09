@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock, Loader2, CheckCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import logoImage from "@assets/logo-verde.png";
 
 export default function NewPasswordPage() {
   const { updatePassword } = useAuth();
@@ -75,97 +73,87 @@ export default function NewPasswordPage() {
 
   if (success) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          <Card className="shadow-lg">
-            <CardContent className="pt-8 pb-8 text-center space-y-4">
-              <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
-              <h2 className="text-xl font-bold text-foreground">
-                ¡Contraseña actualizada!
-              </h2>
-              <p className="text-muted-foreground">
-                Tu contraseña ha sido cambiada correctamente. Redirigiendo al inicio de sesión...
-              </p>
-            </CardContent>
-          </Card>
+      <div className="min-h-[60vh] flex items-center justify-center p-4">
+        <div className="w-full max-w-md text-center space-y-4">
+          <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
+          <h2 className="text-xl font-bold text-foreground">
+            ¡Contraseña actualizada!
+          </h2>
+          <p className="text-muted-foreground">
+            Tu contraseña ha sido cambiada correctamente. Redirigiendo al inicio de sesión...
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center p-4">
+    <div className="min-h-[60vh] flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
-        <Card className="shadow-lg">
-          <CardHeader className="text-center space-y-4">
-            <div className="flex justify-center">
-              <img src={logoImage} alt="YaVoy" className="h-16 w-auto" />
+        <div className="text-center space-y-2">
+          <h1 className="text-2xl font-bold text-foreground">
+            Nueva contraseña
+          </h1>
+          <p className="text-muted-foreground">
+            Introduce tu nueva contraseña
+          </p>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="password">Nueva contraseña</Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="password"
+                type="password"
+                placeholder="Mínimo 6 caracteres"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-10"
+                required
+                minLength={6}
+                data-testid="input-new-password"
+              />
             </div>
-            <CardTitle className="text-2xl font-bold text-foreground">
-              Nueva contraseña
-            </CardTitle>
-            <CardDescription className="text-base">
-              Introduce tu nueva contraseña
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="password">Nueva contraseña</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Mínimo 6 caracteres"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10"
-                    required
-                    minLength={6}
-                    data-testid="input-new-password"
-                  />
-                </div>
-              </div>
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirmar contraseña</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="confirm-password"
-                    type="password"
-                    placeholder="Repite la contraseña"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="pl-10"
-                    required
-                    minLength={6}
-                    data-testid="input-confirm-password"
-                  />
-                </div>
-              </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirm-password">Confirmar contraseña</Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="confirm-password"
+                type="password"
+                placeholder="Repite la contraseña"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="pl-10"
+                required
+                minLength={6}
+                data-testid="input-confirm-password"
+              />
+            </div>
+          </div>
 
-              {error && (
-                <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg" data-testid="text-password-error">
-                  {error}
-                </p>
-              )}
+          {error && (
+            <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg" data-testid="text-password-error">
+              {error}
+            </p>
+          )}
 
-              <Button
-                type="submit"
-                className="w-full bg-primary hover:bg-primary/90"
-                disabled={isSubmitting}
-                data-testid="button-update-password"
-              >
-                {isSubmitting ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                ) : null}
-                Guardar contraseña
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+          <Button
+            type="submit"
+            className="w-full bg-primary hover:bg-primary/90"
+            disabled={isSubmitting}
+            data-testid="button-update-password"
+          >
+            {isSubmitting ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            ) : null}
+            Guardar contraseña
+          </Button>
+        </form>
       </div>
     </div>
   );
