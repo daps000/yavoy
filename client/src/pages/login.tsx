@@ -46,6 +46,23 @@ export default function LoginPage() {
     }
   }, [isLoading, isAuthenticated, setLocation, fromPublish]);
 
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash.includes("error")) {
+      const hashParams = new URLSearchParams(hash.substring(1));
+      const errorCode = hashParams.get("error_code");
+      const errorDescription = hashParams.get("error_description");
+      
+      if (errorCode || errorDescription) {
+        const message = errorDescription 
+          ? decodeURIComponent(errorDescription.replace(/\+/g, " "))
+          : errorCode;
+        setError(translateError(message || "Error desconocido"));
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+    }
+  }, []);
+
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -112,6 +129,12 @@ export default function LoginPage() {
     }
     if (error.includes("Password should be at least")) {
       return "La contraseña debe tener al menos 6 caracteres";
+    }
+    if (error.includes("invalid or has expired") || error.includes("otp_expired")) {
+      return "El enlace ha caducado. Solicita uno nuevo.";
+    }
+    if (error.includes("access_denied")) {
+      return "Acceso denegado. Por favor, inténtalo de nuevo.";
     }
     return error;
   };
