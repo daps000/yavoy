@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import logoImage from "@assets/logo-verde.png";
 import logoWhite from "@assets/logo-yavoy-white.png";
+import logoTrans from "@assets/logo-trans_1765303325983.png";
 import { useAuth } from "@/lib/auth-context";
 import {
   DropdownMenu,
@@ -202,7 +203,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="container px-4 md:px-6 text-center space-y-4">
           <div className="flex items-center justify-center gap-2 mb-4">
             <img 
-              src={logoImage} 
+              src={logoTrans} 
               alt="YaVoy" 
               className="h-10 w-auto brightness-0 invert"
             />
