@@ -1,4 +1,5 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
+import { useEffect } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -14,6 +15,19 @@ import LoginPage from "@/pages/login";
 import { Layout } from "@/components/layout";
 import { AuthProvider } from "@/lib/auth-context";
 import { PendingReviewPrompt } from "@/components/PendingReviewPrompt";
+
+function HashErrorRedirect() {
+  const [, setLocation] = useLocation();
+  
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash.includes("error")) {
+      setLocation("/entrar" + hash);
+    }
+  }, [setLocation]);
+  
+  return null;
+}
 
 function Router() {
   return (
@@ -39,6 +53,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <PendingReviewPrompt />
+          <HashErrorRedirect />
           <Router />
         </TooltipProvider>
       </AuthProvider>
