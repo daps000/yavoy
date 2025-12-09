@@ -254,6 +254,7 @@ export default function PublishPage() {
                   type="date" 
                   required 
                   min={new Date().toISOString().split('T')[0]} 
+                  max={new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
                   className="bg-card border-border"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
