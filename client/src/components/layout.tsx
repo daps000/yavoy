@@ -205,7 +205,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <img 
               src={logoTrans} 
               alt="YaVoy" 
-              className="h-10 w-auto brightness-0 invert"
+              className="h-10 w-auto"
             />
           </div>
           <p className="text-primary-foreground/80 max-w-md mx-auto text-[14px]">Vavoy es un piloto en fase de pruebas. Conectamos personas, no operamos transporte</p>
