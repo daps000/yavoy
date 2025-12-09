@@ -1,6 +1,6 @@
 import { users, rides, locations, driverProfiles, reviews, rideContacts, type User, type UpsertUser, type Ride, type InsertRide, type Location, type DriverProfile, type Review, type InsertReview, type DriverRating, type RideContact, type InsertRideContact } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, ilike, sql, and, avg, count } from "drizzle-orm";
+import { eq, desc, asc, ilike, sql, and, avg, count, gte } from "drizzle-orm";
 import crypto from "crypto";
 
 function normalizeLocationName(name: string): string {
@@ -83,7 +83,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllRides(): Promise<Ride[]> {
-    return await db.select().from(rides).orderBy(desc(rides.createdAt));
+    const today = new Date().toISOString().split('T')[0];
+    return await db
+      .select()
+      .from(rides)
+      .where(gte(rides.date, today))
+      .orderBy(asc(rides.date), asc(rides.time));
   }
 
   async getUserRides(userId: string): Promise<Ride[]> {
