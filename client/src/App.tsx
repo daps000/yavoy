@@ -18,16 +18,22 @@ import { Layout } from "@/components/layout";
 import { AuthProvider } from "@/lib/auth-context";
 import { PendingReviewPrompt } from "@/components/PendingReviewPrompt";
 
-function HashErrorRedirect() {
+function HashAuthRedirect() {
   const [, setLocation] = useLocation();
   const [location] = useLocation();
   
   useEffect(() => {
     const hash = window.location.hash;
-    if (hash && hash.includes("error")) {
-      if (location === "/" || location === "") {
-        setLocation("/entrar" + hash);
-      }
+    if (!hash || (location !== "/" && location !== "")) return;
+    
+    const hashParams = new URLSearchParams(hash.substring(1));
+    const type = hashParams.get("type");
+    const hasError = hash.includes("error");
+    
+    if (type === "recovery") {
+      setLocation("/nueva-contrasena" + hash);
+    } else if (hasError) {
+      setLocation("/entrar" + hash);
     }
   }, [setLocation, location]);
   
@@ -60,7 +66,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <PendingReviewPrompt />
-          <HashErrorRedirect />
+          <HashAuthRedirect />
           <Router />
         </TooltipProvider>
       </AuthProvider>
