@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import logoImage from "@assets/logo-verde.png";
 import logoWhite from "@assets/logo-yavoy-white.png";
-import logoTrans from "@assets/logo-trans_1765303325983.png";
+import logoTrans from "@assets/logo-trans_1765306112600.png";
 import { useAuth } from "@/lib/auth-context";
 import {
   DropdownMenu,
