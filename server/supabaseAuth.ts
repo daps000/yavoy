@@ -37,6 +37,26 @@ export const requireAuth: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const optionalAuth: RequestHandler = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      const { data: { user } } = await supabaseAdmin.auth.getUser(token);
+      
+      if (user) {
+        req.userId = user.id;
+        req.userEmail = user.email;
+      }
+    }
+    
+    next();
+  } catch (error) {
+    next();
+  }
+};
+
 export async function upsertUserFromSupabase(userId: string, email: string | undefined, metadata: any) {
   try {
     await storage.upsertUser({

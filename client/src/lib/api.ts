@@ -195,13 +195,12 @@ export async function createReview(data: {
   driverProfileId: number;
   stars: number;
   comment?: string;
-  reviewerContact: string;
+  reviewerContact?: string;
 }): Promise<Review> {
+  const headers = await getAuthHeaders();
   const response = await fetch("/api/reviews", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(data),
   });
   

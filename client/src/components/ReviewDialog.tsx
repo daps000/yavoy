@@ -8,6 +8,7 @@ import { Star, AlertCircle, Loader2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createReview } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/lib/auth-context";
 
 interface ReviewDialogProps {
   open: boolean;
@@ -25,6 +26,7 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user, isAuthenticated } = useAuth();
 
   const reviewMutation = useMutation({
     mutationFn: createReview,
@@ -59,7 +61,8 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
       return;
     }
 
-    if (!phone || phone.length < 9) {
+    // Only require phone for non-authenticated users
+    if (!isAuthenticated && (!phone || phone.length < 9)) {
       setError("Introduce tu número de teléfono (mínimo 9 dígitos)");
       return;
     }
@@ -73,7 +76,7 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
       driverProfileId,
       stars,
       comment: comment.trim() || undefined,
-      reviewerContact: phone,
+      reviewerContact: isAuthenticated ? undefined : phone,
     });
   };
 
@@ -140,21 +143,23 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="phone">Tu teléfono</Label>
-            <Input
-              id="phone"
-              type="tel"
-              placeholder="612345678"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-              maxLength={12}
-              data-testid="input-phone"
-            />
-            <p className="text-xs text-muted-foreground">
-              Solo usamos tu teléfono para evitar valoraciones duplicadas.
-            </p>
-          </div>
+          {!isAuthenticated && (
+            <div className="space-y-2">
+              <Label htmlFor="phone">Tu teléfono</Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="612345678"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                maxLength={12}
+                data-testid="input-phone"
+              />
+              <p className="text-xs text-muted-foreground">
+                Solo usamos tu teléfono para evitar valoraciones duplicadas.
+              </p>
+            </div>
+          )}
 
           {error && (
             <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg">

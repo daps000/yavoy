@@ -4,7 +4,7 @@ import { storage, hashContact } from "./storage";
 import { insertRideSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import { z } from "zod";
-import { requireAuth, upsertUserFromSupabase } from "./supabaseAuth";
+import { requireAuth, optionalAuth, upsertUserFromSupabase } from "./supabaseAuth";
 import { supabaseAdmin } from "./supabase";
 
 export async function registerRoutes(
@@ -321,10 +321,10 @@ export async function registerRoutes(
     driverProfileId: z.number(),
     stars: z.number().min(1).max(5),
     comment: z.string().optional(),
-    reviewerContact: z.string().min(9),
+    reviewerContact: z.string().min(9).optional(),
   });
 
-  app.post("/api/reviews", async (req, res) => {
+  app.post("/api/reviews", optionalAuth, async (req, res) => {
     try {
       const validation = createReviewSchema.safeParse(req.body);
       
@@ -334,12 +334,18 @@ export async function registerRoutes(
       }
 
       const { driverProfileId, stars, comment, reviewerContact } = validation.data;
+      
+      // Use userId if authenticated, otherwise require phone
+      const reviewerIdentifier = req.userId || reviewerContact;
+      if (!reviewerIdentifier) {
+        return res.status(400).json({ error: "Debes iniciar sesión o proporcionar tu teléfono" });
+      }
 
       if (stars < 3 && (!comment || comment.trim().length === 0)) {
         return res.status(400).json({ error: "Se requiere un comentario para valoraciones menores a 3 estrellas" });
       }
 
-      const canReview = await storage.canUserReview(driverProfileId, reviewerContact);
+      const canReview = await storage.canUserReview(driverProfileId, reviewerIdentifier);
       if (!canReview) {
         return res.status(400).json({ error: "Ya has valorado a este conductor recientemente" });
       }
@@ -348,7 +354,7 @@ export async function registerRoutes(
         driverProfileId,
         stars,
         comment: comment || null,
-        reviewerContactHash: hashContact(reviewerContact),
+        reviewerContactHash: hashContact(reviewerIdentifier),
       });
 
       res.status(201).json(review);
