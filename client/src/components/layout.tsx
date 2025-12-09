@@ -105,8 +105,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
           {/* Mobile Nav */}
           <div className="md:hidden flex items-center gap-2">
             <Link href="/publicar">
-              <Button variant="ghost" size="icon" className="h-12 w-12 text-primary">
-                <PlusCircle className="h-8 w-8" />
+              <Button variant="ghost" size="icon" className="h-14 w-14 text-primary">
+                <PlusCircle className="h-10 w-10" />
               </Button>
             </Link>
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
