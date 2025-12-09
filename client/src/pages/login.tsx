@@ -59,6 +59,7 @@ export default function LoginPage() {
           : errorCode;
         setError(translateError(message || "Error desconocido"));
         window.history.replaceState(null, "", window.location.pathname);
+        window.scrollTo(0, 0);
       }
     }
   }, []);
