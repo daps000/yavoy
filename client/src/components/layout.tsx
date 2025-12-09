@@ -103,16 +103,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </nav>
 
           {/* Mobile Nav */}
-          <div className="md:hidden flex items-center gap-2">
+          <div className="md:hidden flex items-center gap-0">
             <Link href="/publicar">
-              <Button variant="ghost" size="icon" className="h-16 w-16 text-primary">
-                <PlusCircle className="h-12 w-12" />
+              <Button variant="ghost" size="icon" className="h-12 w-12 min-h-[48px] min-w-[48px] text-primary">
+                <PlusCircle className="h-8 w-8" />
               </Button>
             </Link>
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-16 w-16">
-                  <Menu className="h-12 w-12" />
+                <Button variant="ghost" size="icon" className="h-12 w-12 min-h-[48px] min-w-[48px]">
+                  <Menu className="h-8 w-8" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
