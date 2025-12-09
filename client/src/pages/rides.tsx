@@ -123,7 +123,7 @@ export default function RidesPage() {
             <SelectTrigger className="bg-card border-border">
               <SelectValue placeholder="Cualquier fecha" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white">
               <SelectItem value="all">Cualquier fecha</SelectItem>
               <SelectItem value="today">Hoy</SelectItem>
               <SelectItem value="tomorrow">Mañana</SelectItem>
