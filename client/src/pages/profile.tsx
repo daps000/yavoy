@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
+import { updateUserProfile } from "@/lib/api";
 import { User, Phone, Mail, Save, Loader2 } from "lucide-react";
 
 export default function ProfilePage() {
@@ -37,18 +38,7 @@ export default function ProfilePage() {
     setIsSaving(true);
 
     try {
-      const response = await fetch("/api/user/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ firstName, lastName, phone }),
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Error al guardar");
-      }
-
+      await updateUserProfile({ firstName, lastName, phone });
       await refreshProfile();
       
       toast({

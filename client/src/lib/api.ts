@@ -58,6 +58,22 @@ export async function updateUserPhone(phone: string): Promise<User> {
   return response.json();
 }
 
+export async function updateUserProfile(data: { firstName?: string; lastName?: string; phone?: string }): Promise<User> {
+  const headers = await getAuthHeaders();
+  const response = await fetch("/api/user/profile", {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Error al guardar el perfil");
+  }
+  
+  return response.json();
+}
+
 export async function recordRideContact(rideId: number, driverProfileId: number): Promise<RideContact> {
   const headers = await getAuthHeaders();
   const response = await fetch("/api/ride-contacts", {
