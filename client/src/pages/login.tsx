@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, useSearch } from "wouter";
+import { useLocation, useSearch, Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -463,15 +463,9 @@ export default function LoginPage() {
                           data-testid="input-login-password"
                         />
                       </div>
-                      <button
-                        type="button"
-                        onClick={handlePasswordReset}
-                        disabled={isResettingPassword}
-                        className="text-xs text-primary hover:underline mt-1"
-                        data-testid="button-forgot-password"
-                      >
-                        {isResettingPassword ? "Enviando..." : "¿Olvidaste tu contraseña?"}
-                      </button>
+                      <Link href="/recuperar" className="text-xs text-primary hover:underline mt-1 block" data-testid="link-forgot-password">
+                        ¿Olvidaste tu contraseña?
+                      </Link>
                     </div>
                     
                     {error && (

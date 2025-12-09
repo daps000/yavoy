@@ -12,19 +12,24 @@ import FAQPage from "@/pages/faq";
 import MyRidesPage from "@/pages/my-rides";
 import ProfilePage from "@/pages/profile";
 import LoginPage from "@/pages/login";
+import RecoverPasswordPage from "@/pages/recover-password";
+import NewPasswordPage from "@/pages/new-password";
 import { Layout } from "@/components/layout";
 import { AuthProvider } from "@/lib/auth-context";
 import { PendingReviewPrompt } from "@/components/PendingReviewPrompt";
 
 function HashErrorRedirect() {
   const [, setLocation] = useLocation();
+  const [location] = useLocation();
   
   useEffect(() => {
     const hash = window.location.hash;
     if (hash && hash.includes("error")) {
-      setLocation("/entrar" + hash);
+      if (location === "/" || location === "") {
+        setLocation("/entrar" + hash);
+      }
     }
-  }, [setLocation]);
+  }, [setLocation, location]);
   
   return null;
 }
@@ -39,6 +44,8 @@ function Router() {
         <Route path="/mis-viajes" component={MyRidesPage} />
         <Route path="/mi-perfil" component={ProfilePage} />
         <Route path="/entrar" component={LoginPage} />
+        <Route path="/recuperar" component={RecoverPasswordPage} />
+        <Route path="/nueva-contrasena" component={NewPasswordPage} />
         <Route path="/faq" component={FAQPage} />
         <Route component={NotFound} />
       </Switch>

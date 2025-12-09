@@ -23,6 +23,7 @@ type AuthContextType = {
   signInWithEmail: (email: string, password: string) => Promise<{ error: string | null }>;
   signUpWithEmail: (email: string, password: string, firstName?: string, lastName?: string) => Promise<{ error: string | null }>;
   resetPassword: (email: string) => Promise<{ error: string | null }>;
+  updatePassword: (password: string) => Promise<{ error: string | null }>;
   logout: () => Promise<void>;
   refreshProfile: () => void;
 };
@@ -199,7 +200,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const redirectUrl = siteUrl || window.location.origin;
     
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${redirectUrl}/entrar`,
+      redirectTo: `${redirectUrl}/nueva-contrasena`,
+    });
+    if (error) {
+      return { error: error.message };
+    }
+    return { error: null };
+  };
+
+  const updatePassword = async (password: string) => {
+    const supabase = await getSupabase();
+    const { error } = await supabase.auth.updateUser({
+      password,
     });
     if (error) {
       return { error: error.message };
@@ -232,6 +244,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWithEmail,
         signUpWithEmail,
         resetPassword,
+        updatePassword,
         logout,
         refreshProfile,
       }}
