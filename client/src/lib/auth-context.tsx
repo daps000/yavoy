@@ -22,6 +22,7 @@ type AuthContextType = {
   signInWithGoogle: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<{ error: string | null }>;
   signUpWithEmail: (email: string, password: string, firstName?: string, lastName?: string) => Promise<{ error: string | null }>;
+  resetPassword: (email: string) => Promise<{ error: string | null }>;
   logout: () => Promise<void>;
   refreshProfile: () => void;
 };
@@ -192,6 +193,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: null };
   };
 
+  const resetPassword = async (email: string) => {
+    const supabase = await getSupabase();
+    const siteUrl = getSiteUrl();
+    const redirectUrl = siteUrl || window.location.origin;
+    
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${redirectUrl}/entrar`,
+    });
+    if (error) {
+      return { error: error.message };
+    }
+    return { error: null };
+  };
+
   const logout = async () => {
     const supabase = await getSupabase();
     await supabase.auth.signOut();
@@ -216,6 +231,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWithGoogle,
         signInWithEmail,
         signUpWithEmail,
+        resetPassword,
         logout,
         refreshProfile,
       }}

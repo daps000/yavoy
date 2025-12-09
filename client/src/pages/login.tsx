@@ -12,7 +12,7 @@ import logoImage from "@assets/logo-verde.png";
 const RETURN_URL_KEY = "yavoy_login_return";
 
 export default function LoginPage() {
-  const { isAuthenticated, isLoading, signInWithGoogle, signInWithEmail, signUpWithEmail } = useAuth();
+  const { isAuthenticated, isLoading, signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword } = useAuth();
   const [, setLocation] = useLocation();
   const searchString = useSearch();
   const params = new URLSearchParams(searchString);
@@ -31,6 +31,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
@@ -56,6 +57,25 @@ export default function LoginPage() {
       setError(translateError(result.error));
     }
     setIsSubmitting(false);
+  };
+
+  const handlePasswordReset = async () => {
+    if (!email) {
+      setError("Introduce tu email primero");
+      return;
+    }
+    setError(null);
+    setSuccessMessage(null);
+    setIsResettingPassword(true);
+    
+    const result = await resetPassword(email);
+    
+    if (result.error) {
+      setError(translateError(result.error));
+    } else {
+      setSuccessMessage("Te hemos enviado un email con instrucciones para restablecer tu contraseña.");
+    }
+    setIsResettingPassword(false);
   };
 
   const handleEmailSignup = async (e: React.FormEvent) => {
@@ -419,10 +439,23 @@ export default function LoginPage() {
                           data-testid="input-login-password"
                         />
                       </div>
+                      <button
+                        type="button"
+                        onClick={handlePasswordReset}
+                        disabled={isResettingPassword}
+                        className="text-xs text-primary hover:underline mt-1"
+                        data-testid="button-forgot-password"
+                      >
+                        {isResettingPassword ? "Enviando..." : "¿Olvidaste tu contraseña?"}
+                      </button>
                     </div>
                     
                     {error && (
                       <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">{error}</p>
+                    )}
+                    
+                    {successMessage && (
+                      <p className="text-sm text-green-600 bg-green-50 p-3 rounded-lg">{successMessage}</p>
                     )}
                     
                     <Button
