@@ -202,6 +202,7 @@ Preferred communication style: Simple, everyday language.
 - Connection via `pg` package with Drizzle ORM
 - Uses standard PostgreSQL connections with SSL
 - Requires `SUPABASE_DB_URL` environment variable
+- RLS enabled on all tables (no policies defined - access is via service-role connection only)
 
 **Nominatim (OpenStreetMap)** - Reverse geocoding service
 - Used for "Utilizar ubicación actual" feature
