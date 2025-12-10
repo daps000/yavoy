@@ -29,7 +29,7 @@ Preferred communication style: Simple, everyday language.
 
 **Data Layer:**
 - Drizzle ORM with PostgreSQL dialect
-- Supabase PostgreSQL (via `@neondatabase/serverless` for compatibility)
+- External Supabase PostgreSQL database (SUPABASE_DB_URL)
 - Schema-first approach with shared type definitions
 
 **Authentication:**
@@ -58,7 +58,7 @@ Preferred communication style: Simple, everyday language.
 
 5. **Single-Page Application with Multi-Route Structure:** Uses Wouter for lightweight routing with pages for Home, View Rides, Publish Ride, and FAQ.
 
-6. **Serverless-Ready Database:** Uses Neon serverless PostgreSQL with WebSocket connections for efficient scaling and cold-start performance.
+6. **External Supabase Database:** Uses external Supabase PostgreSQL database for data persistence, separate from Replit's built-in database.
 
 7. **Storage Layer Abstraction:** The `IStorage` interface allows swapping storage implementations (currently `DatabaseStorage`) without changing business logic.
 
@@ -199,10 +199,10 @@ Preferred communication style: Simple, everyday language.
 
 ### Third-Party Services
 
-**Neon Database** - Serverless PostgreSQL hosting
-- Connection via `@neondatabase/serverless` package
-- WebSocket-based connections using `ws` library
-- Requires `DATABASE_URL` environment variable
+**Supabase Database** - External PostgreSQL hosting
+- Connection via `pg` package with Drizzle ORM
+- Uses standard PostgreSQL connections with SSL
+- Requires `SUPABASE_DB_URL` environment variable
 
 **Nominatim (OpenStreetMap)** - Reverse geocoding service
 - Used for "Utilizar ubicación actual" feature
