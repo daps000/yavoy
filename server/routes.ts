@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage, hashContact } from "./storage";
+import { storage } from "./storage";
 import { insertRideSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import { z } from "zod";
@@ -180,12 +180,12 @@ export async function registerRoutes(
         return res.status(400).json({ error: error.message });
       }
 
-      const driverProfile = await storage.getOrCreateDriverProfile(
-        validation.data.driverName,
-        validation.data.contact
-      );
-
       const userId = req.userId!;
+      
+      const driverProfile = await storage.getOrCreateDriverProfile(
+        userId,
+        validation.data.driverName
+      );
 
       // Save phone to user profile if not already set
       const userProfile = await storage.getUser(userId);
@@ -316,15 +316,14 @@ export async function registerRoutes(
     }
   });
 
-  // Create a new review
+  // Create a new review (requires authentication)
   const createReviewSchema = z.object({
     driverProfileId: z.number(),
     stars: z.number().min(1).max(5),
     comment: z.string().optional(),
-    reviewerContact: z.string().min(9).optional(),
   });
 
-  app.post("/api/reviews", optionalAuth, async (req, res) => {
+  app.post("/api/reviews", requireAuth, async (req, res) => {
     try {
       const validation = createReviewSchema.safeParse(req.body);
       
@@ -333,19 +332,14 @@ export async function registerRoutes(
         return res.status(400).json({ error: error.message });
       }
 
-      const { driverProfileId, stars, comment, reviewerContact } = validation.data;
-      
-      // Use userId if authenticated, otherwise require phone
-      const reviewerIdentifier = req.userId || reviewerContact;
-      if (!reviewerIdentifier) {
-        return res.status(400).json({ error: "Debes iniciar sesión o proporcionar tu teléfono" });
-      }
+      const { driverProfileId, stars, comment } = validation.data;
+      const reviewerUserId = req.userId!;
 
       if (stars < 3 && (!comment || comment.trim().length === 0)) {
         return res.status(400).json({ error: "Se requiere un comentario para valoraciones menores a 3 estrellas" });
       }
 
-      const canReview = await storage.canUserReview(driverProfileId, reviewerIdentifier);
+      const canReview = await storage.canUserReview(driverProfileId, reviewerUserId);
       if (!canReview) {
         return res.status(400).json({ error: "Ya has valorado a este conductor recientemente" });
       }
@@ -354,7 +348,7 @@ export async function registerRoutes(
         driverProfileId,
         stars,
         comment: comment || null,
-        reviewerContactHash: hashContact(reviewerIdentifier),
+        reviewerUserId,
       });
 
       res.status(201).json(review);
@@ -364,17 +358,16 @@ export async function registerRoutes(
     }
   });
 
-  // Check if user can review
-  app.get("/api/reviews/can-review", async (req, res) => {
+  // Check if user can review (requires authentication)
+  app.get("/api/reviews/can-review", requireAuth, async (req, res) => {
     try {
       const driverProfileId = parseInt(req.query.driverProfileId as string);
-      const reviewerContact = req.query.reviewerContact as string;
       
-      if (isNaN(driverProfileId) || !reviewerContact) {
+      if (isNaN(driverProfileId)) {
         return res.status(400).json({ error: "Faltan parámetros" });
       }
 
-      const canReview = await storage.canUserReview(driverProfileId, reviewerContact);
+      const canReview = await storage.canUserReview(driverProfileId, req.userId!);
       res.json({ canReview });
     } catch (error) {
       console.error("Error checking review eligibility:", error);

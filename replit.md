@@ -77,8 +77,8 @@ Preferred communication style: Simple, everyday language.
 
 2. **driver_profiles** - Driver identity for rating aggregation
    - id (serial, primary key)
+   - userId (varchar, unique) - Links directly to users.id
    - name (text)
-   - contactHash (text, unique) - SHA-256 hash of phone for privacy
    - createdAt (timestamp)
 
 3. **rides** - Core ride-sharing data
@@ -100,7 +100,7 @@ Preferred communication style: Simple, everyday language.
    - driverProfileId (integer) - Links to driver_profiles
    - stars (integer, 1-5)
    - comment (text, optional but required for <3 stars)
-   - reviewerContactHash (text) - SHA-256 hash for duplicate prevention
+   - reviewerUserId (varchar) - Links to users.id for duplicate prevention
    - createdAt (timestamp)
 
 5. **ride_contacts** - Tracks when users contact drivers (for review prompts)
@@ -127,9 +127,9 @@ Preferred communication style: Simple, everyday language.
 
 **GET /api/drivers/:id/reviews** - Get recent reviews for a driver (optional limit param)
 
-**POST /api/reviews** - Submit a review (requires stars 1-5, comment if <3 stars, reviewer phone)
+**POST /api/reviews** - Submit a review (requires auth, stars 1-5, comment if <3 stars)
 
-**GET /api/reviews/can-review** - Check if user can review (14-day limit per driver/reviewer pair)
+**GET /api/reviews/can-review** - Check if user can review (requires auth, 14-day limit per driver)
 
 **Authentication Endpoints:**
 
@@ -173,12 +173,11 @@ Preferred communication style: Simple, everyday language.
 - `/data/municipios.json` - Static list of 8,124 Spanish municipalities from INE (CodeForSpain)
 
 **Driver Rating System:**
-- Drivers automatically get a profile when publishing their first ride (linked via phone hash)
+- Drivers automatically get a profile when publishing their first ride (linked directly via userId)
 - Ride cards show average rating (stars) and review count when available
-- Users can click "Valorar" to submit a review with 1-5 stars
+- Authenticated users can click "Valorar" to submit a review with 1-5 stars
 - Reviews with <3 stars require a comment explanation
-- Phone number used to prevent duplicate reviews (14-day cooldown per driver/reviewer pair)
-- Privacy: phone numbers are hashed using SHA-256 before storage
+- Reviews require authentication (uses reviewerUserId for duplicate prevention, 14-day cooldown per driver)
 
 **Theming:**
 - Custom CSS variables for modern rural aesthetic

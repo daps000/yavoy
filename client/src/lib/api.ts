@@ -195,7 +195,6 @@ export async function createReview(data: {
   driverProfileId: number;
   stars: number;
   comment?: string;
-  reviewerContact?: string;
 }): Promise<Review> {
   const headers = await getAuthHeaders();
   const response = await fetch("/api/reviews", {
@@ -212,8 +211,9 @@ export async function createReview(data: {
   return response.json();
 }
 
-export async function checkCanReview(driverProfileId: number, reviewerContact: string): Promise<boolean> {
-  const response = await fetch(`/api/reviews/can-review?driverProfileId=${driverProfileId}&reviewerContact=${encodeURIComponent(reviewerContact)}`);
+export async function checkCanReview(driverProfileId: number): Promise<boolean> {
+  const headers = await getAuthHeaders();
+  const response = await fetch(`/api/reviews/can-review?driverProfileId=${driverProfileId}`, { headers });
   if (!response.ok) {
     return false;
   }

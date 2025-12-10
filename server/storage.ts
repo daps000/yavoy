@@ -1,7 +1,6 @@
 import { users, rides, locations, driverProfiles, reviews, rideContacts, type User, type UpsertUser, type Ride, type InsertRide, type Location, type DriverProfile, type Review, type InsertReview, type DriverRating, type RideContact, type InsertRideContact } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, ilike, sql, and, avg, count, gte } from "drizzle-orm";
-import crypto from "crypto";
 
 function normalizeLocationName(name: string): string {
   return name
@@ -11,9 +10,6 @@ function normalizeLocationName(name: string): string {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-function hashContact(contact: string): string {
-  return crypto.createHash('sha256').update(contact.trim().toLowerCase()).digest('hex');
-}
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -31,12 +27,12 @@ export interface IStorage {
   searchLocations(query: string): Promise<Location[]>;
   addLocation(name: string): Promise<Location | null>;
   
-  getOrCreateDriverProfile(name: string, contact: string): Promise<DriverProfile>;
+  getOrCreateDriverProfile(userId: string, name: string): Promise<DriverProfile>;
   getDriverProfile(id: number): Promise<DriverProfile | undefined>;
   getDriverRating(driverProfileId: number): Promise<DriverRating>;
   getDriverReviews(driverProfileId: number, limit?: number): Promise<Review[]>;
   createReview(review: InsertReview): Promise<Review>;
-  canUserReview(driverProfileId: number, reviewerContact: string): Promise<boolean>;
+  canUserReview(driverProfileId: number, reviewerUserId: string): Promise<boolean>;
   
   createRideContact(contact: InsertRideContact): Promise<RideContact>;
   getPendingReviewContacts(userId: string): Promise<(RideContact & { driverName: string | null })[]>;
@@ -156,15 +152,14 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getOrCreateDriverProfile(name: string, contact: string): Promise<DriverProfile> {
-    const contactHash = hashContact(contact);
-    const [existing] = await db.select().from(driverProfiles).where(eq(driverProfiles.contactHash, contactHash));
+  async getOrCreateDriverProfile(userId: string, name: string): Promise<DriverProfile> {
+    const [existing] = await db.select().from(driverProfiles).where(eq(driverProfiles.userId, userId));
     if (existing) {
       return existing;
     }
     const [profile] = await db
       .insert(driverProfiles)
-      .values({ name: name.trim(), contactHash })
+      .values({ userId, name: name.trim() })
       .returning();
     return profile;
   }
@@ -207,8 +202,7 @@ export class DatabaseStorage implements IStorage {
     return newReview;
   }
 
-  async canUserReview(driverProfileId: number, reviewerContact: string): Promise<boolean> {
-    const reviewerHash = hashContact(reviewerContact);
+  async canUserReview(driverProfileId: number, reviewerUserId: string): Promise<boolean> {
     const fourteenDaysAgo = new Date();
     fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
     
@@ -218,7 +212,7 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           eq(reviews.driverProfileId, driverProfileId),
-          eq(reviews.reviewerContactHash, reviewerHash)
+          eq(reviews.reviewerUserId, reviewerUserId)
         )
       )
       .orderBy(desc(reviews.createdAt))
@@ -270,5 +264,3 @@ export class DatabaseStorage implements IStorage {
 }
 
 export const storage = new DatabaseStorage();
-
-export { hashContact };

@@ -3,16 +3,6 @@ import { pgTable, text, varchar, serial, integer, timestamp, index, jsonb } from
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const sessions = pgTable(
-  "sessions",
-  {
-    sid: varchar("sid").primaryKey(),
-    sess: jsonb("sess").notNull(),
-    expire: timestamp("expire").notNull(),
-  },
-  (table) => [index("IDX_session_expire").on(table.expire)],
-);
-
 export const users = pgTable("users", {
   id: varchar("id").primaryKey(),
   email: varchar("email").unique(),
@@ -37,8 +27,8 @@ export type Location = typeof locations.$inferSelect;
 
 export const driverProfiles = pgTable("driver_profiles", {
   id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().unique(),
   name: text("name").notNull(),
-  contactHash: text("contact_hash").notNull().unique(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -74,7 +64,7 @@ export const reviews = pgTable("reviews", {
   driverProfileId: integer("driver_profile_id").notNull(),
   stars: integer("stars").notNull(),
   comment: text("comment"),
-  reviewerContactHash: text("reviewer_contact_hash").notNull(),
+  reviewerUserId: varchar("reviewer_user_id").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Star, AlertCircle, Loader2 } from "lucide-react";
@@ -21,12 +20,11 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
   const [stars, setStars] = useState(0);
   const [hoveredStars, setHoveredStars] = useState(0);
   const [comment, setComment] = useState("");
-  const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const reviewMutation = useMutation({
     mutationFn: createReview,
@@ -48,7 +46,6 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
     setStars(0);
     setHoveredStars(0);
     setComment("");
-    setPhone("");
     setError("");
   };
 
@@ -56,14 +53,13 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
     e.preventDefault();
     setError("");
 
-    if (stars === 0) {
-      setError("Selecciona una valoración de 1 a 5 estrellas");
+    if (!isAuthenticated) {
+      setError("Debes iniciar sesión para valorar");
       return;
     }
 
-    // Only require phone for non-authenticated users
-    if (!isAuthenticated && (!phone || phone.length < 9)) {
-      setError("Introduce tu número de teléfono (mínimo 9 dígitos)");
+    if (stars === 0) {
+      setError("Selecciona una valoración de 1 a 5 estrellas");
       return;
     }
 
@@ -76,7 +72,6 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
       driverProfileId,
       stars,
       comment: comment.trim() || undefined,
-      reviewerContact: isAuthenticated ? undefined : phone,
     });
   };
 
@@ -143,24 +138,7 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
             />
           </div>
 
-          {!isAuthenticated && (
-            <div className="space-y-2">
-              <Label htmlFor="phone">Tu teléfono</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="612345678"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                maxLength={12}
-                data-testid="input-phone"
-              />
-              <p className="text-xs text-muted-foreground">
-                Solo usamos tu teléfono para evitar valoraciones duplicadas.
-              </p>
-            </div>
-          )}
-
+          
           {error && (
             <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
               <AlertCircle className="h-4 w-4 flex-shrink-0" />
