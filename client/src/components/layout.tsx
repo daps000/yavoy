@@ -8,6 +8,8 @@ import logoImage from "@assets/logo-verde.png";
 import logoWhite from "@assets/logo-yavoy-white.png";
 import logoTrans from "@assets/logo-trans.png";
 import { useAuth } from "@/lib/auth-context";
+import { useTranslation } from "react-i18next";
+import { LanguageSelector } from "./LanguageSelector";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,12 +22,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { t } = useTranslation();
 
   const navItems = [
-    { label: "Inicio", href: "/" },
-    { label: "Ver viajes disponibles", href: "/viajes" },
-    { label: "Publicar viaje", href: "/publicar" },
-    { label: "Preguntas frecuentes", href: "/faq" },
+    { label: t("nav.home"), href: "/" },
+    { label: t("nav.rides"), href: "/viajes" },
+    { label: t("nav.publish"), href: "/publicar" },
+    { label: t("nav.faq"), href: "/faq" },
   ];
 
   const getUserDisplayName = () => {
@@ -59,6 +62,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </Link>
             ))}
             
+            <LanguageSelector />
             {!isLoading && (
               isAuthenticated ? (
                 <DropdownMenu>
@@ -82,20 +86,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     <Link href="/mis-viajes">
                       <DropdownMenuItem className="cursor-pointer" data-testid="button-my-rides">
                         <Car className="h-4 w-4 mr-2" />
-                        Mis viajes
+                        {t("nav.myRides")}
                       </DropdownMenuItem>
                     </Link>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={logout} className="text-red-600" data-testid="button-logout">
                       <LogOut className="h-4 w-4 mr-2" />
-                      Cerrar sesión
+                      {t("nav.logout")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
                 <Link href="/entrar">
                   <Button variant="outline" className="ml-2" data-testid="button-login">
-                    Iniciar sesión
+                    {t("nav.login")}
                   </Button>
                 </Link>
               )
