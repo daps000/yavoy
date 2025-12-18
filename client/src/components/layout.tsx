@@ -34,7 +34,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const getUserDisplayName = () => {
     if (user?.firstName) return user.firstName;
     if (user?.email) return user.email.split("@")[0];
-    return "Usuario";
+    return t("common.user");
   };
 
   return (
@@ -121,7 +121,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                 <VisuallyHidden>
-                  <SheetTitle>Menú de navegación</SheetTitle>
+                  <SheetTitle>{t("nav.menu")}</SheetTitle>
                 </VisuallyHidden>
                 <div className="flex flex-col gap-6 mt-8 items-start">
                   <img 
@@ -161,7 +161,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
                             <Car className="h-4 w-4" />
-                            Mis viajes
+                            {t("nav.myRides")}
                           </Link>
                           <Button
                             variant="outline"
@@ -173,7 +173,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                             data-testid="button-mobile-logout"
                           >
                             <LogOut className="h-4 w-4 mr-2" />
-                            Cerrar sesión
+                            {t("nav.logout")}
                           </Button>
                         </div>
                       ) : (
@@ -186,7 +186,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                             className="w-full"
                             data-testid="button-mobile-login"
                           >
-                            Iniciar sesión
+                            {t("nav.login")}
                           </Button>
                         </Link>
                       )
@@ -212,9 +212,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
               className="h-10 w-auto"
             />
           </div>
-          <p className="text-primary-foreground/80 max-w-md mx-auto text-[14px]">Vavoy es un piloto en fase de pruebas. Conectamos personas, no operamos transporte</p>
+          <p className="text-primary-foreground/80 max-w-md mx-auto text-[14px]">{t("footer.disclaimer")}</p>
           <div className="pt-4 text-xs opacity-50">
-            Hecho con <Heart className="inline h-3 w-3 mx-1 fill-current" /> para nuestros pueblos
+            {t("footer.madeWith")} <Heart className="inline h-3 w-3 mx-1 fill-current" /> {t("footer.forOurVillages")}
           </div>
         </div>
       </footer>

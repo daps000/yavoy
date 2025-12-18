@@ -1,43 +1,47 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Card } from "@/components/ui/card";
+import { useTranslation } from "react-i18next";
 
 export default function FAQPage() {
+  const { t } = useTranslation();
+  
   return (
     <div className="container px-4 md:px-6 py-12 max-w-3xl mx-auto">
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold font-serif text-primary mb-4">Preguntas frecuentes</h1>
-        <p className="text-muted-foreground">Resolvemos tus dudas sobre cómo funciona Vavoy.</p>
+        <h1 className="text-3xl font-bold font-serif text-primary mb-4">{t("faq.title")}</h1>
+        <p className="text-muted-foreground">{t("faq.subtitle")}</p>
       </div>
       
       <Card className="p-6 border-none shadow-md bg-white">
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="item-1">
-            <AccordionTrigger className="text-left text-lg">¿Vavoy es una empresa de transporte?</AccordionTrigger>
+            <AccordionTrigger className="text-left text-lg">{t("faq.questions.transport.question")}</AccordionTrigger>
             <AccordionContent className="text-muted-foreground text-base">
-              No, Vavoy es solo una herramienta para conectar vecinos. No tenemos conductores contratados ni flota de coches. Son personas particulares compartiendo sus trayectos habituales.
+              {t("faq.questions.transport.answer")}
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-2">
-            <AccordionTrigger className="text-left text-lg">¿Tengo que pagar algo por usar Vavoy?</AccordionTrigger>
+            <AccordionTrigger className="text-left text-lg">{t("faq.questions.payment.question")}</AccordionTrigger>
             <AccordionContent className="text-muted-foreground text-base">
-              Usar la web es totalmente gratis. Los gastos del viaje (gasolina) los acordáis directamente entre conductor y pasajero. Vavoy no cobra ninguna comisión.
+              {t("faq.questions.payment.answer")}
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-3">
-            <AccordionTrigger className="text-left text-lg">¿Cómo contacto con la persona conductora?</AccordionTrigger>
+            <AccordionTrigger className="text-left text-lg">{t("faq.questions.contact.question")}</AccordionTrigger>
             <AccordionContent className="text-muted-foreground text-base">
-              En cada viaje verás un botón de WhatsApp o un teléfono. Contacta directamente con la persona para confirmar hora y lugar de recogida.
+              {t("faq.questions.contact.answer")}
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-4">
-            <AccordionTrigger className="text-left text-lg">¿Es obligatorio compartir gastos?</AccordionTrigger>
+            <AccordionTrigger className="text-left text-lg">{t("faq.questions.costs.question")}</AccordionTrigger>
             <AccordionContent className="text-muted-foreground text-base">
-              Es lo habitual y lo justo, pero depende de cada conductor. Algunos solo buscan compañía, otros necesitan ayuda con la gasolina. Habladlo antes de salir.
+              {t("faq.questions.costs.answer")}
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-5">
-            <AccordionTrigger className="text-left text-lg">¿Qué pasa si quiero cancelar un viaje?</AccordionTrigger>
+            <AccordionTrigger className="text-left text-lg">{t("faq.questions.cancel.question")}</AccordionTrigger>
             <AccordionContent className="text-muted-foreground text-base">
-              Por favor, avisa cuanto antes. Escribe o llama a la persona con la que habías quedado. Al ser una red vecinal, la comunicación y el respeto son fundamentales.
+              {t("faq.questions.cancel.answer")}
             </AccordionContent>
           </AccordionItem>
         </Accordion>
@@ -45,5 +49,3 @@ export default function FAQPage() {
     </div>
   );
 }
-
-import { Card } from "@/components/ui/card";

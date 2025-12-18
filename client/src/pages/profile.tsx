@@ -8,8 +8,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { updateUserProfile } from "@/lib/api";
 import { User, Phone, Mail, Save, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const { user, profile, isAuthenticated, isLoading: authLoading, refreshProfile } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -42,13 +44,13 @@ export default function ProfilePage() {
       await refreshProfile();
       
       toast({
-        title: "Perfil actualizado",
-        description: "Tus datos se han guardado correctamente.",
+        title: t("profile.updated.title"),
+        description: t("profile.updated.description"),
       });
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message || "No se pudo guardar el perfil",
+        title: t("common.error"),
+        description: error.message || t("profile.updated.error"),
         variant: "destructive",
       });
     } finally {
@@ -60,7 +62,7 @@ export default function ProfilePage() {
     return (
       <div className="container px-4 md:px-6 py-12 text-center">
         <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-        <p className="mt-4 text-muted-foreground">Cargando...</p>
+        <p className="mt-4 text-muted-foreground">{t("common.loading")}</p>
       </div>
     );
   }
@@ -72,15 +74,15 @@ export default function ProfilePage() {
   return (
     <div className="container px-4 md:px-6 py-12 max-w-lg mx-auto">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold font-serif text-foreground mb-3">Mi perfil</h1>
-        <p className="text-muted-foreground">Gestiona tus datos personales</p>
+        <h1 className="text-3xl font-bold font-serif text-foreground mb-3">{t("profile.title")}</h1>
+        <p className="text-muted-foreground">{t("profile.subtitle")}</p>
       </div>
 
       <Card className="border border-border shadow-lg bg-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <User className="h-5 w-5 text-primary" />
-            Datos personales
+            {t("profile.personalData")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -88,7 +90,7 @@ export default function ProfilePage() {
             <div className="space-y-2">
               <Label htmlFor="email" className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                Correo electrónico
+                {t("profile.email")}
               </Label>
               <Input
                 id="email"
@@ -97,28 +99,28 @@ export default function ProfilePage() {
                 className="bg-muted"
                 data-testid="input-email"
               />
-              <p className="text-xs text-muted-foreground">El correo no se puede modificar</p>
+              <p className="text-xs text-muted-foreground">{t("profile.emailCannotChange")}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">Nombre</Label>
+                <Label htmlFor="firstName">{t("profile.firstName")}</Label>
                 <Input
                   id="firstName"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="Tu nombre"
+                  placeholder={t("profile.firstNamePlaceholder")}
                   className="bg-card border-border"
                   data-testid="input-first-name"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Apellidos</Label>
+                <Label htmlFor="lastName">{t("profile.lastName")}</Label>
                 <Input
                   id="lastName"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Tus apellidos"
+                  placeholder={t("profile.lastNamePlaceholder")}
                   className="bg-card border-border"
                   data-testid="input-last-name"
                 />
@@ -128,7 +130,7 @@ export default function ProfilePage() {
             <div className="space-y-2">
               <Label htmlFor="phone" className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-muted-foreground" />
-                Teléfono / WhatsApp
+                {t("profile.phoneWhatsapp")}
               </Label>
               <Input
                 id="phone"
@@ -141,7 +143,7 @@ export default function ProfilePage() {
                 data-testid="input-phone"
               />
               <p className="text-xs text-muted-foreground">
-                Este teléfono se usará para que te contacten por tus viajes
+                {t("profile.phoneHint")}
               </p>
             </div>
 
@@ -154,12 +156,12 @@ export default function ProfilePage() {
               {isSaving ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Guardando...
+                  {t("common.saving")}
                 </>
               ) : (
                 <>
                   <Save className="h-4 w-4 mr-2" />
-                  Guardar cambios
+                  {t("common.saveChanges")}
                 </>
               )}
             </Button>

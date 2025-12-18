@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { type Ride, type DriverRating } from "@shared/schema";
 import { Car, MapPin, Calendar, Clock, Users, MessageCircle, Search, Star } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { es, enUS } from "date-fns/locale";
 import { Link, useSearch } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { fetchRides, fetchDriverRating, recordRideContact } from "@/lib/api";
@@ -14,8 +14,10 @@ import { LocationAutocomplete } from "@/components/LocationAutocomplete";
 import { ReviewDialog } from "@/components/ReviewDialog";
 import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 export default function RidesPage() {
+  const { t, i18n } = useTranslation();
   const searchString = useSearch();
   
   const urlOrigin = useMemo(() => {
@@ -78,7 +80,7 @@ export default function RidesPage() {
   if (isLoading) {
     return (
       <div className="container px-4 md:px-6 py-12 text-center">
-        <p className="text-muted-foreground">Cargando viajes...</p>
+        <p className="text-muted-foreground">{t("common.loading")}</p>
       </div>
     );
   }
@@ -87,54 +89,54 @@ export default function RidesPage() {
     <div className="container px-4 md:px-6 py-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold font-serif text-foreground">Viajes disponibles</h1>
-          <p className="text-muted-foreground mt-2">Encuentra un vecino con quien compartir trayecto.</p>
+          <h1 className="text-3xl font-bold font-serif text-foreground">{t("rides.title")}</h1>
+          <p className="text-muted-foreground mt-2">{t("rides.subtitle")}</p>
         </div>
         <div className="hidden md:block text-sm text-muted-foreground bg-secondary/30 px-3 py-1 rounded-full">
-          {filteredRides.length} viajes encontrados
+          {t("rides.ridesFound", { count: filteredRides.length })}
         </div>
       </div>
 
       {/* Filter Bar */}
       <div className="bg-white p-4 rounded-2xl shadow-sm border border-border mb-8 grid gap-4 md:grid-cols-[1fr_1fr_auto_auto]">
         <div className="space-y-2">
-          <Label htmlFor="origin" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Origen</Label>
+          <Label htmlFor="origin" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">{t("rides.filter.origin")}</Label>
           <LocationAutocomplete
             id="origin"
-            placeholder="¿De dónde sales?"
+            placeholder={t("rides.filter.originPlaceholder")}
             value={filterOrigin}
             onChange={setFilterOrigin}
           />
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="dest" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Destino</Label>
+          <Label htmlFor="dest" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">{t("rides.filter.destination")}</Label>
           <LocationAutocomplete
             id="dest"
-            placeholder="¿A dónde vas?"
+            placeholder={t("rides.filter.destinationPlaceholder")}
             value={filterDest}
             onChange={setFilterDest}
           />
         </div>
         
         <div className="space-y-2 min-w-[180px]">
-          <Label htmlFor="date" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">Fecha</Label>
+          <Label htmlFor="date" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">{t("rides.filter.date")}</Label>
           <Select value={filterDate} onValueChange={setFilterDate}>
             <SelectTrigger className="bg-card border-border">
-              <SelectValue placeholder="Cualquier fecha" />
+              <SelectValue placeholder={t("rides.filter.anyDate")} />
             </SelectTrigger>
             <SelectContent className="bg-white">
-              <SelectItem value="all">Cualquier fecha</SelectItem>
-              <SelectItem value="today">Hoy</SelectItem>
-              <SelectItem value="tomorrow">Mañana</SelectItem>
-              <SelectItem value="upcoming">Próximos días</SelectItem>
+              <SelectItem value="all">{t("rides.filter.anyDate")}</SelectItem>
+              <SelectItem value="today">{t("rides.filter.today")}</SelectItem>
+              <SelectItem value="tomorrow">{t("rides.filter.tomorrow")}</SelectItem>
+              <SelectItem value="upcoming">{t("rides.filter.upcoming")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div className="flex items-end">
           <Button className="w-full md:w-auto bg-primary hover:bg-[#70b681]">
-            <Search className="mr-2 h-4 w-4" /> Filtrar
+            <Search className="mr-2 h-4 w-4" /> {t("common.filter")}
           </Button>
         </div>
       </div>
@@ -148,10 +150,10 @@ export default function RidesPage() {
         ) : (
           <div className="col-span-full text-center py-16 bg-secondary/20 rounded-xl border border-dashed">
             <Car className="h-12 w-12 mx-auto text-muted-foreground mb-3 opacity-50" />
-            <h3 className="text-lg font-medium">No hay viajes con estos filtros</h3>
-            <p className="text-muted-foreground mb-6">¡Sé el primero en publicar uno!</p>
+            <h3 className="text-lg font-medium">{t("rides.noRides")}</h3>
+            <p className="text-muted-foreground mb-6">{t("rides.beFirst")}</p>
             <Link href="/publicar">
-              <Button>Publicar viaje</Button>
+              <Button>{t("rides.card.publishRide")}</Button>
             </Link>
           </div>
         )}
@@ -161,6 +163,7 @@ export default function RidesPage() {
 }
 
 function DriverRatingDisplay({ driverProfileId }: { driverProfileId: number | null }) {
+  const { t } = useTranslation();
   const { data: rating } = useQuery({
     queryKey: ["driverRating", driverProfileId],
     queryFn: () => driverProfileId ? fetchDriverRating(driverProfileId) : Promise.resolve({ averageStars: 0, totalReviews: 0 }),
@@ -168,7 +171,7 @@ function DriverRatingDisplay({ driverProfileId }: { driverProfileId: number | nu
   });
 
   if (!driverProfileId || !rating || rating.totalReviews === 0) {
-    return <span className="text-xs text-muted-foreground">(nuevo)</span>;
+    return <span className="text-xs text-muted-foreground">({t("rides.card.new")})</span>;
   }
 
   return (
@@ -186,6 +189,7 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
   onEdit?: (ride: Ride) => void;
   onDelete?: (ride: Ride) => void;
 }) {
+  const { t, i18n } = useTranslation();
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const { isAuthenticated, user } = useAuth();
   const { toast } = useToast();
@@ -194,7 +198,9 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
   
   const formatDate = (dateStr: string) => {
     try {
-      return format(new Date(dateStr), "d 'de' MMMM", { locale: es });
+      const locale = i18n.language === 'en' ? enUS : es;
+      const formatStr = i18n.language === 'en' ? "MMMM d" : "d 'de' MMMM";
+      return format(new Date(dateStr), formatStr, { locale });
     } catch (e) {
       return dateStr;
     }
@@ -223,7 +229,7 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
         <CardContent className="pt-6 space-y-4">
           {isOwnRide && (
             <div className="text-xs font-bold text-primary uppercase tracking-wide">
-              Mi viaje publicado
+              {t("rides.card.myPublishedRide")}
             </div>
           )}
           <div className="flex justify-between items-start">
@@ -257,7 +263,7 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
                     className="text-xs text-primary hover:underline"
                     data-testid={`button-review-${ride.id}`}
                   >
-                    Valorar
+                    {t("rides.card.rate")}
                   </button>
                 )}
               </div>
@@ -274,7 +280,7 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
 
           <div className="flex items-center justify-between pt-2">
             <span className={`text-sm font-medium px-3 py-1 rounded-full ${isOwnRide ? "bg-white text-primary" : "bg-primary/15 text-primary"}`} data-testid={`text-seats-${ride.id}`}>
-              {ride.seats} plazas libres
+              {t("rides.card.freeSeats", { count: ride.seats })}
             </span>
             {isOwnRide ? (
               <div className="flex gap-2">
@@ -286,7 +292,7 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
                     onClick={() => onDelete(ride)}
                     data-testid={`button-delete-${ride.id}`}
                   >
-                    Eliminar
+                    {t("common.delete")}
                   </Button>
                 )}
                 {onEdit && (
@@ -296,7 +302,7 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
                     onClick={() => onEdit(ride)}
                     data-testid={`button-edit-${ride.id}`}
                   >
-                    Editar
+                    {t("common.edit")}
                   </Button>
                 )}
               </div>
@@ -307,7 +313,7 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
                 onClick={handleContact}
                 data-testid={`button-contact-${ride.id}`}
               >
-                <MessageCircle className="mr-2 h-4 w-4" /> Contactar
+                <MessageCircle className="mr-2 h-4 w-4" /> {t("rides.card.contact")}
               </Button>
             )}
           </div>

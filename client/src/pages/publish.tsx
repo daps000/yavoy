@@ -13,8 +13,10 @@ import { createRide } from "@/lib/api";
 import { LocationAutocomplete } from "@/components/LocationAutocomplete";
 import { useAuth } from "@/lib/auth-context";
 import { saveDraft, loadDraft, isDraftPending, clearDraft } from "@/lib/publish-draft";
+import { useTranslation } from "react-i18next";
 
 export default function PublishPage() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
@@ -44,8 +46,8 @@ export default function PublishPage() {
       queryClient.invalidateQueries({ queryKey: ["rides"] });
       queryClient.invalidateQueries({ queryKey: ["my-rides"] });
       toast({
-        title: "¡Viaje publicado!",
-        description: "Tu viaje ya está visible para otros vecinos. ¡Gracias por compartir!",
+        title: t("publish.success.title"),
+        description: t("publish.success.description"),
         action: <CheckCircle2 className="h-6 w-6 text-green-500" />,
         duration: 5000,
       });
@@ -53,8 +55,8 @@ export default function PublishPage() {
     },
     onError: (error) => {
       toast({
-        title: "Error",
-        description: error.message || "No se pudo publicar el viaje. Inténtalo de nuevo.",
+        title: t("common.error"),
+        description: error.message || t("publish.error.generic"),
         variant: "destructive",
       });
     },
@@ -75,8 +77,8 @@ export default function PublishPage() {
       if (isAuthenticated && isDraftPending() && !hasAttemptedAutoSubmit.current) {
         hasAttemptedAutoSubmit.current = true;
         toast({
-          title: "Borrador restaurado",
-          description: "Pulsa 'Publicar' para completar la publicación de tu viaje.",
+          title: t("publish.draftRestored.title"),
+          description: t("publish.draftRestored.description"),
           duration: 5000,
         });
       }
@@ -90,8 +92,8 @@ export default function PublishPage() {
     
     if (!finalName || !origin || !destination || !date || !time) {
       toast({
-        title: "Faltan datos",
-        description: "Por favor, rellena todos los campos obligatorios.",
+        title: t("publish.error.missingData"),
+        description: t("publish.error.fillRequired"),
         variant: "destructive",
       });
       return false;
@@ -99,8 +101,8 @@ export default function PublishPage() {
     
     if (!finalPhone) {
       toast({
-        title: "Falta el teléfono",
-        description: "Por favor, añade un número de teléfono para que puedan contactarte.",
+        title: t("publish.error.missingPhone"),
+        description: t("publish.error.addPhone"),
         variant: "destructive",
       });
       return false;
@@ -146,7 +148,7 @@ export default function PublishPage() {
   if (authLoading || isRestoringDraft) {
     return (
       <div className="container px-4 md:px-6 py-12 text-center">
-        <p className="text-muted-foreground">Cargando...</p>
+        <p className="text-muted-foreground">{t("common.loading")}</p>
       </div>
     );
   }
@@ -154,8 +156,8 @@ export default function PublishPage() {
   return (
     <div className="container px-4 md:px-6 py-12 max-w-2xl mx-auto">
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold font-serif text-foreground mb-3">Publicar un viaje</h1>
-        <p className="text-muted-foreground">Comparte tu coche y ayuda a tus vecinos a moverse.</p>
+        <h1 className="text-3xl font-bold font-serif text-foreground mb-3">{t("publish.title")}</h1>
+        <p className="text-muted-foreground">{t("publish.subtitle")}</p>
       </div>
 
       <Card className="border border-border shadow-lg bg-white">
@@ -166,15 +168,15 @@ export default function PublishPage() {
                 <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 flex items-center gap-3">
                   <User className="h-5 w-5 text-primary shrink-0" />
                   <div className="text-sm">
-                    <p className="font-medium text-foreground">Publicando como: {profileName}</p>
+                    <p className="font-medium text-foreground">{t("publish.form.publishingAs")}: {profileName}</p>
                     {profilePhone && (
-                      <p className="text-muted-foreground">Teléfono: {profilePhone}</p>
+                      <p className="text-muted-foreground">{t("publish.form.phone")}: {profilePhone}</p>
                     )}
                   </div>
                 </div>
                 {!profilePhone && (
                   <div className="space-y-2">
-                    <Label htmlFor="contact-auth">Teléfono / WhatsApp</Label>
+                    <Label htmlFor="contact-auth">{t("publish.form.phoneWhatsapp")}</Label>
                     <Input 
                       id="contact-auth" 
                       name="contact" 
@@ -187,18 +189,18 @@ export default function PublishPage() {
                       onChange={(e) => setContact(e.target.value)}
                       data-testid="input-contact-auth"
                     />
-                    <p className="text-xs text-muted-foreground">Este número se guardará en tu perfil para futuros viajes.</p>
+                    <p className="text-xs text-muted-foreground">{t("publish.form.phoneWillBeSaved")}</p>
                   </div>
                 )}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Tu Nombre</Label>
+                  <Label htmlFor="name">{t("publish.form.yourName")}</Label>
                   <Input 
                     id="name" 
                     name="name" 
-                    placeholder="Ej. María" 
+                    placeholder={t("publish.form.namePlaceholder")} 
                     required 
                     className="bg-card border-border"
                     value={driverName}
@@ -207,7 +209,7 @@ export default function PublishPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="contact">Teléfono / WhatsApp</Label>
+                  <Label htmlFor="contact">{t("publish.form.phoneWhatsapp")}</Label>
                   <Input 
                     id="contact" 
                     name="contact" 
@@ -226,19 +228,19 @@ export default function PublishPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="origin_form">Origen</Label>
+                <Label htmlFor="origin_form">{t("publish.form.origin")}</Label>
                 <LocationAutocomplete
                   id="origin_form"
-                  placeholder="Pueblo de salida"
+                  placeholder={t("publish.form.originPlaceholder")}
                   value={origin}
                   onChange={setOrigin}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="destination_form">Destino</Label>
+                <Label htmlFor="destination_form">{t("publish.form.destination")}</Label>
                 <LocationAutocomplete
                   id="destination_form"
-                  placeholder="Pueblo o ciudad de llegada"
+                  placeholder={t("publish.form.destinationPlaceholder")}
                   value={destination}
                   onChange={setDestination}
                 />
@@ -247,7 +249,7 @@ export default function PublishPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="date_form">Fecha</Label>
+                <Label htmlFor="date_form">{t("publish.form.date")}</Label>
                 <Input 
                   id="date_form" 
                   name="date" 
@@ -262,7 +264,7 @@ export default function PublishPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="time_form">Hora</Label>
+                <Label htmlFor="time_form">{t("publish.form.time")}</Label>
                 <Input 
                   id="time_form" 
                   name="time" 
@@ -275,7 +277,7 @@ export default function PublishPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="seats">Plazas libres</Label>
+                <Label htmlFor="seats">{t("publish.form.seats")}</Label>
                 <Input 
                   id="seats" 
                   name="seats" 
@@ -292,11 +294,11 @@ export default function PublishPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notes">Notas (opcional)</Label>
+              <Label htmlFor="notes">{t("publish.form.notes")}</Label>
               <Textarea 
                 id="notes" 
                 name="notes" 
-                placeholder="Ej. Vuelvo sobre las 18h, salgo de la plaza, llevo maletero vacío..." 
+                placeholder={t("publish.form.notesPlaceholder")} 
                 className="resize-none bg-card border-border"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
@@ -310,13 +312,13 @@ export default function PublishPage() {
               disabled={mutation.isPending}
               data-testid="button-publish"
             >
-              {mutation.isPending ? "Publicando..." : "Publicar viaje ahora"}
+              {mutation.isPending ? t("publish.form.publishing") : t("publish.form.publishNow")}
             </Button>
 
             {!isAuthenticated && (
               <div className="flex items-center gap-2 justify-center text-sm text-muted-foreground mt-3">
                 <LogIn className="h-4 w-4" />
-                <p>Al pulsar publicar te pediremos iniciar sesión para gestionar tu viaje después.</p>
+                <p>{t("publish.form.loginHint")}</p>
               </div>
             )}
           </form>

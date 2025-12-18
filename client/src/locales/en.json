@@ -3,18 +3,23 @@
     "loading": "Loading...",
     "error": "Error",
     "save": "Save",
+    "saveChanges": "Save changes",
+    "saving": "Saving...",
     "cancel": "Cancel",
     "delete": "Delete",
+    "deleting": "Deleting...",
     "edit": "Edit",
     "close": "Close",
     "confirm": "Confirm",
     "back": "Back",
     "next": "Next",
     "search": "Search",
+    "filter": "Filter",
     "seats": "seats",
     "seat": "seat",
     "free": "free",
-    "available": "available"
+    "available": "available",
+    "user": "User"
   },
   "nav": {
     "home": "Home",
@@ -24,89 +29,165 @@
     "profile": "My profile",
     "login": "Sign in",
     "logout": "Sign out",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "menu": "Navigation menu"
   },
   "home": {
-    "heroTitle": "Share rides with your neighbors",
-    "heroSubtitle": "We connect rural neighbors to travel together. No hassle, no online payments.",
-    "searchTitle": "Where do you want to go?",
-    "originPlaceholder": "Where are you leaving from?",
-    "destinationPlaceholder": "Where are you going?",
-    "datePlaceholder": "When?",
-    "searchButton": "Search rides",
-    "publishButton": "Publish a ride",
-    "howItWorks": "How does it work?",
-    "step1Title": "Search or publish",
-    "step1Desc": "Find a ride that suits you or publish your own",
-    "step2Title": "Contact via WhatsApp",
-    "step2Desc": "Talk directly with the driver or passenger",
-    "step3Title": "Travel together",
-    "step3Desc": "Share costs and enjoy the journey"
+    "hero": {
+      "title": "Travel between villages",
+      "titleHighlight": "by sharing rides",
+      "subtitle": "YaVoy connects neighbors who need to go to the doctor, market, or city with those already driving. Less expenses, more community.",
+      "imageAlt": "Rural road"
+    },
+    "search": {
+      "title": "Search available rides",
+      "from": "From",
+      "to": "To"
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "subtitle": "As simple as asking a neighbor for a favor",
+      "step1": {
+        "title": "Publish your ride",
+        "description": "Indicate where you're leaving from, where you're going, and how many free seats you have."
+      },
+      "step2": {
+        "title": "Connect via WhatsApp",
+        "description": "Interested people will see your ride and message you directly."
+      },
+      "step3": {
+        "title": "Share the journey",
+        "description": "Travel together, keep each other company, and share gas costs."
+      }
+    },
+    "publish": {
+      "title": "Publish your ride",
+      "subtitle": "Going somewhere? Share your journey with neighbors.",
+      "description": "If you're making a trip and have room in your car, publish it so other neighbors can join you.",
+      "button": "Publish a ride"
+    }
   },
   "rides": {
     "title": "Available rides",
-    "noRides": "No rides available at the moment",
-    "noRidesMatch": "No rides match your search",
-    "filterOrigin": "Filter by origin",
-    "filterDestination": "Filter by destination",
-    "filterDate": "Filter by date",
-    "clearFilters": "Clear filters",
-    "contactDriver": "Contact",
-    "rateDriver": "Rate",
-    "departure": "Departure",
-    "driver": "Driver",
-    "notes": "Notes",
-    "reviews": "reviews",
-    "review": "review"
+    "subtitle": "Find a neighbor to share your journey with.",
+    "ridesFound": "{{count}} rides found",
+    "noRides": "No rides match these filters",
+    "beFirst": "Be the first to publish one!",
+    "filter": {
+      "origin": "Origin",
+      "originPlaceholder": "Where are you leaving from?",
+      "destination": "Destination",
+      "destinationPlaceholder": "Where are you going?",
+      "date": "Date",
+      "anyDate": "Any date",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "upcoming": "Coming days"
+    },
+    "card": {
+      "new": "new",
+      "rate": "Rate",
+      "contact": "Contact",
+      "freeSeats": "{{count}} free seats",
+      "myPublishedRide": "My published ride",
+      "publishRide": "Publish ride"
+    }
   },
   "publish": {
     "title": "Publish a ride",
-    "subtitle": "Share your ride with neighbors in the area",
-    "driverName": "Your name",
-    "driverNamePlaceholder": "How do you want to be called",
-    "origin": "Where are you leaving from?",
-    "originPlaceholder": "Departure town or city",
-    "destination": "Where are you going?",
-    "destinationPlaceholder": "Destination town or city",
-    "date": "Travel date",
-    "time": "Departure time",
-    "seats": "Available seats",
-    "seatsPlaceholder": "Number of seats",
-    "contact": "Contact phone",
-    "contactPlaceholder": "612345678",
-    "notes": "Additional notes (optional)",
-    "notesPlaceholder": "E.g.: I can pick you up, I have luggage...",
-    "publishButton": "Publish ride",
-    "publishing": "Publishing...",
-    "success": "Ride published!",
-    "successMessage": "Your ride is now visible to other users",
-    "loginRequired": "Sign in to publish",
-    "loginMessage": "You need an account to publish and manage rides",
-    "loginButton": "Sign in"
+    "subtitle": "Share your car and help your neighbors get around.",
+    "form": {
+      "publishingAs": "Publishing as",
+      "phone": "Phone",
+      "phoneWhatsapp": "Phone / WhatsApp",
+      "phoneWillBeSaved": "This number will be saved to your profile for future rides.",
+      "yourName": "Your Name",
+      "namePlaceholder": "E.g. Maria",
+      "origin": "Origin",
+      "originPlaceholder": "Departure town",
+      "destination": "Destination",
+      "destinationPlaceholder": "Arrival town or city",
+      "date": "Date",
+      "time": "Time",
+      "seats": "Free seats",
+      "notes": "Notes (optional)",
+      "notesPlaceholder": "E.g. Returning around 6pm, leaving from the square, empty trunk...",
+      "publishing": "Publishing...",
+      "publishNow": "Publish ride now",
+      "loginHint": "When you click publish, you'll be asked to sign in to manage your ride later."
+    },
+    "success": {
+      "title": "Ride published!",
+      "description": "Your ride is now visible to other neighbors. Thanks for sharing!"
+    },
+    "error": {
+      "generic": "Could not publish the ride. Please try again.",
+      "missingData": "Missing data",
+      "fillRequired": "Please fill in all required fields.",
+      "missingPhone": "Phone missing",
+      "addPhone": "Please add a phone number so people can contact you."
+    },
+    "draftRestored": {
+      "title": "Draft restored",
+      "description": "Click 'Publish' to complete publishing your ride."
+    }
   },
   "myRides": {
     "title": "My published rides",
-    "noRides": "You have no published rides",
-    "noRidesMessage": "Publish a ride to share with your neighbors",
-    "publishFirst": "Publish my first ride",
-    "editRide": "Edit ride",
-    "deleteRide": "Delete ride",
-    "deleteConfirm": "Are you sure you want to delete this ride?",
-    "deleteSuccess": "Ride deleted",
-    "updateSuccess": "Ride updated",
-    "loginRequired": "Sign in to view your rides"
+    "subtitle": "Manage your published rides.",
+    "loading": "Loading your rides...",
+    "publishNew": "Publish new ride",
+    "noRides": {
+      "title": "You have no published rides",
+      "description": "Publish your first ride to share your car!"
+    },
+    "loginRequired": {
+      "title": "Sign in to view your rides",
+      "description": "You need an account to manage your published rides."
+    },
+    "welcome": {
+      "neighbor": "neighbor",
+      "title": "Welcome, {{name}}!",
+      "description": "You can now publish and manage your rides."
+    },
+    "deleted": {
+      "title": "Ride deleted",
+      "description": "Your ride has been deleted successfully.",
+      "error": "Could not delete the ride."
+    },
+    "updated": {
+      "title": "Ride updated",
+      "description": "Changes have been saved successfully.",
+      "error": "Could not save changes."
+    },
+    "edit": {
+      "title": "Edit ride",
+      "description": "Modify the details of your published ride.",
+      "availableSeats": "Available seats",
+      "notesPlaceholder": "Additional information about the ride..."
+    },
+    "delete": {
+      "title": "Delete this ride?",
+      "description": "This action cannot be undone. The ride will be permanently deleted."
+    }
   },
   "profile": {
     "title": "My profile",
-    "firstName": "First name",
-    "lastName": "Last name",
+    "subtitle": "Manage your personal data",
+    "personalData": "Personal data",
     "email": "Email",
-    "phone": "Phone",
-    "phonePlaceholder": "612345678",
-    "saveChanges": "Save changes",
-    "saving": "Saving...",
-    "saved": "Profile saved",
-    "loginRequired": "Sign in to view your profile"
+    "emailCannotChange": "Email cannot be changed",
+    "firstName": "First name",
+    "firstNamePlaceholder": "Your first name",
+    "lastName": "Last name",
+    "lastNamePlaceholder": "Your last name",
+    "phoneWhatsapp": "Phone / WhatsApp",
+    "phoneHint": "This phone will be used for ride contacts",
+    "updated": {
+      "title": "Profile updated",
+      "description": "Your data has been saved successfully.",
+      "error": "Could not save profile"
+    }
   },
   "auth": {
     "loginTitle": "Sign in to YaVoy",
@@ -163,20 +244,34 @@
   },
   "faq": {
     "title": "Frequently Asked Questions",
-    "q1": "How does YaVoy work?",
-    "a1": "YaVoy connects neighbors who need transportation with drivers already making the same trip. You search for a ride, contact via WhatsApp, and agree on the details.",
-    "q2": "Is YaVoy free to use?",
-    "a2": "Yes, YaVoy is completely free. Travel costs (gas, tolls) are agreed directly between you.",
-    "q3": "How do I contact a driver?",
-    "a3": "Each ride has a contact button that opens WhatsApp directly with the driver.",
-    "q4": "Is it safe?",
-    "a4": "YaVoy is designed for rural communities where people know each other. Plus, you can see ratings from other users.",
-    "q5": "How do I publish a ride?",
-    "a5": "Sign in with your account, go to 'Publish ride' and fill in the details: origin, destination, date, time, and available seats."
+    "subtitle": "We answer your questions about how YaVoy works.",
+    "questions": {
+      "transport": {
+        "question": "Is YaVoy a transport company?",
+        "answer": "No, YaVoy is just a tool to connect neighbors. We don't have hired drivers or a fleet of cars. These are private individuals sharing their regular routes."
+      },
+      "payment": {
+        "question": "Do I have to pay to use YaVoy?",
+        "answer": "Using the website is completely free. Travel costs (gas) are agreed directly between driver and passenger. YaVoy takes no commission."
+      },
+      "contact": {
+        "question": "How do I contact the driver?",
+        "answer": "On each ride, you'll see a WhatsApp button or phone number. Contact the person directly to confirm pickup time and location."
+      },
+      "costs": {
+        "question": "Is sharing costs mandatory?",
+        "answer": "It's common and fair, but it depends on each driver. Some just want company, others need help with gas. Discuss it before leaving."
+      },
+      "cancel": {
+        "question": "What if I want to cancel a ride?",
+        "answer": "Please notify as soon as possible. Message or call the person you had arranged with. As a neighborhood network, communication and respect are fundamental."
+      }
+    }
   },
   "footer": {
-    "tagline": "Connecting rural neighbors",
-    "copyright": "© {{year}} YaVoy. Made with ❤️ for rural communities."
+    "disclaimer": "YaVoy is a pilot in testing phase. We connect people, we don't operate transport.",
+    "madeWith": "Made with",
+    "forOurVillages": "for our villages"
   },
   "location": {
     "useCurrentLocation": "Use current location",

@@ -3,18 +3,23 @@
     "loading": "Cargando...",
     "error": "Error",
     "save": "Guardar",
+    "saveChanges": "Guardar cambios",
+    "saving": "Guardando...",
     "cancel": "Cancelar",
     "delete": "Eliminar",
+    "deleting": "Eliminando...",
     "edit": "Editar",
     "close": "Cerrar",
     "confirm": "Confirmar",
     "back": "Volver",
     "next": "Siguiente",
     "search": "Buscar",
+    "filter": "Filtrar",
     "seats": "plazas",
     "seat": "plaza",
     "free": "libres",
-    "available": "disponible"
+    "available": "disponible",
+    "user": "Usuario"
   },
   "nav": {
     "home": "Inicio",
@@ -22,91 +27,167 @@
     "publish": "Publicar viaje",
     "myRides": "Mis viajes",
     "profile": "Mi perfil",
-    "login": "Entrar",
+    "login": "Iniciar sesión",
     "logout": "Cerrar sesión",
-    "faq": "Preguntas frecuentes"
+    "faq": "Preguntas frecuentes",
+    "menu": "Menú de navegación"
   },
   "home": {
-    "heroTitle": "Comparte coche con tus vecinos",
-    "heroSubtitle": "Conectamos a vecinos del medio rural para viajar juntos. Sin complicaciones, sin pagos online.",
-    "searchTitle": "¿A dónde quieres ir?",
-    "originPlaceholder": "¿Desde dónde sales?",
-    "destinationPlaceholder": "¿A dónde vas?",
-    "datePlaceholder": "¿Cuándo?",
-    "searchButton": "Buscar viajes",
-    "publishButton": "Publicar un viaje",
-    "howItWorks": "¿Cómo funciona?",
-    "step1Title": "Busca o publica",
-    "step1Desc": "Encuentra un viaje que te convenga o publica el tuyo",
-    "step2Title": "Contacta por WhatsApp",
-    "step2Desc": "Habla directamente con el conductor o pasajero",
-    "step3Title": "Viaja juntos",
-    "step3Desc": "Comparte gastos y disfruta del camino"
+    "hero": {
+      "title": "Muévete entre pueblos",
+      "titleHighlight": "compartiendo coche",
+      "subtitle": "YaVoy conecta a vecinas y vecinos que necesitan ir al médico, al mercado o a la ciudad con quienes ya van en coche. Menos gastos, más comunidad.",
+      "imageAlt": "Carretera rural"
+    },
+    "search": {
+      "title": "Busca viajes disponibles",
+      "from": "De",
+      "to": "A"
+    },
+    "howItWorks": {
+      "title": "Cómo funciona",
+      "subtitle": "Tan simple como pedirle un favor a un vecino",
+      "step1": {
+        "title": "Publica tu viaje",
+        "description": "Indica de dónde sales, a dónde vas y cuántos sitios libres tienes en el coche."
+      },
+      "step2": {
+        "title": "Conecta por WhatsApp",
+        "description": "Las personas interesadas verán tu viaje y te escribirán directamente."
+      },
+      "step3": {
+        "title": "Compartís el trayecto",
+        "description": "Viajáis juntos, os hacéis compañía y compartís los gastos de gasolina."
+      }
+    },
+    "publish": {
+      "title": "Publica tu viaje",
+      "subtitle": "¿Vas a algún sitio? Comparte tu trayecto con vecinos.",
+      "description": "Si vas a hacer un viaje y tienes sitio en el coche, publícalo para que otros vecinos puedan acompañarte.",
+      "button": "Publicar un viaje"
+    }
   },
   "rides": {
     "title": "Viajes disponibles",
-    "noRides": "No hay viajes disponibles en este momento",
-    "noRidesMatch": "No hay viajes que coincidan con tu búsqueda",
-    "filterOrigin": "Filtrar por origen",
-    "filterDestination": "Filtrar por destino",
-    "filterDate": "Filtrar por fecha",
-    "clearFilters": "Limpiar filtros",
-    "contactDriver": "Contactar",
-    "rateDriver": "Valorar",
-    "departure": "Salida",
-    "driver": "Conductor",
-    "notes": "Notas",
-    "reviews": "valoraciones",
-    "review": "valoración"
+    "subtitle": "Encuentra un vecino con quien compartir trayecto.",
+    "ridesFound": "{{count}} viajes encontrados",
+    "noRides": "No hay viajes con estos filtros",
+    "beFirst": "¡Sé el primero en publicar uno!",
+    "filter": {
+      "origin": "Origen",
+      "originPlaceholder": "¿De dónde sales?",
+      "destination": "Destino",
+      "destinationPlaceholder": "¿A dónde vas?",
+      "date": "Fecha",
+      "anyDate": "Cualquier fecha",
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "upcoming": "Próximos días"
+    },
+    "card": {
+      "new": "nuevo",
+      "rate": "Valorar",
+      "contact": "Contactar",
+      "freeSeats": "{{count}} plazas libres",
+      "myPublishedRide": "Mi viaje publicado",
+      "publishRide": "Publicar viaje"
+    }
   },
   "publish": {
     "title": "Publicar un viaje",
-    "subtitle": "Comparte tu viaje con vecinos de la zona",
-    "driverName": "Tu nombre",
-    "driverNamePlaceholder": "Cómo quieres que te llamen",
-    "origin": "¿Desde dónde sales?",
-    "originPlaceholder": "Pueblo o ciudad de salida",
-    "destination": "¿A dónde vas?",
-    "destinationPlaceholder": "Pueblo o ciudad de destino",
-    "date": "Fecha del viaje",
-    "time": "Hora de salida",
-    "seats": "Plazas libres",
-    "seatsPlaceholder": "Número de plazas",
-    "contact": "Teléfono de contacto",
-    "contactPlaceholder": "612345678",
-    "notes": "Notas adicionales (opcional)",
-    "notesPlaceholder": "Ej: Puedo pasar a recogerte, llevo equipaje...",
-    "publishButton": "Publicar viaje",
-    "publishing": "Publicando...",
-    "success": "¡Viaje publicado!",
-    "successMessage": "Tu viaje ya está visible para otros usuarios",
-    "loginRequired": "Inicia sesión para publicar",
-    "loginMessage": "Necesitas una cuenta para publicar viajes y gestionarlos",
-    "loginButton": "Iniciar sesión"
+    "subtitle": "Comparte tu coche y ayuda a tus vecinos a moverse.",
+    "form": {
+      "publishingAs": "Publicando como",
+      "phone": "Teléfono",
+      "phoneWhatsapp": "Teléfono / WhatsApp",
+      "phoneWillBeSaved": "Este número se guardará en tu perfil para futuros viajes.",
+      "yourName": "Tu Nombre",
+      "namePlaceholder": "Ej. María",
+      "origin": "Origen",
+      "originPlaceholder": "Pueblo de salida",
+      "destination": "Destino",
+      "destinationPlaceholder": "Pueblo o ciudad de llegada",
+      "date": "Fecha",
+      "time": "Hora",
+      "seats": "Plazas libres",
+      "notes": "Notas (opcional)",
+      "notesPlaceholder": "Ej. Vuelvo sobre las 18h, salgo de la plaza, llevo maletero vacío...",
+      "publishing": "Publicando...",
+      "publishNow": "Publicar viaje ahora",
+      "loginHint": "Al pulsar publicar te pediremos iniciar sesión para gestionar tu viaje después."
+    },
+    "success": {
+      "title": "¡Viaje publicado!",
+      "description": "Tu viaje ya está visible para otros vecinos. ¡Gracias por compartir!"
+    },
+    "error": {
+      "generic": "No se pudo publicar el viaje. Inténtalo de nuevo.",
+      "missingData": "Faltan datos",
+      "fillRequired": "Por favor, rellena todos los campos obligatorios.",
+      "missingPhone": "Falta el teléfono",
+      "addPhone": "Por favor, añade un número de teléfono para que puedan contactarte."
+    },
+    "draftRestored": {
+      "title": "Borrador restaurado",
+      "description": "Pulsa 'Publicar' para completar la publicación de tu viaje."
+    }
   },
   "myRides": {
     "title": "Mis viajes publicados",
-    "noRides": "No tienes viajes publicados",
-    "noRidesMessage": "Publica un viaje para compartir coche con tus vecinos",
-    "publishFirst": "Publicar mi primer viaje",
-    "editRide": "Editar viaje",
-    "deleteRide": "Eliminar viaje",
-    "deleteConfirm": "¿Seguro que quieres eliminar este viaje?",
-    "deleteSuccess": "Viaje eliminado",
-    "updateSuccess": "Viaje actualizado",
-    "loginRequired": "Inicia sesión para ver tus viajes"
+    "subtitle": "Gestiona los viajes que has publicado.",
+    "loading": "Cargando tus viajes...",
+    "publishNew": "Publicar nuevo viaje",
+    "noRides": {
+      "title": "No tienes viajes publicados",
+      "description": "¡Publica tu primer viaje para compartir coche!"
+    },
+    "loginRequired": {
+      "title": "Inicia sesión para ver tus viajes",
+      "description": "Necesitas una cuenta para gestionar tus viajes publicados."
+    },
+    "welcome": {
+      "neighbor": "vecino",
+      "title": "¡Bienvenido, {{name}}!",
+      "description": "Ya puedes publicar y gestionar tus viajes."
+    },
+    "deleted": {
+      "title": "Viaje eliminado",
+      "description": "Tu viaje ha sido eliminado correctamente.",
+      "error": "No se pudo eliminar el viaje."
+    },
+    "updated": {
+      "title": "Viaje actualizado",
+      "description": "Los cambios se han guardado correctamente.",
+      "error": "No se pudieron guardar los cambios."
+    },
+    "edit": {
+      "title": "Editar viaje",
+      "description": "Modifica los detalles de tu viaje publicado.",
+      "availableSeats": "Plazas disponibles",
+      "notesPlaceholder": "Información adicional sobre el viaje..."
+    },
+    "delete": {
+      "title": "¿Eliminar este viaje?",
+      "description": "Esta acción no se puede deshacer. El viaje será eliminado permanentemente."
+    }
   },
   "profile": {
     "title": "Mi perfil",
+    "subtitle": "Gestiona tus datos personales",
+    "personalData": "Datos personales",
+    "email": "Correo electrónico",
+    "emailCannotChange": "El correo no se puede modificar",
     "firstName": "Nombre",
+    "firstNamePlaceholder": "Tu nombre",
     "lastName": "Apellidos",
-    "email": "Email",
-    "phone": "Teléfono",
-    "phonePlaceholder": "612345678",
-    "saveChanges": "Guardar cambios",
-    "saving": "Guardando...",
-    "saved": "Perfil guardado",
-    "loginRequired": "Inicia sesión para ver tu perfil"
+    "lastNamePlaceholder": "Tus apellidos",
+    "phoneWhatsapp": "Teléfono / WhatsApp",
+    "phoneHint": "Este teléfono se usará para que te contacten por tus viajes",
+    "updated": {
+      "title": "Perfil actualizado",
+      "description": "Tus datos se han guardado correctamente.",
+      "error": "No se pudo guardar el perfil"
+    }
   },
   "auth": {
     "loginTitle": "Entrar en YaVoy",
@@ -163,20 +244,34 @@
   },
   "faq": {
     "title": "Preguntas frecuentes",
-    "q1": "¿Cómo funciona YaVoy?",
-    "a1": "YaVoy conecta a vecinos que necesitan transporte con conductores que ya hacen el mismo trayecto. Buscas un viaje, contactas por WhatsApp y acordáis los detalles.",
-    "q2": "¿Es gratis usar YaVoy?",
-    "a2": "Sí, YaVoy es completamente gratis. Los gastos del viaje (gasolina, peajes) los acordáis directamente entre vosotros.",
-    "q3": "¿Cómo contacto con un conductor?",
-    "a3": "Cada viaje tiene un botón de contacto que abre WhatsApp directamente con el conductor.",
-    "q4": "¿Es seguro?",
-    "a4": "YaVoy está pensado para comunidades rurales donde la gente se conoce. Además, puedes ver las valoraciones de otros usuarios.",
-    "q5": "¿Cómo publico un viaje?",
-    "a5": "Entra con tu cuenta, ve a 'Publicar viaje' y rellena los datos: origen, destino, fecha, hora y plazas disponibles."
+    "subtitle": "Resolvemos tus dudas sobre cómo funciona YaVoy.",
+    "questions": {
+      "transport": {
+        "question": "¿YaVoy es una empresa de transporte?",
+        "answer": "No, YaVoy es solo una herramienta para conectar vecinos. No tenemos conductores contratados ni flota de coches. Son personas particulares compartiendo sus trayectos habituales."
+      },
+      "payment": {
+        "question": "¿Tengo que pagar algo por usar YaVoy?",
+        "answer": "Usar la web es totalmente gratis. Los gastos del viaje (gasolina) los acordáis directamente entre conductor y pasajero. YaVoy no cobra ninguna comisión."
+      },
+      "contact": {
+        "question": "¿Cómo contacto con la persona conductora?",
+        "answer": "En cada viaje verás un botón de WhatsApp o un teléfono. Contacta directamente con la persona para confirmar hora y lugar de recogida."
+      },
+      "costs": {
+        "question": "¿Es obligatorio compartir gastos?",
+        "answer": "Es lo habitual y lo justo, pero depende de cada conductor. Algunos solo buscan compañía, otros necesitan ayuda con la gasolina. Habladlo antes de salir."
+      },
+      "cancel": {
+        "question": "¿Qué pasa si quiero cancelar un viaje?",
+        "answer": "Por favor, avisa cuanto antes. Escribe o llama a la persona con la que habías quedado. Al ser una red vecinal, la comunicación y el respeto son fundamentales."
+      }
+    }
   },
   "footer": {
-    "tagline": "Conectando vecinos del medio rural",
-    "copyright": "© {{year}} YaVoy. Hecho con ❤️ para el medio rural."
+    "disclaimer": "YaVoy es un piloto en fase de pruebas. Conectamos personas, no operamos transporte.",
+    "madeWith": "Hecho con",
+    "forOurVillages": "para nuestros pueblos"
   },
   "location": {
     "useCurrentLocation": "Utilizar ubicación actual",

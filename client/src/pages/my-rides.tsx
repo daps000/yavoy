@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Car, Plus, PartyPopper } from "lucide-react";
 import { Link, useLocation, useSearch } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +32,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Ride } from "@shared/schema";
 
 export default function MyRidesPage() {
+  const { t } = useTranslation();
   const { isAuthenticated, profile, isLoading: authLoading } = useAuth();
   const [, navigate] = useLocation();
   const searchString = useSearch();
@@ -45,10 +47,10 @@ export default function MyRidesPage() {
     const params = new URLSearchParams(searchString);
     if (params.get("bienvenido") === "1" && !hasShownWelcome && isAuthenticated) {
       setHasShownWelcome(true);
-      const userName = profile?.firstName || "vecino";
+      const userName = profile?.firstName || t("myRides.welcome.neighbor");
       toast({
-        title: `¡Bienvenido, ${userName}!`,
-        description: "Ya puedes publicar y gestionar tus viajes.",
+        title: t("myRides.welcome.title", { name: userName }),
+        description: t("myRides.welcome.description"),
         action: <PartyPopper className="h-6 w-6 text-primary" />,
         duration: 5000,
       });
@@ -68,15 +70,15 @@ export default function MyRidesPage() {
       queryClient.invalidateQueries({ queryKey: ["my-rides"] });
       queryClient.invalidateQueries({ queryKey: ["rides"] });
       toast({
-        title: "Viaje eliminado",
-        description: "Tu viaje ha sido eliminado correctamente.",
+        title: t("myRides.deleted.title"),
+        description: t("myRides.deleted.description"),
       });
       setDeleteConfirmRide(null);
     },
     onError: (error: Error) => {
       toast({
-        title: "Error",
-        description: error.message || "No se pudo eliminar el viaje.",
+        title: t("common.error"),
+        description: error.message || t("myRides.deleted.error"),
         variant: "destructive",
       });
     },
@@ -88,15 +90,15 @@ export default function MyRidesPage() {
       queryClient.invalidateQueries({ queryKey: ["my-rides"] });
       queryClient.invalidateQueries({ queryKey: ["rides"] });
       toast({
-        title: "Viaje actualizado",
-        description: "Los cambios se han guardado correctamente.",
+        title: t("myRides.updated.title"),
+        description: t("myRides.updated.description"),
       });
       setEditingRide(null);
     },
     onError: (error: Error) => {
       toast({
-        title: "Error",
-        description: error.message || "No se pudieron guardar los cambios.",
+        title: t("common.error"),
+        description: error.message || t("myRides.updated.error"),
         variant: "destructive",
       });
     },
@@ -130,7 +132,7 @@ export default function MyRidesPage() {
   if (authLoading) {
     return (
       <div className="container px-4 md:px-6 py-12 text-center">
-        <p className="text-muted-foreground">Cargando...</p>
+        <p className="text-muted-foreground">{t("common.loading")}</p>
       </div>
     );
   }
@@ -140,12 +142,12 @@ export default function MyRidesPage() {
       <div className="container px-4 md:px-6 py-12">
         <div className="text-center py-16 bg-secondary/20 rounded-xl border border-dashed">
           <Car className="h-12 w-12 mx-auto text-muted-foreground mb-3 opacity-50" />
-          <h3 className="text-lg font-medium">Inicia sesión para ver tus viajes</h3>
+          <h3 className="text-lg font-medium">{t("myRides.loginRequired.title")}</h3>
           <p className="text-muted-foreground mb-6">
-            Necesitas una cuenta para gestionar tus viajes publicados.
+            {t("myRides.loginRequired.description")}
           </p>
           <Button onClick={() => navigate("/entrar")} data-testid="button-login-myrides">
-            Iniciar sesión
+            {t("nav.login")}
           </Button>
         </div>
       </div>
@@ -155,7 +157,7 @@ export default function MyRidesPage() {
   if (isLoading) {
     return (
       <div className="container px-4 md:px-6 py-12 text-center">
-        <p className="text-muted-foreground">Cargando tus viajes...</p>
+        <p className="text-muted-foreground">{t("myRides.loading")}</p>
       </div>
     );
   }
@@ -164,12 +166,12 @@ export default function MyRidesPage() {
     <div className="container px-4 md:px-6 py-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold font-serif text-foreground">Mis viajes publicados</h1>
-          <p className="text-muted-foreground mt-2">Gestiona los viajes que has publicado.</p>
+          <h1 className="text-3xl font-bold font-serif text-foreground">{t("myRides.title")}</h1>
+          <p className="text-muted-foreground mt-2">{t("myRides.subtitle")}</p>
         </div>
         <Link href="/publicar">
           <Button className="bg-primary hover:bg-[#70b681]" data-testid="button-publish-new">
-            <Plus className="mr-2 h-4 w-4" /> Publicar nuevo viaje
+            <Plus className="mr-2 h-4 w-4" /> {t("myRides.publishNew")}
           </Button>
         </Link>
       </div>
@@ -188,10 +190,10 @@ export default function MyRidesPage() {
         ) : (
           <div className="col-span-full text-center py-16 bg-secondary/20 rounded-xl border border-dashed">
             <Car className="h-12 w-12 mx-auto text-muted-foreground mb-3 opacity-50" />
-            <h3 className="text-lg font-medium">No tienes viajes publicados</h3>
-            <p className="text-muted-foreground mb-6">¡Publica tu primer viaje para compartir coche!</p>
+            <h3 className="text-lg font-medium">{t("myRides.noRides.title")}</h3>
+            <p className="text-muted-foreground mb-6">{t("myRides.noRides.description")}</p>
             <Link href="/publicar">
-              <Button data-testid="button-publish-first">Publicar viaje</Button>
+              <Button data-testid="button-publish-first">{t("rides.card.publishRide")}</Button>
             </Link>
           </div>
         )}
@@ -200,16 +202,16 @@ export default function MyRidesPage() {
       <Dialog open={!!editingRide} onOpenChange={(open) => !open && setEditingRide(null)}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Editar viaje</DialogTitle>
+            <DialogTitle>{t("myRides.edit.title")}</DialogTitle>
             <DialogDescription>
-              Modifica los detalles de tu viaje publicado.
+              {t("myRides.edit.description")}
             </DialogDescription>
           </DialogHeader>
           {editingRide && (
             <form onSubmit={handleSaveEdit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="origin">Origen</Label>
+                  <Label htmlFor="origin">{t("publish.form.origin")}</Label>
                   <Input
                     id="origin"
                     name="origin"
@@ -219,7 +221,7 @@ export default function MyRidesPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="destination">Destino</Label>
+                  <Label htmlFor="destination">{t("publish.form.destination")}</Label>
                   <Input
                     id="destination"
                     name="destination"
@@ -231,7 +233,7 @@ export default function MyRidesPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="date">Fecha</Label>
+                  <Label htmlFor="date">{t("publish.form.date")}</Label>
                   <Input
                     id="date"
                     name="date"
@@ -242,7 +244,7 @@ export default function MyRidesPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="time">Hora</Label>
+                  <Label htmlFor="time">{t("publish.form.time")}</Label>
                   <Input
                     id="time"
                     name="time"
@@ -254,7 +256,7 @@ export default function MyRidesPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="seats">Plazas disponibles</Label>
+                <Label htmlFor="seats">{t("myRides.edit.availableSeats")}</Label>
                 <Input
                   id="seats"
                   name="seats"
@@ -267,12 +269,12 @@ export default function MyRidesPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="notes">Notas (opcional)</Label>
+                <Label htmlFor="notes">{t("publish.form.notes")}</Label>
                 <Textarea
                   id="notes"
                   name="notes"
                   defaultValue={editingRide.notes || ""}
-                  placeholder="Información adicional sobre el viaje..."
+                  placeholder={t("myRides.edit.notesPlaceholder")}
                   data-testid="input-edit-notes"
                 />
               </div>
@@ -282,14 +284,14 @@ export default function MyRidesPage() {
                   variant="outline"
                   onClick={() => setEditingRide(null)}
                 >
-                  Cancelar
+                  {t("common.cancel")}
                 </Button>
                 <Button 
                   type="submit" 
                   disabled={updateMutation.isPending}
                   data-testid="button-save-edit"
                 >
-                  {updateMutation.isPending ? "Guardando..." : "Guardar cambios"}
+                  {updateMutation.isPending ? t("common.saving") : t("common.saveChanges")}
                 </Button>
               </DialogFooter>
             </form>
@@ -300,19 +302,19 @@ export default function MyRidesPage() {
       <AlertDialog open={!!deleteConfirmRide} onOpenChange={(open) => !open && setDeleteConfirmRide(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar este viaje?</AlertDialogTitle>
+            <AlertDialogTitle>{t("myRides.delete.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. El viaje será eliminado permanentemente.
+              {t("myRides.delete.description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteConfirmRide && deleteMutation.mutate(deleteConfirmRide.id)}
               className="bg-red-600 hover:bg-red-700"
               data-testid="button-confirm-delete"
             >
-              {deleteMutation.isPending ? "Eliminando..." : "Eliminar"}
+              {deleteMutation.isPending ? t("common.deleting") : t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
