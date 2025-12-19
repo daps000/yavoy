@@ -142,10 +142,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     ))}
                   </nav>
                   
-                  <div className="pt-2">
-                    <LanguageSelector />
-                  </div>
-                  
                   <div className="border-t pt-4 w-full">
                     {!isLoading && (
                       isAuthenticated ? (
@@ -166,6 +162,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                             <Car className="h-4 w-4" />
                             {t("nav.myRides")}
                           </Link>
+                          <div className="mt-3">
+                            <LanguageSelector showLabel />
+                          </div>
                           <Button
                             variant="outline"
                             onClick={() => {
@@ -180,18 +179,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
                           </Button>
                         </div>
                       ) : (
-                        <Link 
-                          href="/entrar"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="w-full"
-                        >
-                          <Button
+                        <div className="flex flex-col gap-4">
+                          <Link 
+                            href="/entrar"
+                            onClick={() => setIsMobileMenuOpen(false)}
                             className="w-full"
-                            data-testid="button-mobile-login"
                           >
-                            {t("nav.login")}
-                          </Button>
-                        </Link>
+                            <Button
+                              className="w-full"
+                              data-testid="button-mobile-login"
+                            >
+                              {t("nav.login")}
+                            </Button>
+                          </Link>
+                          <div className="mt-2">
+                            <LanguageSelector showLabel />
+                          </div>
+                        </div>
                       )
                     )}
                   </div>

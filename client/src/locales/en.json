@@ -30,7 +30,8 @@
     "login": "Sign in",
     "logout": "Sign out",
     "faq": "FAQ",
-    "menu": "Navigation menu"
+    "menu": "Navigation menu",
+    "changeLanguage": "Change language"
   },
   "home": {
     "hero": {

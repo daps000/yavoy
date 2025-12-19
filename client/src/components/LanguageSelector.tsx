@@ -13,8 +13,12 @@ const languages = [
   { code: "en", name: "English", flag: "🇬🇧" },
 ];
 
-export function LanguageSelector() {
-  const { i18n } = useTranslation();
+interface LanguageSelectorProps {
+  showLabel?: boolean;
+}
+
+export function LanguageSelector({ showLabel = false }: LanguageSelectorProps) {
+  const { i18n, t } = useTranslation();
 
   const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0];
 
@@ -25,17 +29,27 @@ export function LanguageSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-12 w-12 rounded-full"
-          data-testid="button-language-selector"
-        >
-          <Globe className="h-7 w-7 text-foreground" />
-          <span className="sr-only">Change language</span>
-        </Button>
+        {showLabel ? (
+          <button
+            className="flex items-center gap-2 font-medium text-foreground/80 text-[16px] hover:text-primary transition-colors"
+            data-testid="button-language-selector-mobile"
+          >
+            <Globe className="h-4 w-4" />
+            <span>{t("nav.changeLanguage")}</span>
+          </button>
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-12 w-12 rounded-full"
+            data-testid="button-language-selector"
+          >
+            <Globe className="h-7 w-7 text-foreground" />
+            <span className="sr-only">{t("nav.changeLanguage")}</span>
+          </Button>
+        )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="bg-white">
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
