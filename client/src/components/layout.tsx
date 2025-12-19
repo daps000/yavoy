@@ -142,6 +142,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     ))}
                   </nav>
                   
+                  <div className="pt-2">
+                    <LanguageSelector />
+                  </div>
+                  
                   <div className="border-t pt-4 w-full">
                     {!isLoading && (
                       isAuthenticated ? (
