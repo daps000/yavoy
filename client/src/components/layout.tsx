@@ -158,7 +158,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                             <User className="h-4 w-4" />
                             <span>{getUserDisplayName()}</span>
                           </Link>
-                          <span className="text-xs text-muted-foreground">{user?.email}</span>
                           <Link 
                             href="/mis-viajes"
                             className="flex items-center gap-2 mt-3 text-primary font-medium"
