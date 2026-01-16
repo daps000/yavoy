@@ -42,6 +42,12 @@ export default function MyRidesPage() {
   const [editingRide, setEditingRide] = useState<Ride | null>(null);
   const [deleteConfirmRide, setDeleteConfirmRide] = useState<Ride | null>(null);
   const [hasShownWelcome, setHasShownWelcome] = useState(false);
+  
+  const { data: myRides = [], isLoading } = useQuery({
+    queryKey: ["my-rides"],
+    queryFn: fetchMyRides,
+    enabled: isAuthenticated,
+  });
 
   useEffect(() => {
     const params = new URLSearchParams(searchString);
@@ -57,12 +63,18 @@ export default function MyRidesPage() {
       navigate("/mis-viajes", { replace: true });
     }
   }, [searchString, hasShownWelcome, isAuthenticated, profile, toast, navigate]);
-  
-  const { data: myRides = [], isLoading } = useQuery({
-    queryKey: ["my-rides"],
-    queryFn: fetchMyRides,
-    enabled: isAuthenticated,
-  });
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchString);
+    const editRideId = params.get("editar");
+    if (editRideId && myRides.length > 0 && !editingRide) {
+      const rideToEdit = myRides.find(r => r.id === parseInt(editRideId));
+      if (rideToEdit) {
+        setEditingRide(rideToEdit);
+        navigate("/mis-viajes", { replace: true });
+      }
+    }
+  }, [searchString, myRides, editingRide, navigate]);
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => deleteRide(id),

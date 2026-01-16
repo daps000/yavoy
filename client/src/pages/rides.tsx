@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { type Ride, type DriverRating } from "@shared/schema";
-import { Car, MapPin, Calendar, Clock, Users, MessageCircle, Search, Star } from "lucide-react";
+import { Car, MapPin, Calendar, Clock, Users, MessageCircle, Search, Star, Pencil } from "lucide-react";
 import { format } from "date-fns";
 import { es, enUS } from "date-fns/locale";
 import { Link, useSearch } from "wouter";
@@ -228,8 +228,19 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
         <div className={`h-2 w-full ${isOwnRide ? "bg-primary" : "bg-primary"}`}></div>
         <CardContent className="pt-6 space-y-4">
           {isOwnRide && (
-            <div className="text-xs font-bold text-primary uppercase tracking-wide">
-              {t("rides.card.myPublishedRide")}
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-primary uppercase tracking-wide">
+                {t("rides.card.myPublishedRide")}
+              </span>
+              <Link href={`/mis-viajes?editar=${ride.id}`}>
+                <button 
+                  className="p-1.5 rounded-full hover:bg-primary/20 transition-colors"
+                  title={t("common.edit")}
+                  data-testid={`button-edit-ride-${ride.id}`}
+                >
+                  <Pencil className="h-4 w-4 text-primary" />
+                </button>
+              </Link>
             </div>
           )}
           <div className="flex justify-between items-start">
