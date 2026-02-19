@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/lib/auth-context";
 import { Car, Users, MapPin, Loader2, Mail, Lock, User, CheckCircle } from "lucide-react";
 import logoImage from "@assets/logo-verde.png";
+import { useTranslation } from "react-i18next";
 
 const RETURN_URL_KEY = "yavoy_login_return";
 
@@ -17,6 +18,7 @@ export default function LoginPage() {
   const searchString = useSearch();
   const params = new URLSearchParams(searchString);
   const fromPublish = params.get("from") === "publicar";
+  const { t } = useTranslation();
   
   useEffect(() => {
     if (fromPublish) {
@@ -57,7 +59,7 @@ export default function LoginPage() {
         const message = errorDescription 
           ? decodeURIComponent(errorDescription.replace(/\+/g, " "))
           : errorCode;
-        setError(translateError(message || "Error desconocido"));
+        setError(translateError(message || t("common.unknownError")));
         window.history.replaceState(null, "", window.location.pathname);
         window.scrollTo(0, 0);
       }
@@ -79,7 +81,7 @@ export default function LoginPage() {
 
   const handlePasswordReset = async () => {
     if (!email) {
-      setError("Introduce tu email primero");
+      setError(t("auth.enterEmailFirst"));
       return;
     }
     setError(null);
@@ -91,7 +93,7 @@ export default function LoginPage() {
     if (result.error) {
       setError(translateError(result.error));
     } else {
-      setSuccessMessage("Te hemos enviado un email con instrucciones para restablecer tu contraseña.");
+      setSuccessMessage(t("auth.emailSentResetInstructions"));
     }
     setIsResettingPassword(false);
   };
@@ -103,7 +105,7 @@ export default function LoginPage() {
     setIsSubmitting(true);
     
     if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres");
+      setError(t("auth.passwordMinChars"));
       setIsSubmitting(false);
       return;
     }
@@ -113,29 +115,29 @@ export default function LoginPage() {
     if (result.error) {
       setError(translateError(result.error));
     } else {
-      setSuccessMessage("¡Cuenta creada! Revisa tu email para confirmar tu cuenta.");
+      setSuccessMessage(t("auth.accountCreated"));
     }
     setIsSubmitting(false);
   };
 
   const translateError = (error: string): string => {
     if (error.includes("Invalid login credentials")) {
-      return "Email o contraseña incorrectos";
+      return t("auth.wrongCredentials");
     }
     if (error.includes("Email not confirmed")) {
-      return "Debes confirmar tu email antes de iniciar sesión";
+      return t("auth.confirmEmail");
     }
     if (error.includes("User already registered")) {
-      return "Este email ya está registrado";
+      return t("auth.emailAlreadyRegistered");
     }
     if (error.includes("Password should be at least")) {
-      return "La contraseña debe tener al menos 6 caracteres";
+      return t("auth.passwordMinChars");
     }
     if (error.includes("invalid or has expired") || error.includes("otp_expired")) {
-      return "El enlace ha caducado. Solicita uno nuevo.";
+      return t("auth.linkExpired");
     }
     if (error.includes("access_denied")) {
-      return "Acceso denegado. Por favor, inténtalo de nuevo.";
+      return t("auth.accessDenied");
     }
     return error;
   };
@@ -152,7 +154,6 @@ export default function LoginPage() {
     return null;
   }
 
-  // Simplified version for ride creation flow
   if (fromPublish) {
     return (
       <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-12 bg-gradient-to-b from-primary/5 to-background">
@@ -162,10 +163,10 @@ export default function LoginPage() {
               <CheckCircle className="h-8 w-8 text-primary" />
             </div>
             <h1 className="text-2xl font-bold font-serif text-foreground mb-3">
-              ¡Ya falta poco!
+              {t("auth.almostThere")}
             </h1>
             <p className="text-muted-foreground text-lg">
-              Solo tienes que crear un usuario para que se publique tu viaje. Luego podrás modificarlo cuando quieras.
+              {t("auth.almostThereDesc")}
             </p>
           </div>
 
@@ -183,7 +184,7 @@ export default function LoginPage() {
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                 </svg>
-                Continuar con Google
+                {t("auth.googleButton")}
               </Button>
 
               <div className="relative my-6">
@@ -191,26 +192,26 @@ export default function LoginPage() {
                   <span className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-muted-foreground">O con email</span>
+                  <span className="bg-white px-2 text-muted-foreground">{t("auth.orWithEmail")}</span>
                 </div>
               </div>
 
               <Tabs defaultValue="register" className="w-full">
                 <TabsList className="grid w-full grid-cols-2 mb-4">
-                  <TabsTrigger value="register">Crear cuenta</TabsTrigger>
-                  <TabsTrigger value="login">Ya tengo cuenta</TabsTrigger>
+                  <TabsTrigger value="register">{t("auth.registerTitle")}</TabsTrigger>
+                  <TabsTrigger value="login">{t("auth.haveAccount")}</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="login">
                   <form onSubmit={handleEmailLogin} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="login-email">Email</Label>
+                      <Label htmlFor="login-email">{t("auth.emailLabel")}</Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           id="login-email"
                           type="email"
-                          placeholder="tu@email.com"
+                          placeholder={t("auth.emailPlaceholder")}
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           className="pl-10"
@@ -220,7 +221,7 @@ export default function LoginPage() {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="login-password">Contraseña</Label>
+                      <Label htmlFor="login-password">{t("auth.passwordLabel")}</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -249,7 +250,7 @@ export default function LoginPage() {
                       {isSubmitting ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : null}
-                      Iniciar sesión
+                      {t("auth.loginButton")}
                     </Button>
                   </form>
                 </TabsContent>
@@ -258,22 +259,22 @@ export default function LoginPage() {
                   <form onSubmit={handleEmailSignup} className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
-                        <Label htmlFor="register-firstname">Nombre</Label>
+                        <Label htmlFor="register-firstname">{t("profile.firstName")}</Label>
                         <Input
                           id="register-firstname"
                           type="text"
-                          placeholder="Tu nombre"
+                          placeholder={t("profile.firstNamePlaceholder")}
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
                           data-testid="input-register-firstname-publish"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="register-lastname">Apellidos</Label>
+                        <Label htmlFor="register-lastname">{t("profile.lastName")}</Label>
                         <Input
                           id="register-lastname"
                           type="text"
-                          placeholder="Tus apellidos"
+                          placeholder={t("profile.lastNamePlaceholder")}
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
                           data-testid="input-register-lastname-publish"
@@ -281,13 +282,13 @@ export default function LoginPage() {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="register-email">Email</Label>
+                      <Label htmlFor="register-email">{t("auth.emailLabel")}</Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           id="register-email"
                           type="email"
-                          placeholder="tu@email.com"
+                          placeholder={t("auth.emailPlaceholder")}
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           className="pl-10"
@@ -297,13 +298,13 @@ export default function LoginPage() {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="register-password">Contraseña</Label>
+                      <Label htmlFor="register-password">{t("auth.passwordLabel")}</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           id="register-password"
                           type="password"
-                          placeholder="Mínimo 6 caracteres"
+                          placeholder={t("auth.passwordMinChars")}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           className="pl-10"
@@ -331,7 +332,7 @@ export default function LoginPage() {
                       {isSubmitting ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : null}
-                      Crear cuenta y publicar
+                      {t("auth.createAndPublish")}
                     </Button>
                   </form>
                 </TabsContent>
@@ -340,23 +341,22 @@ export default function LoginPage() {
           </Card>
 
           <p className="text-center text-sm text-muted-foreground">
-            Tu viaje se guardará automáticamente cuando inicies sesión.
+            {t("auth.draftSavedOnLogin")}
           </p>
         </div>
       </div>
     );
   }
 
-  // Full version for normal login
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-12 bg-gradient-to-b from-primary/5 to-background">
       <div className="max-w-md w-full space-y-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold font-serif text-foreground mb-3">
-            Bienvenido a YaVoy
+            {t("auth.welcomeTitle")}
           </h1>
           <p className="text-muted-foreground text-lg">
-            La forma más fácil de compartir viajes entre vecinos
+            {t("auth.welcomeSubtitle")}
           </p>
         </div>
 
@@ -368,8 +368,8 @@ export default function LoginPage() {
                   <Car className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-foreground">Publica tus viajes</h3>
-                  <p className="text-sm text-muted-foreground">Comparte tu coche y ayuda a tus vecinos</p>
+                  <h3 className="font-medium text-foreground">{t("auth.feature1Title")}</h3>
+                  <p className="text-sm text-muted-foreground">{t("auth.feature1Desc")}</p>
                 </div>
               </div>
               
@@ -378,8 +378,8 @@ export default function LoginPage() {
                   <Users className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-foreground">Encuentra compañeros</h3>
-                  <p className="text-sm text-muted-foreground">Conecta con vecinos que van al mismo sitio</p>
+                  <h3 className="font-medium text-foreground">{t("auth.feature2Title")}</h3>
+                  <p className="text-sm text-muted-foreground">{t("auth.feature2Desc")}</p>
                 </div>
               </div>
               
@@ -388,8 +388,8 @@ export default function LoginPage() {
                   <MapPin className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-foreground">Sin complicaciones</h3>
-                  <p className="text-sm text-muted-foreground">Contacto directo por WhatsApp, sin pagos online</p>
+                  <h3 className="font-medium text-foreground">{t("auth.feature3Title")}</h3>
+                  <p className="text-sm text-muted-foreground">{t("auth.feature3Desc")}</p>
                 </div>
               </div>
             </div>
@@ -407,7 +407,7 @@ export default function LoginPage() {
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                 </svg>
-                Continuar con Google
+                {t("auth.googleButton")}
               </Button>
 
               <div className="relative my-6">
@@ -415,26 +415,26 @@ export default function LoginPage() {
                   <span className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-muted-foreground">O con email</span>
+                  <span className="bg-white px-2 text-muted-foreground">{t("auth.orWithEmail")}</span>
                 </div>
               </div>
 
               <Tabs defaultValue="login" className="w-full">
                 <TabsList className="grid w-full grid-cols-2 mb-4">
-                  <TabsTrigger value="login">Iniciar sesión</TabsTrigger>
-                  <TabsTrigger value="register">Registrarse</TabsTrigger>
+                  <TabsTrigger value="login">{t("auth.loginButton")}</TabsTrigger>
+                  <TabsTrigger value="register">{t("auth.registerTab")}</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="login">
                   <form onSubmit={handleEmailLogin} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="login-email">Email</Label>
+                      <Label htmlFor="login-email">{t("auth.emailLabel")}</Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           id="login-email"
                           type="email"
-                          placeholder="tu@email.com"
+                          placeholder={t("auth.emailPlaceholder")}
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           className="pl-10"
@@ -444,7 +444,7 @@ export default function LoginPage() {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="login-password">Contraseña</Label>
+                      <Label htmlFor="login-password">{t("auth.passwordLabel")}</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -459,7 +459,7 @@ export default function LoginPage() {
                         />
                       </div>
                       <Link href="/recuperar" className="text-xs text-primary hover:underline mt-1 block" data-testid="link-forgot-password">
-                        ¿Olvidaste tu contraseña?
+                        {t("auth.forgotPassword")}
                       </Link>
                     </div>
                     
@@ -480,7 +480,7 @@ export default function LoginPage() {
                       {isSubmitting ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : null}
-                      Iniciar sesión
+                      {t("auth.loginButton")}
                     </Button>
                   </form>
                 </TabsContent>
@@ -489,22 +489,22 @@ export default function LoginPage() {
                   <form onSubmit={handleEmailSignup} className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
-                        <Label htmlFor="register-firstname">Nombre</Label>
+                        <Label htmlFor="register-firstname">{t("profile.firstName")}</Label>
                         <Input
                           id="register-firstname"
                           type="text"
-                          placeholder="Tu nombre"
+                          placeholder={t("profile.firstNamePlaceholder")}
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
                           data-testid="input-register-firstname"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="register-lastname">Apellidos</Label>
+                        <Label htmlFor="register-lastname">{t("profile.lastName")}</Label>
                         <Input
                           id="register-lastname"
                           type="text"
-                          placeholder="Tus apellidos"
+                          placeholder={t("profile.lastNamePlaceholder")}
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
                           data-testid="input-register-lastname"
@@ -512,13 +512,13 @@ export default function LoginPage() {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="register-email">Email</Label>
+                      <Label htmlFor="register-email">{t("auth.emailLabel")}</Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           id="register-email"
                           type="email"
-                          placeholder="tu@email.com"
+                          placeholder={t("auth.emailPlaceholder")}
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           className="pl-10"
@@ -528,13 +528,13 @@ export default function LoginPage() {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="register-password">Contraseña</Label>
+                      <Label htmlFor="register-password">{t("auth.passwordLabel")}</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           id="register-password"
                           type="password"
-                          placeholder="Mínimo 6 caracteres"
+                          placeholder={t("auth.passwordMinChars")}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           className="pl-10"
@@ -562,18 +562,18 @@ export default function LoginPage() {
                       {isSubmitting ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : null}
-                      Crear cuenta
+                      {t("auth.registerButton")}
                     </Button>
                   </form>
                 </TabsContent>
               </Tabs>
+
+              <p className="text-center text-xs text-muted-foreground mt-4">
+                {t("auth.termsNotice")}
+              </p>
             </div>
           </CardContent>
         </Card>
-
-        <p className="text-center text-sm text-muted-foreground">
-          Al continuar, aceptas compartir viajes de manera responsable y respetuosa con tus vecinos.
-        </p>
       </div>
     </div>
   );

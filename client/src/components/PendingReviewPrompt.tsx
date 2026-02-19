@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function PendingReviewPrompt() {
   const { isAuthenticated } = useAuth();
@@ -20,6 +21,7 @@ export function PendingReviewPrompt() {
   const [promptDialogOpen, setPromptDialogOpen] = useState(false);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [currentContact, setCurrentContact] = useState<PendingReviewContact | null>(null);
+  const { t } = useTranslation();
   
   const { data: pendingContacts = [] } = useQuery({
     queryKey: ["pending-reviews"],
@@ -73,7 +75,7 @@ export function PendingReviewPrompt() {
     return null;
   }
 
-  const driverName = currentContact.driverName || "el conductor";
+  const driverName = currentContact.driverName || t("pendingReview.theDriver");
 
   return (
     <>
@@ -82,18 +84,18 @@ export function PendingReviewPrompt() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Star className="h-5 w-5 text-amber-500" />
-              ¿Qué tal fue tu viaje con {driverName}?
+              {t("pendingReview.title", { name: driverName })}
             </DialogTitle>
             <DialogDescription>
-              Vemos que contactaste con {driverName} hace poco. ¿Te gustaría dejar una valoración para ayudar a otros usuarios?
+              {t("pendingReview.subtitle", { name: driverName })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button variant="outline" onClick={handleDismiss} data-testid="button-dismiss-review">
-              Ahora no
+              {t("pendingReview.notNow")}
             </Button>
             <Button onClick={handleReviewClick} className="bg-primary" data-testid="button-write-review">
-              Escribir valoración
+              {t("pendingReview.writeReview")}
             </Button>
           </DialogFooter>
         </DialogContent>

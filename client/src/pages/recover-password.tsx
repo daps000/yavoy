@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, Loader2, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { useTranslation } from "react-i18next";
 
 export default function RecoverPasswordPage() {
   const { resetPassword } = useAuth();
@@ -12,13 +13,14 @@ export default function RecoverPasswordPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const translateError = (error: string): string => {
     if (error.includes("User not found")) {
-      return "No existe una cuenta con este email";
+      return t("auth.noAccountRegistered");
     }
     if (error.includes("rate limit")) {
-      return "Demasiados intentos. Espera unos minutos.";
+      return t("auth.tooManyAttempts");
     }
     return error;
   };
@@ -34,7 +36,7 @@ export default function RecoverPasswordPage() {
     if (result.error) {
       setError(translateError(result.error));
     } else {
-      setSuccessMessage("Te hemos enviado un email con un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada.");
+      setSuccessMessage(t("auth.recoverSentDetail"));
     }
     setIsSubmitting(false);
   };
@@ -44,22 +46,22 @@ export default function RecoverPasswordPage() {
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold text-foreground">
-            Recuperar contraseña
+            {t("auth.recoverTitle")}
           </h1>
           <p className="text-muted-foreground">
-            Introduce tu email y te enviaremos un enlace para restablecer tu contraseña
+            {t("auth.recoverSubtitle")}
           </p>
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("auth.emailLabel")}</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 id="email"
                 type="email"
-                placeholder="tu@email.com"
+                placeholder={t("auth.emailPlaceholder")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="pl-10"
@@ -90,7 +92,7 @@ export default function RecoverPasswordPage() {
             {isSubmitting ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
             ) : null}
-            Enviar enlace
+            {t("auth.recoverButton")}
           </Button>
 
           <Link href="/entrar" className="block">
@@ -101,7 +103,7 @@ export default function RecoverPasswordPage() {
               data-testid="button-back-to-login"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Volver a iniciar sesión
+              {t("auth.backToLogin")}
             </Button>
           </Link>
         </form>

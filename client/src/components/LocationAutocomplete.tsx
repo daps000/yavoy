@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { MapPin, Navigation, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface LocationAutocompleteProps {
   id: string;
@@ -24,6 +25,7 @@ export function LocationAutocomplete({
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (value.length >= 2) {
@@ -65,7 +67,7 @@ export function LocationAutocomplete({
 
   const handleUseCurrentLocation = async () => {
     if (!navigator.geolocation) {
-      alert("Tu navegador no soporta geolocalización");
+      alert(t("location.browserNotSupported"));
       return;
     }
 
@@ -95,9 +97,9 @@ export function LocationAutocomplete({
 
       if (!response.ok) {
         if (response.status === 403 || response.status === 429) {
-          throw new Error("Servicio de ubicación temporalmente no disponible");
+          throw new Error(t("location.serviceUnavailable"));
         }
-        throw new Error("Error al obtener ubicación");
+        throw new Error(t("location.locationError"));
       }
 
       const data = await response.json();
@@ -109,16 +111,16 @@ export function LocationAutocomplete({
         address.city ||
         address.municipality ||
         address.county ||
-        "Ubicación desconocida";
+        t("location.locationUnknown");
 
       onChange(locationName);
     } catch (error) {
       console.error("Error getting location:", error);
-      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
-      if (errorMessage.includes("temporalmente")) {
+      const errorMessage = error instanceof Error ? error.message : t("common.unknownError");
+      if (errorMessage === t("location.serviceUnavailable")) {
         alert(errorMessage);
       } else {
-        alert("No se pudo obtener tu ubicación. Asegúrate de permitir el acceso.");
+        alert(t("location.permissionError"));
       }
     } finally {
       setIsLoadingLocation(false);
@@ -154,7 +156,6 @@ export function LocationAutocomplete({
     }
   };
 
-  // Hide dropdown if 5+ chars typed and no suggestions found (let user proceed with custom text)
   const hasNoResults = !isLoadingSuggestions && suggestions.length === 0 && value.length >= 5;
   const showDropdown = isOpen && value.length >= 2 && !hasNoResults;
 
@@ -191,14 +192,14 @@ export function LocationAutocomplete({
               <Navigation className="h-4 w-4 text-primary" />
             )}
             <span className="font-medium text-primary">
-              {isLoadingLocation ? "Obteniendo ubicación..." : "Utilizar ubicación actual"}
+              {isLoadingLocation ? t("location.locating") : t("location.useCurrentLocation")}
             </span>
           </button>
           
           {isLoadingSuggestions && (
             <div className="px-3 py-2.5 text-muted-foreground text-sm border-t border-border flex items-center gap-2">
               <Loader2 className="h-3 w-3 animate-spin" />
-              Buscando...
+              {t("common.searching")}
             </div>
           )}
           
@@ -224,7 +225,7 @@ export function LocationAutocomplete({
           
           {!isLoadingSuggestions && suggestions.length === 0 && value.length >= 2 && (
             <div className="px-3 py-2.5 text-muted-foreground text-sm border-t border-border">
-              Escribe el nombre de tu pueblo
+              {t("location.typeTownName")}
             </div>
           )}
         </div>

@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createReview } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
+import { useTranslation } from "react-i18next";
 
 interface ReviewDialogProps {
   open: boolean;
@@ -21,6 +22,7 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
   const [hoveredStars, setHoveredStars] = useState(0);
   const [comment, setComment] = useState("");
   const [error, setError] = useState("");
+  const { t } = useTranslation();
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -31,8 +33,8 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["driverRating", driverProfileId] });
       toast({
-        title: "Valoración enviada",
-        description: "Gracias por tu opinión. Ayudas a la comunidad.",
+        title: t("review.success"),
+        description: t("review.successMessage"),
       });
       resetForm();
       onOpenChange(false);
@@ -54,17 +56,17 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
     setError("");
 
     if (!isAuthenticated) {
-      setError("Debes iniciar sesión para valorar");
+      setError(t("review.loginRequired"));
       return;
     }
 
     if (stars === 0) {
-      setError("Selecciona una valoración de 1 a 5 estrellas");
+      setError(t("review.selectRating"));
       return;
     }
 
     if (stars < 3 && !comment.trim()) {
-      setError("Para valoraciones menores a 3 estrellas, explica brevemente tu experiencia");
+      setError(t("review.commentRequiredError"));
       return;
     }
 
@@ -77,6 +79,15 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
 
   const displayStars = hoveredStars || stars;
 
+  const ratingLabels: Record<number, string> = {
+    0: t("review.clickToRate"),
+    1: t("review.veryBad"),
+    2: t("review.bad"),
+    3: t("review.normal"),
+    4: t("review.good"),
+    5: t("review.excellent"),
+  };
+
   return (
     <Dialog open={open} onOpenChange={(newOpen) => {
       if (!newOpen) resetForm();
@@ -84,15 +95,15 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
     }}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl font-serif">Valorar a {driverName}</DialogTitle>
+          <DialogTitle className="text-xl font-serif">{t("review.title", { name: driverName })}</DialogTitle>
           <DialogDescription>
-            Comparte tu experiencia con este conductor para ayudar a otros vecinos.
+            {t("review.subtitle")}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 pt-4">
           <div className="space-y-2">
-            <Label>Tu valoración</Label>
+            <Label>{t("review.yourRating")}</Label>
             <div className="flex gap-2 justify-center py-2">
               {[1, 2, 3, 4, 5].map((value) => (
                 <button
@@ -115,22 +126,17 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
               ))}
             </div>
             <p className="text-center text-sm text-muted-foreground">
-              {displayStars === 0 && "Haz clic para valorar"}
-              {displayStars === 1 && "Muy mala experiencia"}
-              {displayStars === 2 && "Mala experiencia"}
-              {displayStars === 3 && "Experiencia normal"}
-              {displayStars === 4 && "Buena experiencia"}
-              {displayStars === 5 && "Excelente experiencia"}
+              {ratingLabels[displayStars]}
             </p>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="comment">
-              Comentario {stars > 0 && stars < 3 ? "(obligatorio)" : "(opcional)"}
+              {t("review.comment")} {stars > 0 && stars < 3 ? t("review.commentRequired") : t("review.commentOptional")}
             </Label>
             <Textarea
               id="comment"
-              placeholder="¿Cómo fue tu experiencia con este conductor?"
+              placeholder={t("review.commentPlaceholder")}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={3}
@@ -154,7 +160,7 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
               className="flex-1"
               data-testid="button-cancel-review"
             >
-              Cancelar
+              {t("common.cancel")}
             </Button>
             <Button
               type="submit"
@@ -165,10 +171,10 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
               {reviewMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Enviando...
+                  {t("review.submitting")}
                 </>
               ) : (
-                "Enviar valoración"
+                t("review.submitButton")
               )}
             </Button>
           </div>

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock, Loader2, CheckCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { useTranslation } from "react-i18next";
 
 export default function NewPasswordPage() {
   const { updatePassword } = useAuth();
@@ -14,6 +15,7 @@ export default function NewPasswordPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -23,7 +25,7 @@ export default function NewPasswordPage() {
       if (errorDescription) {
         const message = decodeURIComponent(errorDescription.replace(/\+/g, " "));
         if (message.includes("invalid or has expired") || message.includes("otp_expired")) {
-          setError("El enlace ha caducado. Solicita uno nuevo desde la página de recuperación.");
+          setError(t("auth.linkExpired"));
         } else {
           setError(message);
         }
@@ -34,10 +36,10 @@ export default function NewPasswordPage() {
 
   const translateError = (error: string): string => {
     if (error.includes("should be at least")) {
-      return "La contraseña debe tener al menos 6 caracteres";
+      return t("auth.passwordMinChars");
     }
     if (error.includes("same password")) {
-      return "La nueva contraseña debe ser diferente a la anterior";
+      return t("auth.passwordMustDiffer");
     }
     return error;
   };
@@ -47,12 +49,12 @@ export default function NewPasswordPage() {
     setError(null);
 
     if (password !== confirmPassword) {
-      setError("Las contraseñas no coinciden");
+      setError(t("auth.passwordsNoMatch"));
       return;
     }
 
     if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres");
+      setError(t("auth.passwordMinChars"));
       return;
     }
 
@@ -77,10 +79,10 @@ export default function NewPasswordPage() {
         <div className="w-full max-w-md text-center space-y-4">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
           <h2 className="text-xl font-bold text-foreground">
-            ¡Contraseña actualizada!
+            {t("auth.passwordUpdated")}
           </h2>
           <p className="text-muted-foreground">
-            Tu contraseña ha sido cambiada correctamente. Redirigiendo al inicio de sesión...
+            {t("auth.passwordUpdatedMessage")}
           </p>
         </div>
       </div>
@@ -92,22 +94,22 @@ export default function NewPasswordPage() {
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold text-foreground">
-            Nueva contraseña
+            {t("auth.newPasswordTitle")}
           </h1>
           <p className="text-muted-foreground">
-            Introduce tu nueva contraseña
+            {t("auth.newPasswordSubtitle")}
           </p>
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="password">Nueva contraseña</Label>
+            <Label htmlFor="password">{t("auth.newPasswordLabel")}</Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 id="password"
                 type="password"
-                placeholder="Mínimo 6 caracteres"
+                placeholder={t("auth.passwordMinChars")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="pl-10"
@@ -119,13 +121,13 @@ export default function NewPasswordPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirm-password">Confirmar contraseña</Label>
+            <Label htmlFor="confirm-password">{t("auth.confirmPasswordLabel")}</Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 id="confirm-password"
                 type="password"
-                placeholder="Repite la contraseña"
+                placeholder={t("auth.confirmPasswordPlaceholder")}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="pl-10"
@@ -151,7 +153,7 @@ export default function NewPasswordPage() {
             {isSubmitting ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
             ) : null}
-            Guardar contraseña
+            {t("auth.updatePasswordButton")}
           </Button>
         </form>
       </div>
