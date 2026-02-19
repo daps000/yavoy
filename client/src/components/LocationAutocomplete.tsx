@@ -88,7 +88,7 @@ export function LocationAutocomplete({
         {
           headers: {
             "Accept-Language": "es",
-            "User-Agent": "YaVoy-RuralRideshare/1.0 (contact@yavoy.es)",
+            "User-Agent": "YaVoy-RuralRideshare/1.0 (contact@yavoy.info)",
           },
         }
       );
