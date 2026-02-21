@@ -65,6 +65,11 @@ export function LocationAutocomplete({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleMouseDown = (e: React.MouseEvent, callback: () => void) => {
+    e.preventDefault();
+    callback();
+  };
+
   const handleUseCurrentLocation = async () => {
     if (!navigator.geolocation) {
       alert(t("location.browserNotSupported"));
@@ -182,7 +187,7 @@ export function LocationAutocomplete({
             className={`w-full px-3 py-3 flex items-center gap-3 text-left transition-colors ${
               highlightedIndex === 0 ? "bg-primary/10" : "hover:bg-muted"
             }`}
-            onClick={handleUseCurrentLocation}
+            onMouseDown={(e) => handleMouseDown(e, handleUseCurrentLocation)}
             disabled={isLoadingLocation}
             data-testid="button-use-location"
           >
@@ -213,7 +218,7 @@ export function LocationAutocomplete({
                   className={`w-full px-3 py-2.5 flex items-center gap-3 text-left transition-colors ${
                     highlightedIndex === index + 1 ? "bg-primary/10" : "hover:bg-muted"
                   }`}
-                  onClick={() => handleSelect(location)}
+                  onMouseDown={(e) => handleMouseDown(e, () => handleSelect(location))}
                   data-testid={`suggestion-${index}`}
                 >
                   <MapPin className="h-4 w-4 text-muted-foreground" />

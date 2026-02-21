@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { type Ride, type DriverRating } from "@shared/schema";
-import { Car, MapPin, Calendar, Clock, Users, MessageCircle, Search, Star, Pencil, Repeat, Navigation, Globe } from "lucide-react";
+import { Car, MapPin, Calendar, Clock, Users, MessageCircle, Search, Star, Pencil, Repeat, Navigation, Globe, X } from "lucide-react";
 import { format } from "date-fns";
 import { es, enUS } from "date-fns/locale";
 import { Link, useSearch } from "wouter";
@@ -152,9 +152,20 @@ export default function RidesPage() {
         </div>
 
         <div className="flex items-end">
-          <Button className="w-full md:w-auto bg-primary hover:bg-[#70b681]">
-            <Search className="mr-2 h-4 w-4" /> {t("common.filter")}
-          </Button>
+          {(filterOrigin || filterDest || filterDate !== "all") ? (
+            <Button 
+              variant="outline"
+              className="w-full md:w-auto"
+              onClick={() => { setFilterOrigin(""); setFilterDest(""); setFilterDate("all"); }}
+              data-testid="button-clear-filters"
+            >
+              <X className="mr-2 h-4 w-4" /> {t("common.clearFilters")}
+            </Button>
+          ) : (
+            <Button className="w-full md:w-auto bg-primary hover:bg-[#70b681] pointer-events-none opacity-50" tabIndex={-1}>
+              <Search className="mr-2 h-4 w-4" /> {t("common.filter")}
+            </Button>
+          )}
         </div>
       </div>
 
