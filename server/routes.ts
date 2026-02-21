@@ -14,9 +14,13 @@ export async function registerRoutes(
   
   // Supabase config endpoint for client
   app.get("/api/config/supabase", (req, res) => {
-    // Construct the redirect URL for OAuth
     let siteUrl: string | undefined;
-    if (process.env.REPLIT_DEV_DOMAIN) {
+    if (process.env.NODE_ENV === "production") {
+      const host = req.get("host");
+      if (host) {
+        siteUrl = `https://${host}`;
+      }
+    } else if (process.env.REPLIT_DEV_DOMAIN) {
       siteUrl = `https://${process.env.REPLIT_DEV_DOMAIN}`;
     }
     
