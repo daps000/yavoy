@@ -295,98 +295,94 @@ export default function MyRidesPage() {
           </DialogHeader>
           {editingRide && (
             <form onSubmit={handleSaveEdit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="origin">{t("publish.form.origin")}</Label>
-                  <Input
-                    id="origin"
-                    name="origin"
-                    defaultValue={editingRide.origin}
-                    required
-                    data-testid="input-edit-origin"
+              <div className="space-y-2">
+                <Label htmlFor="origin">{t("publish.form.origin")}</Label>
+                <Input
+                  id="origin"
+                  name="origin"
+                  defaultValue={editingRide.origin}
+                  required
+                  data-testid="input-edit-origin"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="destination">{t("publish.form.destination")}</Label>
+                <Input
+                  id="destination"
+                  name="destination"
+                  defaultValue={editingRide.destination}
+                  required
+                  data-testid="input-edit-destination"
+                />
+              </div>
+              <div className="space-y-2">
+                {editIsRecurrent ? (
+                  <>
+                    <Label htmlFor="edit-day">{t("publish.form.dayOfWeek")}</Label>
+                    <Select value={editRecurrentDay} onValueChange={setEditRecurrentDay}>
+                      <SelectTrigger className="bg-card border-border" data-testid="select-edit-day">
+                        <SelectValue placeholder={t("publish.form.dayOfWeek")} />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        {DAYS_OF_WEEK.map(day => (
+                          <SelectItem key={day} value={day}>
+                            {t(`days.${day}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </>
+                ) : (
+                  <>
+                    <Label htmlFor="date">{t("publish.form.date")}</Label>
+                    <Input
+                      id="date"
+                      name="date"
+                      type="date"
+                      defaultValue={editingRide.date.split(' ')[0]}
+                      required={!editIsRecurrent}
+                      data-testid="input-edit-date"
+                    />
+                  </>
+                )}
+                <div className="flex items-center gap-2 mt-1">
+                  <Checkbox
+                    id="edit-recurrent"
+                    checked={editIsRecurrent}
+                    onCheckedChange={(checked) => setEditIsRecurrent(checked === true)}
+                    data-testid="checkbox-edit-recurrent"
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="destination">{t("publish.form.destination")}</Label>
-                  <Input
-                    id="destination"
-                    name="destination"
-                    defaultValue={editingRide.destination}
-                    required
-                    data-testid="input-edit-destination"
-                  />
+                  <label htmlFor="edit-recurrent" className="text-sm text-muted-foreground cursor-pointer">
+                    {t("publish.form.recurrentTrip")}
+                  </label>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  {editIsRecurrent ? (
-                    <>
-                      <Label htmlFor="edit-day">{t("publish.form.dayOfWeek")}</Label>
-                      <Select value={editRecurrentDay} onValueChange={setEditRecurrentDay}>
-                        <SelectTrigger className="bg-card border-border" data-testid="select-edit-day">
-                          <SelectValue placeholder={t("publish.form.dayOfWeek")} />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white">
-                          {DAYS_OF_WEEK.map(day => (
-                            <SelectItem key={day} value={day}>
-                              {t(`days.${day}`)}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </>
-                  ) : (
-                    <>
-                      <Label htmlFor="date">{t("publish.form.date")}</Label>
-                      <Input
-                        id="date"
-                        name="date"
-                        type="date"
-                        defaultValue={editingRide.date.split(' ')[0]}
-                        required={!editIsRecurrent}
-                        data-testid="input-edit-date"
-                      />
-                    </>
-                  )}
-                  <div className="flex items-center gap-2 mt-1">
-                    <Checkbox
-                      id="edit-recurrent"
-                      checked={editIsRecurrent}
-                      onCheckedChange={(checked) => setEditIsRecurrent(checked === true)}
-                      data-testid="checkbox-edit-recurrent"
-                    />
-                    <label htmlFor="edit-recurrent" className="text-sm text-muted-foreground cursor-pointer">
-                      {t("publish.form.recurrentTrip")}
-                    </label>
+              <div className="space-y-2">
+                <Label htmlFor="time">{t("publish.form.time")}</Label>
+                {editFlexibleTime ? (
+                  <div className="flex items-center h-10 px-3 rounded-md bg-card border border-border text-muted-foreground text-sm">
+                    {t("publish.form.flexibleTimeHint")}
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="time">{t("publish.form.time")}</Label>
-                  {editFlexibleTime ? (
-                    <div className="flex items-center h-10 px-3 rounded-md bg-card border border-border text-muted-foreground text-sm">
-                      {t("publish.form.flexibleTimeHint")}
-                    </div>
-                  ) : (
-                    <Input
-                      id="time"
-                      name="time"
-                      type="time"
-                      defaultValue={editingRide.flexibleTime ? "" : editingRide.time}
-                      required={!editFlexibleTime}
-                      data-testid="input-edit-time"
-                    />
-                  )}
-                  <div className="flex items-center gap-2 mt-1">
-                    <Checkbox
-                      id="edit-flexible-time"
-                      checked={editFlexibleTime}
-                      onCheckedChange={(checked) => setEditFlexibleTime(checked === true)}
-                      data-testid="checkbox-edit-flexible-time"
-                    />
-                    <label htmlFor="edit-flexible-time" className="text-sm text-muted-foreground cursor-pointer">
-                      {t("publish.form.flexibleTime")}
-                    </label>
-                  </div>
+                ) : (
+                  <Input
+                    id="time"
+                    name="time"
+                    type="time"
+                    defaultValue={editingRide.flexibleTime ? "" : editingRide.time}
+                    required={!editFlexibleTime}
+                    data-testid="input-edit-time"
+                  />
+                )}
+                <div className="flex items-center gap-2 mt-1">
+                  <Checkbox
+                    id="edit-flexible-time"
+                    checked={editFlexibleTime}
+                    onCheckedChange={(checked) => setEditFlexibleTime(checked === true)}
+                    data-testid="checkbox-edit-flexible-time"
+                  />
+                  <label htmlFor="edit-flexible-time" className="text-sm text-muted-foreground cursor-pointer">
+                    {t("publish.form.flexibleTime")}
+                  </label>
                 </div>
               </div>
               <div className="space-y-2">
