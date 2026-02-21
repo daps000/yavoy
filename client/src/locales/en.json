@@ -136,7 +136,7 @@
       "flexibleTime": "Flexible time",
       "flexibleTimeHint": "No fixed time, can be arranged with the traveler",
       "recurrentNote": "Recurrent trip every {{day}}.",
-      "flexibleTimeNote": "No fixed time set, can be arranged directly with the traveler."
+      "flexibleTimeNote": "I'm flexible, we can arrange the time."
     },
     "success": {
       "title": "Ride published!",

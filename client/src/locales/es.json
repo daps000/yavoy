@@ -136,7 +136,7 @@
       "flexibleTime": "Horario flexible",
       "flexibleTimeHint": "Sin hora fija, se puede acordar con el viajero",
       "recurrentNote": "Viaje recurrente cada {{day}}.",
-      "flexibleTimeNote": "Sin hora fija establecida, se puede acordar directamente con el viajero."
+      "flexibleTimeNote": "Soy flexible, podemos acordar la hora."
     },
     "success": {
       "title": "¡Viaje publicado!",
