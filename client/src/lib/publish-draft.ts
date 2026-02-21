@@ -11,6 +11,9 @@ export interface RideDraft {
   seats: number;
   contact: string;
   notes: string;
+  isRecurrent?: boolean;
+  recurrentDay?: string;
+  flexibleTime?: boolean;
   savedAt: number;
 }
 

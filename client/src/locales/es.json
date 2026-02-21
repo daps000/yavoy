@@ -70,12 +70,23 @@
       "button": "Publicar un viaje"
     }
   },
+  "days": {
+    "monday": "lunes",
+    "tuesday": "martes",
+    "wednesday": "miércoles",
+    "thursday": "jueves",
+    "friday": "viernes",
+    "saturday": "sábado",
+    "sunday": "domingo"
+  },
   "rides": {
     "title": "Viajes disponibles",
     "subtitle": "Encuentra un vecino con quien compartir trayecto.",
     "ridesFound": "{{count}} viajes encontrados",
     "noRides": "No hay viajes con estos filtros",
     "beFirst": "¡Sé el primero en publicar uno!",
+    "recurrentBadge": "Cada {{day}}",
+    "flexibleTimeBadge": "Horario flexible",
     "filter": {
       "origin": "Origen",
       "originPlaceholder": "¿De dónde sales?",
@@ -117,7 +128,15 @@
       "notesPlaceholder": "Ej. Vuelvo sobre las 18h, salgo de la plaza, llevo maletero vacío...",
       "publishing": "Publicando...",
       "publishNow": "Publicar viaje ahora",
-      "loginHint": "Al pulsar publicar te pediremos iniciar sesión para gestionar tu viaje después."
+      "loginHint": "Al pulsar publicar te pediremos iniciar sesión para gestionar tu viaje después.",
+      "tripType": "Tipo de viaje",
+      "specificDate": "Fecha concreta",
+      "recurrentTrip": "Viaje recurrente",
+      "dayOfWeek": "Día de la semana",
+      "flexibleTime": "Horario flexible",
+      "flexibleTimeHint": "Sin hora fija, se puede acordar con el viajero",
+      "recurrentNote": "Viaje recurrente cada {{day}}.",
+      "flexibleTimeNote": "Sin hora fija establecida, se puede acordar directamente con el viajero."
     },
     "success": {
       "title": "¡Viaje publicado!",

@@ -70,12 +70,23 @@
       "button": "Publish a ride"
     }
   },
+  "days": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  },
   "rides": {
     "title": "Available rides",
     "subtitle": "Find a neighbor to share your journey with.",
     "ridesFound": "{{count}} rides found",
     "noRides": "No rides match these filters",
     "beFirst": "Be the first to publish one!",
+    "recurrentBadge": "Every {{day}}",
+    "flexibleTimeBadge": "Flexible time",
     "filter": {
       "origin": "Origin",
       "originPlaceholder": "Where are you leaving from?",
@@ -117,7 +128,15 @@
       "notesPlaceholder": "E.g. Returning around 6pm, leaving from the square, empty trunk...",
       "publishing": "Publishing...",
       "publishNow": "Publish ride now",
-      "loginHint": "When you click publish, you'll be asked to sign in to manage your ride later."
+      "loginHint": "When you click publish, you'll be asked to sign in to manage your ride later.",
+      "tripType": "Trip type",
+      "specificDate": "Specific date",
+      "recurrentTrip": "Recurrent trip",
+      "dayOfWeek": "Day of the week",
+      "flexibleTime": "Flexible time",
+      "flexibleTimeHint": "No fixed time, can be arranged with the traveler",
+      "recurrentNote": "Recurrent trip every {{day}}.",
+      "flexibleTimeNote": "No fixed time set, can be arranged directly with the traveler."
     },
     "success": {
       "title": "Ride published!",

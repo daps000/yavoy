@@ -29,6 +29,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { Ride } from "@shared/schema";
 
 export default function MyRidesPage() {
@@ -124,18 +126,56 @@ export default function MyRidesPage() {
     setDeleteConfirmRide(ride);
   };
 
+  const [editIsRecurrent, setEditIsRecurrent] = useState(false);
+  const [editRecurrentDay, setEditRecurrentDay] = useState("");
+  const [editFlexibleTime, setEditFlexibleTime] = useState(false);
+  
+  const DAYS_OF_WEEK = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
+
+  useEffect(() => {
+    if (editingRide) {
+      setEditIsRecurrent(!!editingRide.isRecurrent);
+      setEditRecurrentDay(editingRide.recurrentDay || "");
+      setEditFlexibleTime(!!editingRide.flexibleTime);
+    }
+  }, [editingRide]);
+
   const handleSaveEdit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingRide) return;
     
+    if (editIsRecurrent && !editRecurrentDay) {
+      toast({
+        title: t("publish.error.missingData"),
+        description: t("publish.error.fillRequired"),
+        variant: "destructive",
+      });
+      return;
+    }
+    
     const formData = new FormData(e.currentTarget);
-    const data = {
+    const dateVal = editIsRecurrent ? new Date().toISOString().split('T')[0] : formData.get("date") as string;
+    const timeVal = editFlexibleTime ? "flexible" : formData.get("time") as string;
+    
+    if (!editIsRecurrent && !dateVal) {
+      toast({
+        title: t("publish.error.missingData"),
+        description: t("publish.error.fillRequired"),
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const data: Partial<Ride> = {
       origin: formData.get("origin") as string,
       destination: formData.get("destination") as string,
-      date: formData.get("date") as string,
-      time: formData.get("time") as string,
+      date: dateVal,
+      time: timeVal,
       seats: parseInt(formData.get("seats") as string),
       notes: formData.get("notes") as string || undefined,
+      isRecurrent: editIsRecurrent ? 1 : 0,
+      recurrentDay: editIsRecurrent ? editRecurrentDay : null,
+      flexibleTime: editFlexibleTime ? 1 : 0,
     };
     
     updateMutation.mutate({ id: editingRide.id, data });
@@ -245,26 +285,74 @@ export default function MyRidesPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="date">{t("publish.form.date")}</Label>
-                  <Input
-                    id="date"
-                    name="date"
-                    type="date"
-                    defaultValue={editingRide.date.split(' ')[0]}
-                    required
-                    data-testid="input-edit-date"
-                  />
+                  {editIsRecurrent ? (
+                    <>
+                      <Label htmlFor="edit-day">{t("publish.form.dayOfWeek")}</Label>
+                      <Select value={editRecurrentDay} onValueChange={setEditRecurrentDay}>
+                        <SelectTrigger className="bg-card border-border" data-testid="select-edit-day">
+                          <SelectValue placeholder={t("publish.form.dayOfWeek")} />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          {DAYS_OF_WEEK.map(day => (
+                            <SelectItem key={day} value={day}>
+                              {t(`days.${day}`)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </>
+                  ) : (
+                    <>
+                      <Label htmlFor="date">{t("publish.form.date")}</Label>
+                      <Input
+                        id="date"
+                        name="date"
+                        type="date"
+                        defaultValue={editingRide.date.split(' ')[0]}
+                        required={!editIsRecurrent}
+                        data-testid="input-edit-date"
+                      />
+                    </>
+                  )}
+                  <div className="flex items-center gap-2 mt-1">
+                    <Checkbox
+                      id="edit-recurrent"
+                      checked={editIsRecurrent}
+                      onCheckedChange={(checked) => setEditIsRecurrent(checked === true)}
+                      data-testid="checkbox-edit-recurrent"
+                    />
+                    <label htmlFor="edit-recurrent" className="text-sm text-muted-foreground cursor-pointer">
+                      {t("publish.form.recurrentTrip")}
+                    </label>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="time">{t("publish.form.time")}</Label>
-                  <Input
-                    id="time"
-                    name="time"
-                    type="time"
-                    defaultValue={editingRide.time}
-                    required
-                    data-testid="input-edit-time"
-                  />
+                  {editFlexibleTime ? (
+                    <div className="flex items-center h-10 px-3 rounded-md bg-card border border-border text-muted-foreground text-sm">
+                      {t("publish.form.flexibleTimeHint")}
+                    </div>
+                  ) : (
+                    <Input
+                      id="time"
+                      name="time"
+                      type="time"
+                      defaultValue={editingRide.flexibleTime ? "" : editingRide.time}
+                      required={!editFlexibleTime}
+                      data-testid="input-edit-time"
+                    />
+                  )}
+                  <div className="flex items-center gap-2 mt-1">
+                    <Checkbox
+                      id="edit-flexible-time"
+                      checked={editFlexibleTime}
+                      onCheckedChange={(checked) => setEditFlexibleTime(checked === true)}
+                      data-testid="checkbox-edit-flexible-time"
+                    />
+                    <label htmlFor="edit-flexible-time" className="text-sm text-muted-foreground cursor-pointer">
+                      {t("publish.form.flexibleTime")}
+                    </label>
+                  </div>
                 </div>
               </div>
               <div className="space-y-2">

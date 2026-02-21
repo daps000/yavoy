@@ -4,9 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { type InsertRide } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, LogIn, User } from "lucide-react";
+import { CheckCircle2, LogIn, User, CalendarDays, Repeat } from "lucide-react";
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createRide } from "@/lib/api";
@@ -31,7 +33,12 @@ export default function PublishPage() {
   const [time, setTime] = useState("");
   const [seats, setSeats] = useState(3);
   const [notes, setNotes] = useState("");
+  const [isRecurrent, setIsRecurrent] = useState(false);
+  const [recurrentDay, setRecurrentDay] = useState("");
+  const [flexibleTime, setFlexibleTime] = useState(false);
   const [isRestoringDraft, setIsRestoringDraft] = useState(true);
+
+  const DAYS_OF_WEEK = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
 
   const profileName = profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : '';
   const profilePhone = profile?.phone || '';
@@ -69,10 +76,17 @@ export default function PublishPage() {
       setContact(draft.contact);
       setOrigin(draft.origin);
       setDestination(draft.destination);
-      setDate(draft.date);
-      setTime(draft.time);
+      setDate(draft.date || "");
+      setTime(draft.time || "");
       setSeats(draft.seats);
       setNotes(draft.notes);
+      if (draft.isRecurrent) {
+        setIsRecurrent(true);
+        setRecurrentDay(draft.recurrentDay || "");
+      }
+      if (draft.flexibleTime) {
+        setFlexibleTime(true);
+      }
       
       if (isAuthenticated && isDraftPending() && !hasAttemptedAutoSubmit.current) {
         hasAttemptedAutoSubmit.current = true;
@@ -90,7 +104,11 @@ export default function PublishPage() {
     const finalName = isAuthenticated ? profileName : driverName;
     const finalPhone = isAuthenticated ? effectivePhone : contact;
     
-    if (!finalName || !origin || !destination || !date || !time) {
+    const needsDate = !isRecurrent;
+    const needsTime = !flexibleTime;
+    const needsDay = isRecurrent;
+    
+    if (!finalName || !origin || !destination || (needsDate && !date) || (needsTime && !time) || (needsDay && !recurrentDay)) {
       toast({
         title: t("publish.error.missingData"),
         description: t("publish.error.fillRequired"),
@@ -111,6 +129,18 @@ export default function PublishPage() {
     return true;
   };
 
+  const buildAutoNotes = (): string => {
+    const parts: string[] = [];
+    if (notes.trim()) parts.push(notes.trim());
+    if (isRecurrent && recurrentDay) {
+      parts.push(t("publish.form.recurrentNote", { day: t(`days.${recurrentDay}`) }));
+    }
+    if (flexibleTime) {
+      parts.push(t("publish.form.flexibleTimeNote"));
+    }
+    return parts.join(" ");
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
@@ -126,20 +156,29 @@ export default function PublishPage() {
         time,
         seats,
         notes,
+        isRecurrent,
+        recurrentDay: isRecurrent ? recurrentDay : undefined,
+        flexibleTime,
       });
       setLocation("/entrar?from=publicar");
       return;
     }
 
+    const finalDate = isRecurrent ? new Date().toISOString().split('T')[0] : date;
+    const finalTime = flexibleTime ? "flexible" : time;
+
     const newRide: InsertRide = {
       driverName: isAuthenticated ? profileName : driverName,
       origin,
       destination,
-      date,
-      time,
+      date: finalDate,
+      time: finalTime,
       seats,
       contact: isAuthenticated ? effectivePhone : contact,
-      notes: notes || "",
+      notes: buildAutoNotes() || "",
+      isRecurrent: isRecurrent ? 1 : 0,
+      recurrentDay: isRecurrent ? recurrentDay : null,
+      flexibleTime: flexibleTime ? 1 : 0,
     };
 
     mutation.mutate(newRide);
@@ -247,49 +286,120 @@ export default function PublishPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="date_form">{t("publish.form.date")}</Label>
-                <Input 
-                  id="date_form" 
-                  name="date" 
-                  type="date" 
-                  required 
-                  min={new Date().toISOString().split('T')[0]} 
-                  max={new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
-                  className="bg-card border-border"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  data-testid="input-date"
-                />
+                <Label>{t("publish.form.tripType")}</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsRecurrent(false)}
+                    className={`flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition-colors ${
+                      !isRecurrent 
+                        ? "border-primary bg-primary/10 text-primary font-medium" 
+                        : "border-border bg-card text-muted-foreground hover:border-primary/50"
+                    }`}
+                    data-testid="button-specific-date"
+                  >
+                    <CalendarDays className="h-4 w-4" />
+                    {t("publish.form.specificDate")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsRecurrent(true)}
+                    className={`flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition-colors ${
+                      isRecurrent 
+                        ? "border-primary bg-primary/10 text-primary font-medium" 
+                        : "border-border bg-card text-muted-foreground hover:border-primary/50"
+                    }`}
+                    data-testid="button-recurrent-trip"
+                  >
+                    <Repeat className="h-4 w-4" />
+                    {t("publish.form.recurrentTrip")}
+                  </button>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="time_form">{t("publish.form.time")}</Label>
-                <Input 
-                  id="time_form" 
-                  name="time" 
-                  type="time" 
-                  required 
-                  className="bg-card border-border"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  data-testid="input-time"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="seats">{t("publish.form.seats")}</Label>
-                <Input 
-                  id="seats" 
-                  name="seats" 
-                  type="number" 
-                  min="1" 
-                  max="8" 
-                  required 
-                  className="bg-card border-border"
-                  value={seats}
-                  onChange={(e) => setSeats(parseInt(e.target.value) || 3)}
-                  data-testid="input-seats"
-                />
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {isRecurrent ? (
+                  <div className="space-y-2">
+                    <Label htmlFor="day_form">{t("publish.form.dayOfWeek")}</Label>
+                    <Select value={recurrentDay} onValueChange={setRecurrentDay}>
+                      <SelectTrigger className="bg-card border-border" data-testid="select-day-of-week">
+                        <SelectValue placeholder={t("publish.form.dayOfWeek")} />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        {DAYS_OF_WEEK.map(day => (
+                          <SelectItem key={day} value={day}>
+                            {t(`days.${day}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Label htmlFor="date_form">{t("publish.form.date")}</Label>
+                    <Input 
+                      id="date_form" 
+                      name="date" 
+                      type="date" 
+                      required={!isRecurrent}
+                      min={new Date().toISOString().split('T')[0]} 
+                      max={new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
+                      className="bg-card border-border"
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                      data-testid="input-date"
+                    />
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="time_form">{t("publish.form.time")}</Label>
+                  {flexibleTime ? (
+                    <div className="flex items-center h-10 px-3 rounded-md bg-card border border-border text-muted-foreground text-sm">
+                      {t("publish.form.flexibleTimeHint")}
+                    </div>
+                  ) : (
+                    <Input 
+                      id="time_form" 
+                      name="time" 
+                      type="time" 
+                      required={!flexibleTime}
+                      className="bg-card border-border"
+                      value={time}
+                      onChange={(e) => setTime(e.target.value)}
+                      data-testid="input-time"
+                    />
+                  )}
+                  <div className="flex items-center gap-2 mt-1">
+                    <Checkbox
+                      id="flexible-time"
+                      checked={flexibleTime}
+                      onCheckedChange={(checked) => setFlexibleTime(checked === true)}
+                      data-testid="checkbox-flexible-time"
+                    />
+                    <label htmlFor="flexible-time" className="text-sm text-muted-foreground cursor-pointer">
+                      {t("publish.form.flexibleTime")}
+                    </label>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="seats">{t("publish.form.seats")}</Label>
+                  <Input 
+                    id="seats" 
+                    name="seats" 
+                    type="number" 
+                    min="1" 
+                    max="8" 
+                    required 
+                    className="bg-card border-border"
+                    value={seats}
+                    onChange={(e) => setSeats(parseInt(e.target.value) || 3)}
+                    data-testid="input-seats"
+                  />
+                </div>
               </div>
             </div>
 

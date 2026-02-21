@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { type Ride, type DriverRating } from "@shared/schema";
-import { Car, MapPin, Calendar, Clock, Users, MessageCircle, Search, Star, Pencil } from "lucide-react";
+import { Car, MapPin, Calendar, Clock, Users, MessageCircle, Search, Star, Pencil, Repeat } from "lucide-react";
 import { format } from "date-fns";
 import { es, enUS } from "date-fns/locale";
 import { Link, useSearch } from "wouter";
@@ -66,11 +66,11 @@ export default function RidesPage() {
       const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
       
       if (filterDate === "today") {
-        result = result.filter(ride => ride.date === today);
+        result = result.filter(ride => ride.isRecurrent || ride.date === today);
       } else if (filterDate === "tomorrow") {
-        result = result.filter(ride => ride.date === tomorrow);
+        result = result.filter(ride => ride.isRecurrent || ride.date === tomorrow);
       } else if (filterDate === "upcoming") {
-        result = result.filter(ride => ride.date > tomorrow);
+        result = result.filter(ride => ride.isRecurrent || ride.date > tomorrow);
       }
     }
 
@@ -250,12 +250,32 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
                 <span className="text-primary">→</span>
                 <span className="text-foreground">{ride.destination}</span>
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
-                <Calendar className="h-4 w-4 text-primary" />
-                <span>{formatDate(ride.date)}</span>
+              <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium flex-wrap">
+                {ride.isRecurrent ? (
+                  <>
+                    <Repeat className="h-4 w-4 text-primary" />
+                    <span className="text-primary font-medium">
+                      {t("rides.recurrentBadge", { day: t(`days.${ride.recurrentDay}`) })}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <Calendar className="h-4 w-4 text-primary" />
+                    <span>{formatDate(ride.date)}</span>
+                  </>
+                )}
                 <span className="mx-1">•</span>
-                <Clock className="h-4 w-4 text-primary" />
-                <span>{ride.time}</span>
+                {ride.flexibleTime ? (
+                  <>
+                    <Clock className="h-4 w-4 text-accent" />
+                    <span className="text-accent font-medium">{t("rides.flexibleTimeBadge")}</span>
+                  </>
+                ) : (
+                  <>
+                    <Clock className="h-4 w-4 text-primary" />
+                    <span>{ride.time}</span>
+                  </>
+                )}
               </div>
             </div>
           </div>

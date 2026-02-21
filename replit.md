@@ -87,10 +87,13 @@ Preferred communication style: Simple, everyday language.
    - origin (text)
    - destination (text)
    - date (text - stored as ISO date string)
-   - time (text)
+   - time (text - "flexible" for flexible time rides)
    - seats (integer)
    - contact (text - phone number for WhatsApp)
    - notes (optional text)
+   - isRecurrent (integer, default 0) - 1 for weekly recurring rides
+   - recurrentDay (text, nullable) - Day of week key (monday-sunday)
+   - flexibleTime (integer, default 0) - 1 if time is flexible/to be arranged
    - driverProfileId (integer, nullable) - Links to driver_profiles
    - userId (varchar, nullable) - Links to users for ownership
    - createdAt (timestamp)
