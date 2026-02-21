@@ -46,26 +46,33 @@ export default function PublishPage() {
   // Use draft contact if profile phone is empty (for users who just logged in after filling form)
   const effectivePhone = profilePhone || contact;
 
-  const prevAutoNote = useRef("");
+  const userNotes = useRef("");
 
-  useEffect(() => {
-    const parts: string[] = [];
-    if (isRecurrent && recurrentDay) {
-      parts.push(t("publish.form.recurrentNote", { day: t(`days.${recurrentDay}`) }));
+  const handleNotesChange = (value: string) => {
+    setNotes(value);
+    const currentAuto = buildAutoNote(isRecurrent, recurrentDay, flexibleTime);
+    if (currentAuto) {
+      userNotes.current = value.replace(currentAuto, "").trim();
+    } else {
+      userNotes.current = value.trim();
     }
-    if (flexibleTime) {
+  };
+
+  const buildAutoNote = (recurrent: boolean, day: string, flexible: boolean): string => {
+    const parts: string[] = [];
+    if (recurrent && day) {
+      parts.push(t("publish.form.recurrentNote", { day: t(`days.${day}`) }));
+    }
+    if (flexible) {
       parts.push(t("publish.form.flexibleTimeNote"));
     }
-    const newAutoNote = parts.join(" ");
+    return parts.join(" ");
+  };
 
-    setNotes((prev) => {
-      const oldAuto = prevAutoNote.current;
-      const userText = oldAuto ? prev.replace(oldAuto, "").trim() : prev.trim();
-      const combined = [userText, newAutoNote].filter(Boolean).join("\n");
-      return combined;
-    });
-
-    prevAutoNote.current = newAutoNote;
+  useEffect(() => {
+    const autoNote = buildAutoNote(isRecurrent, recurrentDay, flexibleTime);
+    const combined = [userNotes.current, autoNote].filter(Boolean).join("\n");
+    setNotes(combined);
   }, [isRecurrent, recurrentDay, flexibleTime, t]);
 
   const mutation = useMutation({
@@ -421,7 +428,7 @@ export default function PublishPage() {
                 placeholder={t("publish.form.notesPlaceholder")} 
                 className="resize-none bg-card border-border"
                 value={notes}
-                onChange={(e) => setNotes(e.target.value)}
+                onChange={(e) => handleNotesChange(e.target.value)}
                 data-testid="input-notes"
               />
             </div>

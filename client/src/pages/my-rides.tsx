@@ -130,39 +130,48 @@ export default function MyRidesPage() {
   const [editRecurrentDay, setEditRecurrentDay] = useState("");
   const [editFlexibleTime, setEditFlexibleTime] = useState(false);
   const [editNotes, setEditNotes] = useState("");
-  const editPrevAutoNote = useRef("");
+  const editUserNotes = useRef("");
   
   const DAYS_OF_WEEK = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
+
+  const buildEditAutoNote = (recurrent: boolean, day: string, flexible: boolean): string => {
+    const parts: string[] = [];
+    if (recurrent && day) {
+      parts.push(t("publish.form.recurrentNote", { day: t(`days.${day}`) }));
+    }
+    if (flexible) {
+      parts.push(t("publish.form.flexibleTimeNote"));
+    }
+    return parts.join(" ");
+  };
+
+  const handleEditNotesChange = (value: string) => {
+    setEditNotes(value);
+    const currentAuto = buildEditAutoNote(editIsRecurrent, editRecurrentDay, editFlexibleTime);
+    if (currentAuto) {
+      editUserNotes.current = value.replace(currentAuto, "").trim();
+    } else {
+      editUserNotes.current = value.trim();
+    }
+  };
 
   useEffect(() => {
     if (editingRide) {
       setEditIsRecurrent(!!editingRide.isRecurrent);
       setEditRecurrentDay(editingRide.recurrentDay || "");
       setEditFlexibleTime(!!editingRide.flexibleTime);
-      setEditNotes(editingRide.notes || "");
-      editPrevAutoNote.current = "";
+      const autoNote = buildEditAutoNote(!!editingRide.isRecurrent, editingRide.recurrentDay || "", !!editingRide.flexibleTime);
+      const rawNotes = editingRide.notes || "";
+      editUserNotes.current = autoNote ? rawNotes.replace(autoNote, "").trim() : rawNotes.trim();
+      setEditNotes(rawNotes);
     }
   }, [editingRide]);
 
   useEffect(() => {
     if (!editingRide) return;
-    const parts: string[] = [];
-    if (editIsRecurrent && editRecurrentDay) {
-      parts.push(t("publish.form.recurrentNote", { day: t(`days.${editRecurrentDay}`) }));
-    }
-    if (editFlexibleTime) {
-      parts.push(t("publish.form.flexibleTimeNote"));
-    }
-    const newAutoNote = parts.join(" ");
-
-    setEditNotes((prev) => {
-      const oldAuto = editPrevAutoNote.current;
-      const userText = oldAuto ? prev.replace(oldAuto, "").trim() : prev.trim();
-      const combined = [userText, newAutoNote].filter(Boolean).join("\n");
-      return combined;
-    });
-
-    editPrevAutoNote.current = newAutoNote;
+    const autoNote = buildEditAutoNote(editIsRecurrent, editRecurrentDay, editFlexibleTime);
+    const combined = [editUserNotes.current, autoNote].filter(Boolean).join("\n");
+    setEditNotes(combined);
   }, [editIsRecurrent, editRecurrentDay, editFlexibleTime, editingRide, t]);
 
   const handleSaveEdit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -399,7 +408,7 @@ export default function MyRidesPage() {
                   id="notes"
                   name="notes"
                   value={editNotes}
-                  onChange={(e) => setEditNotes(e.target.value)}
+                  onChange={(e) => handleEditNotesChange(e.target.value)}
                   placeholder={t("myRides.edit.notesPlaceholder")}
                   data-testid="input-edit-notes"
                 />
