@@ -6,6 +6,7 @@ import { fromZodError } from "zod-validation-error";
 import { z } from "zod";
 import { requireAuth, optionalAuth, upsertUserFromSupabase } from "./supabaseAuth";
 import { supabaseAdmin } from "./supabase";
+import { geocodeTown } from "./geocode";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -113,6 +114,31 @@ export async function registerRoutes(
     }
   });
   
+  // Update user home location
+  app.put("/api/user/home-location", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId!;
+      const { homeTown } = req.body;
+      
+      if (!homeTown || homeTown.trim().length < 2) {
+        return res.status(400).json({ error: "Nombre de localidad no válido" });
+      }
+      
+      const geocoded = await geocodeTown(homeTown.trim());
+      if (!geocoded) {
+        return res.status(400).json({ error: "No se pudo localizar esta población" });
+      }
+      
+      const updatedUser = await storage.updateUserHomeLocation(
+        userId, homeTown.trim(), geocoded.lat, geocoded.lng
+      );
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating home location:", error);
+      res.status(500).json({ error: "No se pudo actualizar la ubicación" });
+    }
+  });
+
   // Record ride contact (when user clicks "Contactar")
   app.post("/api/ride-contacts", requireAuth, async (req, res) => {
     try {
@@ -163,11 +189,37 @@ export async function registerRoutes(
     }
   });
 
-  // Get all rides
-  app.get("/api/rides", async (req, res) => {
+  // Get all rides (with optional proximity filtering for logged-in users)
+  app.get("/api/rides", optionalAuth, async (req, res) => {
     try {
-      const rides = await storage.getAllRides();
-      res.json(rides);
+      const allRides = await storage.getAllRides();
+      const showAll = req.query.all === "true";
+      
+      const userProfile = req.userId ? await storage.getUser(req.userId) : null;
+      
+      if (!showAll && userProfile?.homeLatitude && userProfile?.homeLongitude) {
+        const { haversineDistance } = await import("./geocode");
+        const RADIUS_KM = 30;
+        
+        const nearbyRides = allRides.filter(ride => {
+          if (!ride.originLat || !ride.originLng) return false;
+          const distance = haversineDistance(
+            userProfile.homeLatitude!, userProfile.homeLongitude!,
+            ride.originLat, ride.originLng
+          );
+          return distance <= RADIUS_KM;
+        });
+        
+        return res.json({ 
+          rides: nearbyRides, 
+          filtered: true, 
+          homeTown: userProfile.homeTown,
+          totalCount: allRides.length,
+          nearbyCount: nearbyRides.length,
+        });
+      }
+      
+      res.json({ rides: allRides, filtered: false, homeTown: userProfile?.homeTown || undefined });
     } catch (error) {
       console.error("Error fetching rides:", error);
       res.status(500).json({ error: "No se pudieron cargar los viajes" });
@@ -191,14 +243,30 @@ export async function registerRoutes(
         validation.data.driverName
       );
 
-      // Save phone to user profile if not already set
       const userProfile = await storage.getUser(userId);
       if (userProfile && !userProfile.phone && validation.data.contact) {
         await storage.updateUserPhone(userId, validation.data.contact);
       }
 
+      let originLat: number | undefined;
+      let originLng: number | undefined;
+      
+      const geocoded = await geocodeTown(validation.data.origin);
+      if (geocoded) {
+        originLat = geocoded.lat;
+        originLng = geocoded.lng;
+        
+        if (userProfile && !userProfile.homeLatitude) {
+          storage.updateUserHomeLocation(userId, validation.data.origin, geocoded.lat, geocoded.lng).catch(err => {
+            console.error("Error auto-setting home location:", err);
+          });
+        }
+      }
+
       const ride = await storage.createRide({
         ...validation.data,
+        originLat: originLat ?? null,
+        originLng: originLng ?? null,
         driverProfileId: driverProfile.id,
         userId,
       } as any);

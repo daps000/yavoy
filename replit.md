@@ -72,6 +72,9 @@ Preferred communication style: Simple, everyday language.
    - firstName (varchar)
    - lastName (varchar)
    - phone (varchar) - Optional phone number
+   - homeTown (varchar) - User's home town for proximity filtering
+   - homeLatitude (doublePrecision) - Home location latitude
+   - homeLongitude (doublePrecision) - Home location longitude
    - createdAt (timestamp)
    - updatedAt (timestamp)
 
@@ -94,6 +97,8 @@ Preferred communication style: Simple, everyday language.
    - isRecurrent (integer, default 0) - 1 for weekly recurring rides
    - recurrentDay (text, nullable) - Day of week key (monday-sunday)
    - flexibleTime (integer, default 0) - 1 if time is flexible/to be arranged
+   - originLat (doublePrecision, nullable) - Geocoded origin latitude
+   - originLng (doublePrecision, nullable) - Geocoded origin longitude
    - driverProfileId (integer, nullable) - Links to driver_profiles
    - userId (varchar, nullable) - Links to users for ownership
    - createdAt (timestamp)
@@ -116,9 +121,11 @@ Preferred communication style: Simple, everyday language.
 
 ### API Endpoints
 
-**GET /api/rides** - Fetch all rides, ordered by creation date (newest first)
+**GET /api/rides** - Fetch rides with optional proximity filtering. Returns {rides, filtered, homeTown, totalCount, nearbyCount}. Supports ?all=true to bypass 30km filter. Uses optionalAuth to detect logged-in users.
 
-**POST /api/rides** - Create a new ride (requires auth). Automatically creates or links driver profile.
+**POST /api/rides** - Create a new ride (requires auth). Automatically creates/links driver profile. Geocodes origin town via Nominatim and auto-sets user home location if not set.
+
+**PUT /api/user/home-location** - Update user home location (requires auth). Geocodes town name via Nominatim.
 
 **GET /api/my-rides** - Get current user's published rides (requires auth)
 

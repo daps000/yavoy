@@ -113,11 +113,37 @@ export async function markContactReviewed(contactId: number): Promise<void> {
   }
 }
 
-export async function fetchRides(): Promise<Ride[]> {
-  const response = await fetch("/api/rides");
+export type RidesResponse = {
+  rides: Ride[];
+  filtered: boolean;
+  homeTown?: string;
+  totalCount?: number;
+  nearbyCount?: number;
+};
+
+export async function fetchRides(showAll: boolean = false): Promise<RidesResponse> {
+  const headers = await getAuthHeaders();
+  const url = showAll ? "/api/rides?all=true" : "/api/rides";
+  const response = await fetch(url, { headers });
   if (!response.ok) {
     throw new Error("Failed to fetch rides");
   }
+  return response.json();
+}
+
+export async function updateUserHomeLocation(homeTown: string): Promise<User> {
+  const headers = await getAuthHeaders();
+  const response = await fetch("/api/user/home-location", {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ homeTown }),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Error al actualizar ubicación");
+  }
+  
   return response.json();
 }
 

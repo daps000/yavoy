@@ -98,6 +98,10 @@
       "tomorrow": "Tomorrow",
       "upcoming": "Coming days"
     },
+    "nearbyFilter": "Rides near {{town}} ({{count}} found)",
+    "showAll": "See all ({{count}})",
+    "showingAll": "Showing all rides",
+    "showNearby": "Only near {{town}}",
     "card": {
       "new": "new",
       "rate": "Rate",
@@ -210,6 +214,12 @@
     "lastNamePlaceholder": "Your last name",
     "phoneWhatsapp": "Phone / WhatsApp",
     "phoneHint": "This phone will be used for ride contacts",
+    "homeLocation": "My location",
+    "homeLocationHint": "We use your location to show you nearby rides (30 km)",
+    "homeLocationPlaceholder": "Your town or city",
+    "homeLocationSaved": "Location saved",
+    "homeLocationSavedDesc": "We'll show you rides near {{town}}",
+    "homeLocationError": "Could not save location",
     "updated": {
       "title": "Profile updated",
       "description": "Your data has been saved successfully.",

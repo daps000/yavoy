@@ -4,12 +4,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { type Ride, type DriverRating } from "@shared/schema";
-import { Car, MapPin, Calendar, Clock, Users, MessageCircle, Search, Star, Pencil, Repeat } from "lucide-react";
+import { Car, MapPin, Calendar, Clock, Users, MessageCircle, Search, Star, Pencil, Repeat, Navigation, Globe } from "lucide-react";
 import { format } from "date-fns";
 import { es, enUS } from "date-fns/locale";
 import { Link, useSearch } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { fetchRides, fetchDriverRating, recordRideContact } from "@/lib/api";
+import { fetchRides, fetchDriverRating, recordRideContact, type RidesResponse } from "@/lib/api";
 import { LocationAutocomplete } from "@/components/LocationAutocomplete";
 import { ReviewDialog } from "@/components/ReviewDialog";
 import { useAuth } from "@/lib/auth-context";
@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 export default function RidesPage() {
   const { t, i18n } = useTranslation();
   const searchString = useSearch();
+  const [showAll, setShowAll] = useState(false);
   
   const urlOrigin = useMemo(() => {
     const params = new URLSearchParams(searchString);
@@ -35,10 +36,16 @@ export default function RidesPage() {
     return params.get("fecha") || "all";
   }, [searchString]);
   
-  const { data: rides = [], isLoading } = useQuery({
-    queryKey: ["rides"],
-    queryFn: fetchRides,
+  const { data: ridesData, isLoading } = useQuery({
+    queryKey: ["rides", showAll],
+    queryFn: () => fetchRides(showAll),
   });
+  
+  const rides = ridesData?.rides ?? [];
+  const isFiltered = ridesData?.filtered ?? false;
+  const homeTown = ridesData?.homeTown;
+  const totalCount = ridesData?.totalCount ?? 0;
+  const nearbyCount = ridesData?.nearbyCount ?? 0;
   
   // Filter states - initialize from URL params
   const [filterOrigin, setFilterOrigin] = useState(urlOrigin);
@@ -150,6 +157,47 @@ export default function RidesPage() {
           </Button>
         </div>
       </div>
+
+      {/* Proximity indicator */}
+      {isFiltered && !showAll && (
+        <div className="flex items-center justify-between bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 mb-6" data-testid="proximity-indicator">
+          <div className="flex items-center gap-2 text-sm">
+            <Navigation className="h-4 w-4 text-primary" />
+            <span className="text-foreground">
+              {t("rides.nearbyFilter", { town: homeTown, count: nearbyCount })}
+            </span>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setShowAll(true)}
+            className="text-primary hover:text-primary hover:bg-primary/10 text-xs gap-1"
+            data-testid="button-show-all-rides"
+          >
+            <Globe className="h-3.5 w-3.5" />
+            {t("rides.showAll", { count: totalCount })}
+          </Button>
+        </div>
+      )}
+      
+      {showAll && homeTown && (
+        <div className="flex items-center justify-between bg-muted/50 border border-border rounded-xl px-4 py-3 mb-6" data-testid="showing-all-indicator">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Globe className="h-4 w-4" />
+            <span>{t("rides.showingAll")}</span>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setShowAll(false)}
+            className="text-primary hover:bg-primary/10 text-xs gap-1"
+            data-testid="button-show-nearby"
+          >
+            <Navigation className="h-3.5 w-3.5" />
+            {t("rides.showNearby", { town: homeTown })}
+          </Button>
+        </div>
+      )}
 
       {/* Results */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

@@ -34,6 +34,8 @@ export interface IStorage {
   createReview(review: InsertReview): Promise<Review>;
   canUserReview(driverProfileId: number, reviewerUserId: string): Promise<boolean>;
   
+  updateUserHomeLocation(userId: string, homeTown: string, lat: number, lng: number): Promise<User>;
+  
   createRideContact(contact: InsertRideContact): Promise<RideContact>;
   getPendingReviewContacts(userId: string): Promise<(RideContact & { driverName: string | null })[]>;
   markContactReviewed(contactId: number): Promise<void>;
@@ -222,6 +224,15 @@ export class DatabaseStorage implements IStorage {
     
     const lastReview = existingReviews[0];
     return lastReview.createdAt < fourteenDaysAgo;
+  }
+
+  async updateUserHomeLocation(userId: string, homeTown: string, lat: number, lng: number): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ homeTown, homeLatitude: lat, homeLongitude: lng, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
   }
 
   async createRideContact(contact: InsertRideContact): Promise<RideContact> {

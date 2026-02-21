@@ -98,6 +98,10 @@
       "tomorrow": "Mañana",
       "upcoming": "Próximos días"
     },
+    "nearbyFilter": "Viajes cerca de {{town}} ({{count}} encontrados)",
+    "showAll": "Ver todos ({{count}})",
+    "showingAll": "Mostrando todos los viajes",
+    "showNearby": "Solo cerca de {{town}}",
     "card": {
       "new": "nuevo",
       "rate": "Valorar",
@@ -210,6 +214,12 @@
     "lastNamePlaceholder": "Tus apellidos",
     "phoneWhatsapp": "Teléfono / WhatsApp",
     "phoneHint": "Este teléfono se usará para que te contacten por tus viajes",
+    "homeLocation": "Mi localidad",
+    "homeLocationHint": "Usamos tu localidad para mostrarte los viajes más cercanos (30 km)",
+    "homeLocationPlaceholder": "Tu pueblo o ciudad",
+    "homeLocationSaved": "Localidad guardada",
+    "homeLocationSavedDesc": "Te mostraremos viajes cerca de {{town}}",
+    "homeLocationError": "No se pudo guardar la localidad",
     "updated": {
       "title": "Perfil actualizado",
       "description": "Tus datos se han guardado correctamente.",

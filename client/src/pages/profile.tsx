@@ -6,26 +6,32 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
-import { updateUserProfile } from "@/lib/api";
-import { User, Phone, Mail, Save, Loader2 } from "lucide-react";
+import { updateUserProfile, updateUserHomeLocation } from "@/lib/api";
+import { User, Phone, Mail, Save, Loader2, MapPin, Navigation } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { LocationAutocomplete } from "@/components/LocationAutocomplete";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function ProfilePage() {
   const { t } = useTranslation();
   const { user, profile, isAuthenticated, isLoading: authLoading, refreshProfile } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [homeTown, setHomeTown] = useState("");
+  const [isSavingHome, setIsSavingHome] = useState(false);
 
   useEffect(() => {
     if (profile) {
       setFirstName(profile.firstName || "");
       setLastName(profile.lastName || "");
       setPhone(profile.phone || "");
+      setHomeTown(profile.homeTown || "");
     }
   }, [profile]);
 
@@ -55,6 +61,28 @@ export default function ProfilePage() {
       });
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleSaveHome = async () => {
+    if (!homeTown.trim()) return;
+    setIsSavingHome(true);
+    try {
+      await updateUserHomeLocation(homeTown.trim());
+      await refreshProfile();
+      queryClient.invalidateQueries({ queryKey: ["rides"] });
+      toast({
+        title: t("profile.homeLocationSaved"),
+        description: t("profile.homeLocationSavedDesc", { town: homeTown.trim() }),
+      });
+    } catch (error: any) {
+      toast({
+        title: t("common.error"),
+        description: error.message || t("profile.homeLocationError"),
+        variant: "destructive",
+      });
+    } finally {
+      setIsSavingHome(false);
     }
   };
 
@@ -145,6 +173,47 @@ export default function ProfilePage() {
               <p className="text-xs text-muted-foreground">
                 {t("profile.phoneHint")}
               </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Navigation className="h-4 w-4 text-muted-foreground" />
+                {t("profile.homeLocation")}
+              </Label>
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <LocationAutocomplete
+                    id="home-town"
+                    placeholder={t("profile.homeLocationPlaceholder")}
+                    value={homeTown}
+                    onChange={setHomeTown}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSaveHome}
+                  disabled={isSavingHome || !homeTown.trim() || homeTown === profile?.homeTown}
+                  className="h-10 px-3"
+                  data-testid="button-save-home-location"
+                >
+                  {isSavingHome ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <MapPin className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {t("profile.homeLocationHint")}
+              </p>
+              {profile?.homeTown && (
+                <p className="text-xs text-primary flex items-center gap-1">
+                  <MapPin className="h-3 w-3" />
+                  {t("profile.homeLocationSavedDesc", { town: profile.homeTown })}
+                </p>
+              )}
             </div>
 
             <Button

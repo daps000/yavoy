@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, serial, integer, timestamp, index, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, serial, integer, timestamp, index, jsonb, doublePrecision } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -9,6 +9,9 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   phone: varchar("phone"),
+  homeTown: varchar("home_town"),
+  homeLatitude: doublePrecision("home_latitude"),
+  homeLongitude: doublePrecision("home_longitude"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -47,6 +50,8 @@ export const rides = pgTable("rides", {
   isRecurrent: integer("is_recurrent").default(0),
   recurrentDay: text("recurrent_day"),
   flexibleTime: integer("flexible_time").default(0),
+  originLat: doublePrecision("origin_lat"),
+  originLng: doublePrecision("origin_lng"),
   driverProfileId: integer("driver_profile_id"),
   userId: varchar("user_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
