@@ -102,6 +102,9 @@
       "new": "nuevo",
       "rate": "Valorar",
       "contact": "Contactar",
+      "whatsappMessage": "Hola, me interesa tu viaje de {{origin}} a {{destination}} el {{date}}{{time}}. ¿Me podrías recoger en...?",
+      "whatsappMessageRecurrent": "Hola, me interesa tu viaje recurrente de {{origin}} a {{destination}} (cada {{day}}){{time}}. ¿Me podrías recoger en...?",
+      "whatsappAtTime": " a las {{time}}",
       "freeSeats": "{{count}} plazas libres",
       "myPublishedRide": "Mi viaje publicado",
       "publishRide": "Publicar viaje"

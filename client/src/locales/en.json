@@ -102,6 +102,9 @@
       "new": "new",
       "rate": "Rate",
       "contact": "Contact",
+      "whatsappMessage": "Hello, I'm interested in your trip from {{origin}} to {{destination}} on {{date}}{{time}}. Can you pick me up at...?",
+      "whatsappMessageRecurrent": "Hello, I'm interested in your recurrent trip from {{origin}} to {{destination}} (every {{day}}){{time}}. Can you pick me up at...?",
+      "whatsappAtTime": " at {{time}}",
       "freeSeats": "{{count}} free seats",
       "myPublishedRide": "My published ride",
       "publishRide": "Publish ride"

@@ -224,7 +224,25 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
         console.error("Error recording ride contact:", error);
       }
     }
-    window.open(`https://wa.me/34${ride.contact.replace(/\s/g, '')}`, '_blank');
+    const timeText = ride.flexibleTime ? "" : t("rides.card.whatsappAtTime", { time: ride.time });
+    let message: string;
+    if (ride.isRecurrent && ride.recurrentDay) {
+      message = t("rides.card.whatsappMessageRecurrent", {
+        origin: ride.origin,
+        destination: ride.destination,
+        day: t(`days.${ride.recurrentDay}`),
+        time: timeText,
+      });
+    } else {
+      message = t("rides.card.whatsappMessage", {
+        origin: ride.origin,
+        destination: ride.destination,
+        date: formatDate(ride.date),
+        time: timeText,
+      });
+    }
+    const encoded = encodeURIComponent(message);
+    window.open(`https://wa.me/34${ride.contact.replace(/\s/g, '')}?text=${encoded}`, '_blank');
   };
 
   return (
