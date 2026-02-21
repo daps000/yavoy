@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchMyRides, deleteRide, updateRide } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
@@ -129,6 +129,8 @@ export default function MyRidesPage() {
   const [editIsRecurrent, setEditIsRecurrent] = useState(false);
   const [editRecurrentDay, setEditRecurrentDay] = useState("");
   const [editFlexibleTime, setEditFlexibleTime] = useState(false);
+  const [editNotes, setEditNotes] = useState("");
+  const editPrevAutoNote = useRef("");
   
   const DAYS_OF_WEEK = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
 
@@ -137,8 +139,31 @@ export default function MyRidesPage() {
       setEditIsRecurrent(!!editingRide.isRecurrent);
       setEditRecurrentDay(editingRide.recurrentDay || "");
       setEditFlexibleTime(!!editingRide.flexibleTime);
+      setEditNotes(editingRide.notes || "");
+      editPrevAutoNote.current = "";
     }
   }, [editingRide]);
+
+  useEffect(() => {
+    if (!editingRide) return;
+    const parts: string[] = [];
+    if (editIsRecurrent && editRecurrentDay) {
+      parts.push(t("publish.form.recurrentNote", { day: t(`days.${editRecurrentDay}`) }));
+    }
+    if (editFlexibleTime) {
+      parts.push(t("publish.form.flexibleTimeNote"));
+    }
+    const newAutoNote = parts.join(" ");
+
+    setEditNotes((prev) => {
+      const oldAuto = editPrevAutoNote.current;
+      const userText = oldAuto ? prev.replace(oldAuto, "").trim() : prev.trim();
+      const combined = [userText, newAutoNote].filter(Boolean).join("\n");
+      return combined;
+    });
+
+    editPrevAutoNote.current = newAutoNote;
+  }, [editIsRecurrent, editRecurrentDay, editFlexibleTime, editingRide, t]);
 
   const handleSaveEdit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -172,7 +197,7 @@ export default function MyRidesPage() {
       date: dateVal,
       time: timeVal,
       seats: parseInt(formData.get("seats") as string),
-      notes: formData.get("notes") as string || undefined,
+      notes: editNotes.trim() || undefined,
       isRecurrent: editIsRecurrent ? 1 : 0,
       recurrentDay: editIsRecurrent ? editRecurrentDay : null,
       flexibleTime: editFlexibleTime ? 1 : 0,
@@ -373,7 +398,8 @@ export default function MyRidesPage() {
                 <Textarea
                   id="notes"
                   name="notes"
-                  defaultValue={editingRide.notes || ""}
+                  value={editNotes}
+                  onChange={(e) => setEditNotes(e.target.value)}
                   placeholder={t("myRides.edit.notesPlaceholder")}
                   data-testid="input-edit-notes"
                 />

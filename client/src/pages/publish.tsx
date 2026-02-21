@@ -46,6 +46,28 @@ export default function PublishPage() {
   // Use draft contact if profile phone is empty (for users who just logged in after filling form)
   const effectivePhone = profilePhone || contact;
 
+  const prevAutoNote = useRef("");
+
+  useEffect(() => {
+    const parts: string[] = [];
+    if (isRecurrent && recurrentDay) {
+      parts.push(t("publish.form.recurrentNote", { day: t(`days.${recurrentDay}`) }));
+    }
+    if (flexibleTime) {
+      parts.push(t("publish.form.flexibleTimeNote"));
+    }
+    const newAutoNote = parts.join(" ");
+
+    setNotes((prev) => {
+      const oldAuto = prevAutoNote.current;
+      const userText = oldAuto ? prev.replace(oldAuto, "").trim() : prev.trim();
+      const combined = [userText, newAutoNote].filter(Boolean).join("\n");
+      return combined;
+    });
+
+    prevAutoNote.current = newAutoNote;
+  }, [isRecurrent, recurrentDay, flexibleTime, t]);
+
   const mutation = useMutation({
     mutationFn: createRide,
     onSuccess: () => {
@@ -129,18 +151,6 @@ export default function PublishPage() {
     return true;
   };
 
-  const buildAutoNotes = (): string => {
-    const parts: string[] = [];
-    if (notes.trim()) parts.push(notes.trim());
-    if (isRecurrent && recurrentDay) {
-      parts.push(t("publish.form.recurrentNote", { day: t(`days.${recurrentDay}`) }));
-    }
-    if (flexibleTime) {
-      parts.push(t("publish.form.flexibleTimeNote"));
-    }
-    return parts.join(" ");
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
@@ -175,7 +185,7 @@ export default function PublishPage() {
       time: finalTime,
       seats,
       contact: isAuthenticated ? effectivePhone : contact,
-      notes: buildAutoNotes() || "",
+      notes: notes.trim() || "",
       isRecurrent: isRecurrent ? 1 : 0,
       recurrentDay: isRecurrent ? recurrentDay : null,
       flexibleTime: flexibleTime ? 1 : 0,
