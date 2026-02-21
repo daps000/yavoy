@@ -21,6 +21,7 @@ export function PendingReviewPrompt() {
   const [promptDialogOpen, setPromptDialogOpen] = useState(false);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [currentContact, setCurrentContact] = useState<PendingReviewContact | null>(null);
+  const [dismissedIds, setDismissedIds] = useState<Set<number>>(new Set());
   const { t } = useTranslation();
   
   const { data: pendingContacts = [] } = useQuery({
@@ -32,15 +33,18 @@ export function PendingReviewPrompt() {
   });
 
   useEffect(() => {
-    if (pendingContacts.length > 0 && !currentContact) {
-      const contact = pendingContacts[0];
-      setCurrentContact(contact);
-      setPromptDialogOpen(true);
+    if (pendingContacts.length > 0 && !currentContact && !promptDialogOpen && !reviewDialogOpen) {
+      const undismissed = pendingContacts.find(c => !dismissedIds.has(c.id));
+      if (undismissed) {
+        setCurrentContact(undismissed);
+        setPromptDialogOpen(true);
+      }
     }
-  }, [pendingContacts, currentContact]);
+  }, [pendingContacts, currentContact, dismissedIds, promptDialogOpen, reviewDialogOpen]);
 
   const handleDismiss = async () => {
     if (currentContact) {
+      setDismissedIds(prev => new Set(prev).add(currentContact.id));
       try {
         await markContactReviewed(currentContact.id);
         queryClient.invalidateQueries({ queryKey: ["pending-reviews"] });
@@ -79,7 +83,7 @@ export function PendingReviewPrompt() {
 
   return (
     <>
-      <Dialog open={promptDialogOpen} onOpenChange={setPromptDialogOpen}>
+      <Dialog open={promptDialogOpen} onOpenChange={(open) => { if (!open) handleDismiss(); }}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
