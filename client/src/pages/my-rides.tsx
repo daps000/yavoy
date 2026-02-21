@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchMyRides, deleteRide, updateRide } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { RideCard } from "./rides";
 import { Button } from "@/components/ui/button";
-import { Car, Plus, PartyPopper } from "lucide-react";
+import { Car, Plus, PartyPopper, ChevronDown, ChevronRight, MapPin, Calendar, Clock } from "lucide-react";
 import { Link, useLocation, useSearch } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
@@ -32,9 +32,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Ride } from "@shared/schema";
+import { format } from "date-fns";
+import { es, enUS } from "date-fns/locale";
 
 export default function MyRidesPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isAuthenticated, profile, isLoading: authLoading } = useAuth();
   const [, navigate] = useLocation();
   const searchString = useSearch();
@@ -44,12 +46,27 @@ export default function MyRidesPage() {
   const [editingRide, setEditingRide] = useState<Ride | null>(null);
   const [deleteConfirmRide, setDeleteConfirmRide] = useState<Ride | null>(null);
   const [hasShownWelcome, setHasShownWelcome] = useState(false);
+  const [pastRidesOpen, setPastRidesOpen] = useState(false);
   
   const { data: myRides = [], isLoading } = useQuery({
     queryKey: ["my-rides"],
     queryFn: fetchMyRides,
     enabled: isAuthenticated,
   });
+
+  const { activeRides, pastRides } = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const active: Ride[] = [];
+    const past: Ride[] = [];
+    for (const ride of myRides) {
+      if (ride.isRecurrent || ride.date >= today) {
+        active.push(ride);
+      } else {
+        past.push(ride);
+      }
+    }
+    return { activeRides: active, pastRides: past };
+  }, [myRides]);
 
   useEffect(() => {
     const params = new URLSearchParams(searchString);
@@ -248,6 +265,16 @@ export default function MyRidesPage() {
     );
   }
 
+  const formatPastDate = (dateStr: string) => {
+    try {
+      const locale = i18n.language === 'en' ? enUS : es;
+      const formatStr = i18n.language === 'en' ? "MMM d, yyyy" : "d MMM yyyy";
+      return format(new Date(dateStr), formatStr, { locale });
+    } catch {
+      return dateStr;
+    }
+  };
+
   return (
     <div className="container px-4 md:px-6 py-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
@@ -262,9 +289,9 @@ export default function MyRidesPage() {
         </Link>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {myRides.length > 0 ? (
-          myRides.map((ride) => (
+      {activeRides.length > 0 ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {activeRides.map((ride) => (
             <RideCard 
               key={ride.id} 
               ride={ride} 
@@ -272,18 +299,60 @@ export default function MyRidesPage() {
               onEdit={handleEdit}
               onDelete={handleDelete}
             />
-          ))
-        ) : (
-          <div className="col-span-full text-center py-16 bg-secondary/20 rounded-xl border border-dashed">
-            <Car className="h-12 w-12 mx-auto text-muted-foreground mb-3 opacity-50" />
-            <h3 className="text-lg font-medium">{t("myRides.noRides.title")}</h3>
-            <p className="text-muted-foreground mb-6">{t("myRides.noRides.description")}</p>
-            <Link href="/publicar">
-              <Button data-testid="button-publish-first">{t("rides.card.publishRide")}</Button>
-            </Link>
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-16 bg-secondary/20 rounded-xl border border-dashed">
+          <Car className="h-12 w-12 mx-auto text-muted-foreground mb-3 opacity-50" />
+          <h3 className="text-lg font-medium">{t("myRides.noRides.title")}</h3>
+          <p className="text-muted-foreground mb-6">{t("myRides.noRides.description")}</p>
+          <Link href="/publicar">
+            <Button data-testid="button-publish-first">{t("rides.card.publishRide")}</Button>
+          </Link>
+        </div>
+      )}
+
+      {pastRides.length > 0 && (
+        <div className="mt-8">
+          <button
+            onClick={() => setPastRidesOpen(!pastRidesOpen)}
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors w-full"
+            data-testid="toggle-past-rides"
+          >
+            {pastRidesOpen ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
+            <span className="text-lg font-semibold">{t("myRides.pastRides")}</span>
+            <span className="text-sm">({pastRides.length})</span>
+          </button>
+          {pastRidesOpen && (
+            <div className="grid gap-3 mt-4">
+              {pastRides.map((ride) => (
+                <div
+                  key={ride.id}
+                  className="flex items-center gap-4 p-3 rounded-lg border border-border bg-muted/30 text-sm"
+                  data-testid={`past-ride-${ride.id}`}
+                >
+                  <div className="flex items-center gap-1.5 text-muted-foreground min-w-[100px]">
+                    <Calendar className="h-3.5 w-3.5" />
+                    <span>{formatPastDate(ride.date)}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                    <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                    <span className="truncate">{ride.origin}</span>
+                    <span className="text-muted-foreground mx-1">→</span>
+                    <span className="truncate">{ride.destination}</span>
+                  </div>
+                  {ride.time && ride.time !== "flexible" && (
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <Clock className="h-3.5 w-3.5" />
+                      <span>{ride.time}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       <Dialog open={!!editingRide} onOpenChange={(open) => !open && setEditingRide(null)}>
         <DialogContent className="sm:max-w-[500px]">

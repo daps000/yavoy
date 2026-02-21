@@ -194,7 +194,9 @@
     "delete": {
       "title": "Delete this ride?",
       "description": "This action cannot be undone. The ride will be permanently deleted."
-    }
+    },
+    "pastRides": "My past rides",
+    "pastRidesCount": "{{count}} past ride(s)"
   },
   "profile": {
     "title": "My profile",

@@ -194,7 +194,9 @@
     "delete": {
       "title": "¿Eliminar este viaje?",
       "description": "Esta acción no se puede deshacer. El viaje será eliminado permanentemente."
-    }
+    },
+    "pastRides": "Mis viajes pasados",
+    "pastRidesCount": "{{count}} viaje(s) pasado(s)"
   },
   "profile": {
     "title": "Mi perfil",
