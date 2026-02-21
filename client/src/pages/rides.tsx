@@ -264,14 +264,7 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
     }
   };
 
-  const handleContact = async () => {
-    if (isAuthenticated && ride.driverProfileId) {
-      try {
-        await recordRideContact(ride.id, ride.driverProfileId);
-      } catch (error) {
-        console.error("Error recording ride contact:", error);
-      }
-    }
+  const handleContact = () => {
     const timeText = ride.flexibleTime ? "" : t("rides.card.whatsappAtTime", { time: ride.time });
     let message: string;
     if (ride.isRecurrent && ride.recurrentDay) {
@@ -291,6 +284,10 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
     }
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/34${ride.contact.replace(/\s/g, '')}?text=${encoded}`, '_blank');
+
+    if (isAuthenticated && ride.driverProfileId) {
+      recordRideContact(ride.id, ride.driverProfileId).catch(() => {});
+    }
   };
 
   return (
