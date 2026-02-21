@@ -15,9 +15,10 @@ interface ReviewDialogProps {
   onOpenChange: (open: boolean) => void;
   driverProfileId: number;
   driverName: string;
+  onReviewSuccess?: () => void;
 }
 
-export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }: ReviewDialogProps) {
+export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName, onReviewSuccess }: ReviewDialogProps) {
   const [stars, setStars] = useState(0);
   const [hoveredStars, setHoveredStars] = useState(0);
   const [comment, setComment] = useState("");
@@ -36,6 +37,7 @@ export function ReviewDialog({ open, onOpenChange, driverProfileId, driverName }
         title: t("review.success"),
         description: t("review.successMessage"),
       });
+      onReviewSuccess?.();
       resetForm();
       onOpenChange(false);
     },

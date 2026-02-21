@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchPendingReviews, markContactReviewed, type PendingReviewContact } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
@@ -15,65 +15,102 @@ import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+const DISMISSED_KEY = "yavoy_dismissed_review_ids";
+
+function getDismissedIds(): Set<number> {
+  try {
+    const stored = sessionStorage.getItem(DISMISSED_KEY);
+    if (stored) return new Set(JSON.parse(stored));
+  } catch {}
+  return new Set();
+}
+
+function addDismissedId(id: number) {
+  const ids = getDismissedIds();
+  ids.add(id);
+  sessionStorage.setItem(DISMISSED_KEY, JSON.stringify(Array.from(ids)));
+}
+
 export function PendingReviewPrompt() {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   const [promptDialogOpen, setPromptDialogOpen] = useState(false);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [currentContact, setCurrentContact] = useState<PendingReviewContact | null>(null);
-  const [dismissedIds, setDismissedIds] = useState<Set<number>>(new Set());
+  const hasPickedRef = useRef(false);
+  const reviewSubmittedRef = useRef(false);
   const { t } = useTranslation();
   
   const { data: pendingContacts = [] } = useQuery({
     queryKey: ["pending-reviews"],
     queryFn: fetchPendingReviews,
     enabled: isAuthenticated,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
     retry: false,
   });
 
   useEffect(() => {
-    if (pendingContacts.length > 0 && !currentContact && !promptDialogOpen && !reviewDialogOpen) {
-      const undismissed = pendingContacts.find(c => !dismissedIds.has(c.id));
-      if (undismissed) {
-        setCurrentContact(undismissed);
-        setPromptDialogOpen(true);
-      }
-    }
-  }, [pendingContacts, currentContact, dismissedIds, promptDialogOpen, reviewDialogOpen]);
+    if (hasPickedRef.current || promptDialogOpen || reviewDialogOpen) return;
+    if (pendingContacts.length === 0) return;
 
-  const handleDismiss = async () => {
-    if (currentContact) {
-      setDismissedIds(prev => new Set(prev).add(currentContact.id));
-      try {
-        await markContactReviewed(currentContact.id);
-        queryClient.invalidateQueries({ queryKey: ["pending-reviews"] });
-      } catch (error) {
-        console.error("Error dismissing review prompt:", error);
-      }
+    const dismissed = getDismissedIds();
+    const next = pendingContacts.find(c => !dismissed.has(c.id));
+    if (next) {
+      hasPickedRef.current = true;
+      setCurrentContact(next);
+      setPromptDialogOpen(true);
     }
+  }, [pendingContacts, promptDialogOpen, reviewDialogOpen]);
+
+  const dismissContact = useCallback(async (contact: PendingReviewContact) => {
+    addDismissedId(contact.id);
+    try {
+      await markContactReviewed(contact.id);
+    } catch (error) {
+      console.error("Error dismissing review prompt:", error);
+    }
+  }, []);
+
+  const handleDismiss = useCallback(async () => {
     setPromptDialogOpen(false);
+    if (currentContact) {
+      await dismissContact(currentContact);
+    }
     setCurrentContact(null);
-  };
+    hasPickedRef.current = false;
+  }, [currentContact, dismissContact]);
 
-  const handleReviewClick = () => {
+  const handleReviewClick = useCallback(() => {
+    reviewSubmittedRef.current = false;
     setPromptDialogOpen(false);
     setReviewDialogOpen(true);
-  };
+  }, []);
 
-  const handleReviewComplete = async () => {
+  const handleReviewSuccess = useCallback(() => {
+    reviewSubmittedRef.current = true;
+  }, []);
+
+  const handleReviewDialogClose = useCallback(async () => {
+    setReviewDialogOpen(false);
     if (currentContact) {
-      try {
-        await markContactReviewed(currentContact.id);
-        queryClient.invalidateQueries({ queryKey: ["pending-reviews"] });
-        queryClient.invalidateQueries({ queryKey: ["driverRating", currentContact.driverProfileId] });
-      } catch (error) {
-        console.error("Error marking review complete:", error);
+      addDismissedId(currentContact.id);
+      if (reviewSubmittedRef.current) {
+        try {
+          await markContactReviewed(currentContact.id);
+          queryClient.invalidateQueries({ queryKey: ["pending-reviews"] });
+          queryClient.invalidateQueries({ queryKey: ["driverRating", currentContact.driverProfileId] });
+        } catch (error) {
+          console.error("Error marking review complete:", error);
+        }
+      } else {
+        await dismissContact(currentContact);
       }
     }
-    setReviewDialogOpen(false);
     setCurrentContact(null);
-  };
+    reviewSubmittedRef.current = false;
+    hasPickedRef.current = false;
+  }, [currentContact, dismissContact, queryClient]);
 
   if (!isAuthenticated || !currentContact) {
     return null;
@@ -109,13 +146,11 @@ export function PendingReviewPrompt() {
         <ReviewDialog
           open={reviewDialogOpen}
           onOpenChange={(open) => {
-            if (!open) {
-              handleReviewComplete();
-            }
-            setReviewDialogOpen(open);
+            if (!open) handleReviewDialogClose();
           }}
           driverProfileId={currentContact.driverProfileId}
           driverName={driverName}
+          onReviewSuccess={handleReviewSuccess}
         />
       )}
     </>
