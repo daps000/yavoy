@@ -62,15 +62,25 @@ export default function RidesPage() {
     }
 
     if (filterDate !== "all") {
-      const today = new Date().toISOString().split('T')[0];
-      const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+      const now = new Date();
+      const today = now.toISOString().split('T')[0];
+      const tomorrowDate = new Date(Date.now() + 86400000);
+      const tomorrow = tomorrowDate.toISOString().split('T')[0];
       
+      const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+      const todayDayName = dayNames[now.getDay()];
+      const tomorrowDayName = dayNames[tomorrowDate.getDay()];
+
+      const recurrentMatchesDay = (ride: typeof rides[0], targetDays: string[]): boolean => {
+        return !!ride.isRecurrent && !!ride.recurrentDay && targetDays.includes(ride.recurrentDay);
+      };
+
       if (filterDate === "today") {
-        result = result.filter(ride => ride.isRecurrent || ride.date === today);
+        result = result.filter(ride => recurrentMatchesDay(ride, [todayDayName]) || (!ride.isRecurrent && ride.date === today));
       } else if (filterDate === "tomorrow") {
-        result = result.filter(ride => ride.isRecurrent || ride.date === tomorrow);
+        result = result.filter(ride => recurrentMatchesDay(ride, [tomorrowDayName]) || (!ride.isRecurrent && ride.date === tomorrow));
       } else if (filterDate === "upcoming") {
-        result = result.filter(ride => ride.isRecurrent || ride.date > tomorrow);
+        result = result.filter(ride => !!ride.isRecurrent || ride.date > tomorrow);
       }
     }
 
