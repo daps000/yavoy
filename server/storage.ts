@@ -36,6 +36,7 @@ export interface IStorage {
   
   updateUserHomeLocation(userId: string, homeTown: string, lat: number, lng: number): Promise<User>;
   
+  findRideContact(userId: string, rideId: number): Promise<RideContact | null>;
   createRideContact(contact: InsertRideContact): Promise<RideContact>;
   getPendingReviewContacts(userId: string): Promise<(RideContact & { driverName: string | null })[]>;
   markContactReviewed(contactId: number): Promise<void>;
@@ -233,6 +234,15 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     return user;
+  }
+
+  async findRideContact(userId: string, rideId: number): Promise<RideContact | null> {
+    const [contact] = await db
+      .select()
+      .from(rideContacts)
+      .where(and(eq(rideContacts.userId, userId), eq(rideContacts.rideId, rideId)))
+      .limit(1);
+    return contact || null;
   }
 
   async createRideContact(contact: InsertRideContact): Promise<RideContact> {

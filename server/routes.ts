@@ -149,6 +149,11 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Faltan datos del viaje" });
       }
       
+      const existing = await storage.findRideContact(userId, rideId);
+      if (existing) {
+        return res.status(200).json(existing);
+      }
+      
       const contact = await storage.createRideContact({
         userId,
         rideId,
