@@ -41,8 +41,11 @@ async function getUncachableResendClient() {
 export async function sendEmail(to: string, subject: string, html: string): Promise<{ success: boolean; error?: string }> {
   try {
     const { client, fromEmail } = await getUncachableResendClient();
+    const sender = (fromEmail && !fromEmail.includes('gmail.com'))
+      ? `YaVoy <${fromEmail}>`
+      : 'YaVoy <noreply@yavoy.info>';
     const { error } = await client.emails.send({
-      from: fromEmail || 'YaVoy <noreply@yavoy.info>',
+      from: sender,
       to,
       subject,
       html,
