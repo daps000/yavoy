@@ -13,7 +13,14 @@ async function initSupabase(): Promise<SupabaseClient> {
   // Store the site URL for OAuth redirects
   cachedSiteUrl = siteUrl || null;
   
-  supabaseInstance = createClient(url, anonKey);
+  supabaseInstance = createClient(url, anonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      storageKey: 'yavoy-auth',
+      storage: window.localStorage,
+    },
+  });
   return supabaseInstance;
 }
 
