@@ -197,12 +197,12 @@ export async function registerRoutes(
       
       const userProfile = req.userId ? await storage.getUser(req.userId) : null;
       
-      if (!showAll && userProfile?.homeLatitude && userProfile?.homeLongitude) {
+      if (!showAll && userProfile?.homeLatitude != null && userProfile?.homeLongitude != null) {
         const { haversineDistance } = await import("./geocode");
         const RADIUS_KM = 30;
         
         const nearbyRides = allRides.filter(ride => {
-          if (!ride.originLat || !ride.originLng) return false;
+          if (ride.originLat == null || ride.originLng == null) return true;
           const distance = haversineDistance(
             userProfile.homeLatitude!, userProfile.homeLongitude!,
             ride.originLat, ride.originLng
