@@ -169,8 +169,8 @@ export default function RidesPage() {
         </div>
       </div>
 
-      {/* Proximity indicator */}
-      {isFiltered && !showAll && (
+      {/* Proximity indicator - hide when using origin/destination text filters */}
+      {isFiltered && !showAll && !filterOrigin && !filterDest && (
         <div className="flex items-center justify-between bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 mb-6" data-testid="proximity-indicator">
           <div className="flex items-center gap-2 text-sm">
             <Navigation className="h-4 w-4 text-primary" />
@@ -191,7 +191,7 @@ export default function RidesPage() {
         </div>
       )}
       
-      {showAll && homeTown && (
+      {showAll && homeTown && !filterOrigin && !filterDest && (
         <div className="flex items-center justify-between bg-muted/50 border border-border rounded-xl px-4 py-3 mb-6" data-testid="showing-all-indicator">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Globe className="h-4 w-4" />
