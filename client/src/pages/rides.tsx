@@ -103,21 +103,17 @@ export default function RidesPage() {
   }
 
   return (
-    <div className="container px-4 md:px-6 py-12">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-        <div>
-          <h1 className="text-3xl font-bold font-serif text-foreground">{t("rides.title")}</h1>
-          <p className="text-muted-foreground mt-2">{t("rides.subtitle")}</p>
-        </div>
-        <div className="hidden md:block text-sm text-muted-foreground bg-secondary/30 px-3 py-1 rounded-full">
+    <div className="container px-4 md:px-6 py-4 md:py-6">
+      <div className="flex items-center justify-between mb-3">
+        <h1 className="text-xl md:text-2xl font-bold font-serif text-foreground">{t("rides.title")}</h1>
+        <span className="text-xs text-muted-foreground bg-secondary/30 px-2.5 py-1 rounded-full">
           {t("rides.ridesFound", { count: filteredRides.length })}
-        </div>
+        </span>
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white p-4 rounded-2xl shadow-sm border border-border mb-8 grid gap-4 md:grid-cols-[1fr_1fr_auto_auto]">
-        <div className="space-y-2">
-          <Label htmlFor="origin" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">{t("rides.filter.origin")}</Label>
+      <div className="bg-white p-3 rounded-xl shadow-sm border border-border mb-4 grid gap-2 grid-cols-[1fr_1fr] md:grid-cols-[1fr_1fr_auto_auto]">
+        <div>
           <LocationAutocomplete
             id="origin"
             placeholder={t("rides.filter.originPlaceholder")}
@@ -126,8 +122,7 @@ export default function RidesPage() {
           />
         </div>
         
-        <div className="space-y-2">
-          <Label htmlFor="dest" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">{t("rides.filter.destination")}</Label>
+        <div>
           <LocationAutocomplete
             id="dest"
             placeholder={t("rides.filter.destinationPlaceholder")}
@@ -136,10 +131,9 @@ export default function RidesPage() {
           />
         </div>
         
-        <div className="space-y-2 min-w-[180px]">
-          <Label htmlFor="date" className="text-xs text-muted-foreground uppercase font-bold tracking-wide">{t("rides.filter.date")}</Label>
+        <div>
           <Select value={filterDate} onValueChange={setFilterDate}>
-            <SelectTrigger className="bg-card border-border">
+            <SelectTrigger className="bg-card border-border h-9 text-sm">
               <SelectValue placeholder={t("rides.filter.anyDate")} />
             </SelectTrigger>
             <SelectContent className="bg-white">
@@ -151,19 +145,20 @@ export default function RidesPage() {
           </Select>
         </div>
 
-        <div className="flex items-end">
+        <div className="flex items-center">
           {(filterOrigin || filterDest || filterDate !== "all") ? (
             <Button 
               variant="outline"
-              className="w-full md:w-auto"
+              size="sm"
+              className="w-full md:w-auto h-9"
               onClick={() => { setFilterOrigin(""); setFilterDest(""); setFilterDate("all"); }}
               data-testid="button-clear-filters"
             >
-              <X className="mr-2 h-4 w-4" /> {t("common.clearFilters")}
+              <X className="mr-1.5 h-3.5 w-3.5" /> {t("common.clearFilters")}
             </Button>
           ) : (
-            <Button className="w-full md:w-auto bg-primary hover:bg-[#70b681] pointer-events-none opacity-50" tabIndex={-1}>
-              <Search className="mr-2 h-4 w-4" /> {t("common.filter")}
+            <Button size="sm" className="w-full md:w-auto h-9 bg-primary hover:bg-[#70b681] pointer-events-none opacity-50" tabIndex={-1}>
+              <Search className="mr-1.5 h-3.5 w-3.5" /> {t("common.filter")}
             </Button>
           )}
         </div>
@@ -171,9 +166,9 @@ export default function RidesPage() {
 
       {/* Proximity indicator - hide when using origin/destination text filters */}
       {isFiltered && !showAll && !filterOrigin && !filterDest && (
-        <div className="flex items-center justify-between bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 mb-6" data-testid="proximity-indicator">
-          <div className="flex items-center gap-2 text-sm">
-            <Navigation className="h-4 w-4 text-primary" />
+        <div className="flex items-center justify-between bg-primary/10 border border-primary/20 rounded-lg px-3 py-2 mb-3" data-testid="proximity-indicator">
+          <div className="flex items-center gap-1.5 text-xs">
+            <Navigation className="h-3.5 w-3.5 text-primary" />
             <span className="text-foreground">
               {t("rides.nearbyFilter", { town: homeTown, count: nearbyCount })}
             </span>
@@ -182,36 +177,36 @@ export default function RidesPage() {
             variant="ghost" 
             size="sm" 
             onClick={() => setShowAll(true)}
-            className="text-primary hover:text-primary hover:bg-primary/10 text-xs gap-1"
+            className="text-primary hover:text-primary hover:bg-primary/10 text-xs gap-1 h-7 px-2"
             data-testid="button-show-all-rides"
           >
-            <Globe className="h-3.5 w-3.5" />
+            <Globe className="h-3 w-3" />
             {t("rides.showAll", { count: totalCount })}
           </Button>
         </div>
       )}
       
       {showAll && homeTown && !filterOrigin && !filterDest && (
-        <div className="flex items-center justify-between bg-muted/50 border border-border rounded-xl px-4 py-3 mb-6" data-testid="showing-all-indicator">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Globe className="h-4 w-4" />
+        <div className="flex items-center justify-between bg-muted/50 border border-border rounded-lg px-3 py-2 mb-3" data-testid="showing-all-indicator">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Globe className="h-3.5 w-3.5" />
             <span>{t("rides.showingAll")}</span>
           </div>
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={() => setShowAll(false)}
-            className="text-primary hover:bg-primary/10 text-xs gap-1"
+            className="text-primary hover:bg-primary/10 text-xs gap-1 h-7 px-2"
             data-testid="button-show-nearby"
           >
-            <Navigation className="h-3.5 w-3.5" />
+            <Navigation className="h-3 w-3" />
             {t("rides.showNearby", { town: homeTown })}
           </Button>
         </div>
       )}
 
       {/* Results */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         {filteredRides.length > 0 ? (
           filteredRides.map((ride) => (
             <RideCard key={ride.id} ride={ride} showAsOwn={false} />
@@ -309,8 +304,8 @@ export function RideCard({ ride, showAsOwn = false, onEdit, onDelete }: {
         }`} 
         data-testid={`card-ride-${ride.id}`}
       >
-        <div className={`h-2 w-full ${isOwnRide ? "bg-primary" : "bg-primary"}`}></div>
-        <CardContent className="pt-6 space-y-4">
+        <div className={`h-1.5 w-full bg-primary`}></div>
+        <CardContent className="pt-4 pb-4 space-y-3">
           {isOwnRide && (
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-primary uppercase tracking-wide">
