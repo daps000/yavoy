@@ -40,6 +40,12 @@ export interface IStorage {
   createRideContact(contact: InsertRideContact): Promise<RideContact>;
   getPendingReviewContacts(userId: string): Promise<(RideContact & { driverName: string | null })[]>;
   markContactReviewed(contactId: number): Promise<void>;
+
+  getEligibleDriversForReminder(): Promise<User[]>;
+  getDriverContactStats(userId: string): Promise<{ totalContacts: number; topOrigin: string | null; topDestination: string | null }>;
+  getNearbyRideCount(lat: number, lng: number, radiusKm: number): Promise<number>;
+  updateLastReminderSent(userId: string): Promise<void>;
+  setEmailReminders(userId: string, enabled: boolean): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -281,6 +287,80 @@ export class DatabaseStorage implements IStorage {
       .update(rideContacts)
       .set({ reviewSubmitted: 1 })
       .where(eq(rideContacts.id, contactId));
+  }
+
+  async getEligibleDriversForReminder(): Promise<User[]> {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const result = await db
+      .select({ user: users })
+      .from(users)
+      .innerJoin(driverProfiles, eq(users.id, driverProfiles.userId))
+      .where(
+        and(
+          eq(users.emailReminders, 1),
+          sql`(${users.lastReminderSentAt} IS NULL OR ${users.lastReminderSentAt} < ${sevenDaysAgo})`
+        )
+      );
+    return result.map(r => r.user);
+  }
+
+  async getDriverContactStats(userId: string): Promise<{ totalContacts: number; topOrigin: string | null; topDestination: string | null }> {
+    const result = await db
+      .select({
+        rideId: rides.id,
+        origin: rides.origin,
+        destination: rides.destination,
+        contactCount: count(rideContacts.id),
+      })
+      .from(rides)
+      .leftJoin(rideContacts, eq(rides.id, rideContacts.rideId))
+      .where(eq(rides.userId, userId))
+      .groupBy(rides.id, rides.origin, rides.destination)
+      .orderBy(desc(count(rideContacts.id)));
+
+    let totalContacts = 0;
+    let topOrigin: string | null = null;
+    let topDestination: string | null = null;
+
+    for (const row of result) {
+      const cnt = Number(row.contactCount);
+      totalContacts += cnt;
+      if (topOrigin == null && cnt > 0) {
+        topOrigin = row.origin;
+        topDestination = row.destination;
+      }
+    }
+
+    return { totalContacts, topOrigin, topDestination };
+  }
+
+  async getNearbyRideCount(lat: number, lng: number, radiusKm: number): Promise<number> {
+    const result = await db
+      .select({ count: count() })
+      .from(rides)
+      .where(
+        sql`origin_lat IS NOT NULL AND origin_lng IS NOT NULL AND
+          (6371 * acos(
+            cos(radians(${lat})) * cos(radians(origin_lat)) *
+            cos(radians(origin_lng) - radians(${lng})) +
+            sin(radians(${lat})) * sin(radians(origin_lat))
+          )) <= ${radiusKm}`
+      );
+    return Number(result[0]?.count ?? 0);
+  }
+
+  async updateLastReminderSent(userId: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ lastReminderSentAt: new Date() })
+      .where(eq(users.id, userId));
+  }
+
+  async setEmailReminders(userId: string, enabled: boolean): Promise<void> {
+    await db
+      .update(users)
+      .set({ emailReminders: enabled ? 1 : 0 })
+      .where(eq(users.id, userId));
   }
 }
 

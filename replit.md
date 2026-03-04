@@ -75,6 +75,8 @@ Preferred communication style: Simple, everyday language.
    - homeTown (varchar) - User's home town for proximity filtering
    - homeLatitude (doublePrecision) - Home location latitude
    - homeLongitude (doublePrecision) - Home location longitude
+   - emailReminders (integer, default 1) - 1 to receive weekly reminders, 0 to opt out
+   - lastReminderSentAt (timestamp, nullable) - When last reminder email was sent
    - createdAt (timestamp)
    - updatedAt (timestamp)
 
@@ -156,6 +158,26 @@ Preferred communication style: Simple, everyday language.
 **GET /api/pending-reviews** - Get ride contacts pending review (requires auth)
 
 **PUT /api/ride-contacts/:id/reviewed** - Mark contact as reviewed (requires auth)
+
+**Email Reminder Endpoints:**
+
+**POST /api/admin/send-reminders** - Trigger reminder emails (requires x-admin-key header)
+
+**GET /api/unsubscribe?token={signed_token}** - Unsubscribe from email reminders (HMAC-signed token)
+
+**PUT /api/user/email-reminders** - Update email reminder preference (requires auth, body: {enabled: boolean})
+
+### Email Reminder System
+
+Weekly email reminders sent Sundays at 19:00 Spain time via Resend integration. Targets drivers who haven't published recently. Emails include:
+- Personalized greeting
+- Contact stats for their rides (how many people were interested)
+- Nearby ride count (social proof)
+- Community/environmental impact messaging
+- Direct link to publish a new ride
+- HMAC-signed unsubscribe link
+
+Files: `server/email.ts` (Resend integration), `server/email-templates.ts` (HTML template), `server/reminders.ts` (logic + token signing)
 
 ### Frontend Architecture
 

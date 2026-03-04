@@ -360,6 +360,12 @@
     "permissionError": "No se pudo obtener tu ubicación. Asegúrate de permitir el acceso.",
     "typeTownName": "Escribe el nombre de tu pueblo"
   },
+  "emailPreferences": {
+    "title": "Recordatorios por email",
+    "enabled": "Recibir emails semanales recordándote publicar viajes",
+    "disabled": "No recibir emails de recordatorio",
+    "updated": "Preferencia actualizada"
+  },
   "errors": {
     "generic": "Ha ocurrido un error. Inténtalo de nuevo.",
     "network": "Error de conexión. Comprueba tu internet.",

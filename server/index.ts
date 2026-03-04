@@ -4,6 +4,7 @@ import rateLimit from "express-rate-limit";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import { sendReminderEmails } from "./reminders";
 
 const app = express();
 const httpServer = createServer(app);
@@ -111,6 +112,35 @@ app.use((req, res, next) => {
     },
     () => {
       log(`serving on port ${port}`);
+
+      startWeeklyReminderScheduler(port);
     },
   );
 })();
+
+function startWeeklyReminderScheduler(port: number) {
+  const CHECK_INTERVAL_MS = 60 * 60 * 1000;
+
+  function isSpainSundayEvening(): boolean {
+    const now = new Date();
+    const spainTime = new Date(now.toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
+    const day = spainTime.getDay();
+    const hour = spainTime.getHours();
+    return day === 0 && hour === 19;
+  }
+
+  setInterval(async () => {
+    if (!isSpainSundayEvening()) return;
+
+    log("Running weekly reminder emails...", "scheduler");
+    try {
+      const baseUrl = process.env.APP_BASE_URL || `http://localhost:${port}`;
+      const result = await sendReminderEmails(baseUrl);
+      log(`Reminders complete: sent=${result.sent}, skipped=${result.skipped}, errors=${result.errors}`, "scheduler");
+    } catch (err: any) {
+      log(`Reminder scheduler error: ${err.message}`, "scheduler");
+    }
+  }, CHECK_INTERVAL_MS);
+
+  log("Weekly reminder scheduler initialized (Sundays 19:00 Spain time)", "scheduler");
+}

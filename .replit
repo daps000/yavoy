@@ -40,8 +40,10 @@ waitForPort = 5000
 
 [agent]
 mockupState = "FULLSTACK"
-integrations = ["javascript_database:1.0.0"]
+integrations = ["javascript_database:1.0.0", "resend:1.0.0"]
 
 [userenv]
 
 [userenv.shared]
+ADMIN_SECRET = "353199119798ef684e25acff32a83eeb609aaed56fcfc3ac"
+APP_BASE_URL = "https://yavoy.info"

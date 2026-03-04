@@ -360,6 +360,12 @@
     "permissionError": "Could not get your location. Make sure you allow access.",
     "typeTownName": "Type your town name"
   },
+  "emailPreferences": {
+    "title": "Email reminders",
+    "enabled": "Receive weekly email reminders to publish rides",
+    "disabled": "Don't receive reminder emails",
+    "updated": "Preference updated"
+  },
   "errors": {
     "generic": "An error occurred. Please try again.",
     "network": "Connection error. Check your internet.",

@@ -12,6 +12,8 @@ export const users = pgTable("users", {
   homeTown: varchar("home_town"),
   homeLatitude: doublePrecision("home_latitude"),
   homeLongitude: doublePrecision("home_longitude"),
+  emailReminders: integer("email_reminders").default(1),
+  lastReminderSentAt: timestamp("last_reminder_sent_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

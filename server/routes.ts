@@ -7,6 +7,7 @@ import { z } from "zod";
 import { requireAuth, optionalAuth, upsertUserFromSupabase } from "./supabaseAuth";
 import { supabaseAdmin } from "./supabase";
 import { geocodeTown } from "./geocode";
+import { sendReminderEmails, verifyUnsubscribeToken } from "./reminders";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -449,6 +450,71 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error checking review eligibility:", error);
       res.status(500).json({ error: "No se pudo verificar si puedes valorar" });
+    }
+  });
+
+  app.post("/api/admin/send-reminders", async (req, res) => {
+    try {
+      const adminKey = req.headers["x-admin-key"];
+      if (!adminKey || adminKey !== process.env.ADMIN_SECRET) {
+        return res.status(403).json({ error: "No autorizado" });
+      }
+
+      const baseUrl = process.env.APP_BASE_URL || `${req.headers["x-forwarded-proto"] || "https"}://${req.headers["host"]}`;
+
+      const result = await sendReminderEmails(baseUrl);
+      res.json(result);
+    } catch (error) {
+      console.error("Error sending reminders:", error);
+      res.status(500).json({ error: "Error al enviar recordatorios" });
+    }
+  });
+
+  app.get("/api/unsubscribe", async (req, res) => {
+    try {
+      const token = req.query.token as string;
+      if (!token) {
+        return res.status(400).send("Enlace no válido");
+      }
+
+      const uid = verifyUnsubscribeToken(token);
+      if (!uid) {
+        return res.status(400).send("Enlace no válido o expirado");
+      }
+
+      await storage.setEmailReminders(uid, false);
+
+      res.send(`<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YaVoy - Desuscripción</title>
+<style>body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#f5f5f0;margin:0}
+.card{background:#fff;border-radius:16px;padding:40px;max-width:400px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+h1{color:#7dc891;font-size:28px;margin:0 0 16px}p{color:#444;font-size:16px;line-height:1.6}
+a{color:#7dc891;text-decoration:underline}</style></head>
+<body><div class="card">
+<h1>YaVoy</h1>
+<p>Te has dado de baja de los emails de recordatorio.</p>
+<p>Ya no recibirás más emails nuestros. Si cambias de opinión, puedes volver a activarlos desde tu perfil.</p>
+<p><a href="/">Volver a YaVoy</a></p>
+</div></body></html>`);
+    } catch (error) {
+      console.error("Error unsubscribing:", error);
+      res.status(500).send("Error al procesar la solicitud");
+    }
+  });
+
+  app.put("/api/user/email-reminders", requireAuth, async (req, res) => {
+    try {
+      const { enabled } = req.body;
+      if (typeof enabled !== "boolean") {
+        return res.status(400).json({ error: "Parámetro 'enabled' requerido" });
+      }
+      await storage.setEmailReminders(req.userId!, enabled);
+      res.json({ success: true, emailReminders: enabled });
+    } catch (error) {
+      console.error("Error updating email preferences:", error);
+      res.status(500).json({ error: "No se pudo actualizar la preferencia" });
     }
   });
 
