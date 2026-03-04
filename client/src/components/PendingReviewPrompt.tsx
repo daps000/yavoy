@@ -19,7 +19,7 @@ const DISMISSED_KEY = "yavoy_dismissed_review_ids";
 
 function getDismissedIds(): Set<number> {
   try {
-    const stored = sessionStorage.getItem(DISMISSED_KEY);
+    const stored = localStorage.getItem(DISMISSED_KEY);
     if (stored) return new Set(JSON.parse(stored));
   } catch {}
   return new Set();
@@ -28,7 +28,7 @@ function getDismissedIds(): Set<number> {
 function addDismissedId(id: number) {
   const ids = getDismissedIds();
   ids.add(id);
-  sessionStorage.setItem(DISMISSED_KEY, JSON.stringify(Array.from(ids)));
+  localStorage.setItem(DISMISSED_KEY, JSON.stringify(Array.from(ids)));
 }
 
 export function PendingReviewPrompt() {
@@ -67,10 +67,11 @@ export function PendingReviewPrompt() {
     addDismissedId(contact.id);
     try {
       await markContactReviewed(contact.id);
+      queryClient.invalidateQueries({ queryKey: ["pending-reviews"] });
     } catch (error) {
       console.error("Error dismissing review prompt:", error);
     }
-  }, []);
+  }, [queryClient]);
 
   const handleDismiss = useCallback(async () => {
     setPromptDialogOpen(false);
@@ -95,22 +96,20 @@ export function PendingReviewPrompt() {
     setReviewDialogOpen(false);
     if (currentContact) {
       addDismissedId(currentContact.id);
-      if (reviewSubmittedRef.current) {
-        try {
-          await markContactReviewed(currentContact.id);
-          queryClient.invalidateQueries({ queryKey: ["pending-reviews"] });
+      try {
+        await markContactReviewed(currentContact.id);
+        queryClient.invalidateQueries({ queryKey: ["pending-reviews"] });
+        if (reviewSubmittedRef.current) {
           queryClient.invalidateQueries({ queryKey: ["driverRating", currentContact.driverProfileId] });
-        } catch (error) {
-          console.error("Error marking review complete:", error);
         }
-      } else {
-        await dismissContact(currentContact);
+      } catch (error) {
+        console.error("Error marking review complete:", error);
       }
     }
     setCurrentContact(null);
     reviewSubmittedRef.current = false;
     hasPickedRef.current = false;
-  }, [currentContact, dismissContact, queryClient]);
+  }, [currentContact, queryClient]);
 
   if (!isAuthenticated || !currentContact) {
     return null;
