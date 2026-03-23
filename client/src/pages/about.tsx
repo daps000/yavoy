@@ -3,11 +3,6 @@ import aboutIllustration from "@assets/generated_images/about-illustration.png";
 export default function AboutPage() {
   return (
     <div className="container px-4 md:px-6 py-12 max-w-3xl mx-auto">
-      <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold font-serif text-primary mb-4">Nosotros</h1>
-        <p className="text-muted-foreground">La historia detrás de YaVoy</p>
-      </div>
-
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         <img
           src={aboutIllustration}
@@ -51,9 +46,6 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <p className="text-muted-foreground italic text-[15px]">
-            Hecho con buena intención, para nuestra comunidad.
-          </p>
         </div>
       </div>
     </div>
