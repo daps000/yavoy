@@ -1,3 +1,6 @@
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
 import aboutIllustration from "@assets/generated_images/about-illustration.png";
 
 export default function AboutPage() {
@@ -44,6 +47,15 @@ export default function AboutPage() {
             <p className="font-medium text-primary">
               Si necesitas ir a algún lugar, encuentra a alguien que ya vaya.
             </p>
+          </div>
+
+          <div className="pt-2 text-center">
+            <Link href="/publicar">
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-semibold px-8" data-testid="button-about-publish">
+                <PlusCircle className="h-5 w-5 mr-2" />
+                Publicar un viaje ahora
+              </Button>
+            </Link>
           </div>
 
         </div>
