@@ -16,6 +16,7 @@ import RecoverPasswordPage from "@/pages/recover-password";
 import NewPasswordPage from "@/pages/new-password";
 import LegalNoticePage from "@/pages/legal-notice";
 import PrivacyPolicyPage from "@/pages/privacy-policy";
+import AboutPage from "@/pages/about";
 import { Layout } from "@/components/layout";
 import { AuthProvider } from "@/lib/auth-context";
 import { PendingReviewPrompt } from "@/components/PendingReviewPrompt";
@@ -57,6 +58,7 @@ function Router() {
         <Route path="/faq" component={FAQPage} />
         <Route path="/aviso-legal" component={LegalNoticePage} />
         <Route path="/privacidad" component={PrivacyPolicyPage} />
+        <Route path="/nosotros" component={AboutPage} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

@@ -29,6 +29,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     { label: t("nav.rides"), href: "/viajes" },
     { label: t("nav.publish"), href: "/publicar" },
     { label: t("nav.faq"), href: "/faq" },
+    { label: t("nav.about"), href: "/nosotros" },
   ];
 
   const getUserDisplayName = () => {
