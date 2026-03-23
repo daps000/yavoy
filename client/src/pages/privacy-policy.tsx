@@ -14,8 +14,8 @@ export default function PrivacyPolicyPage() {
             YaVoy es un proyecto piloto sin ánimo de lucro y sin entidad jurídica constituida, creado con el objetivo
             de facilitar la movilidad compartida entre vecinos de zonas rurales en España. Para cualquier cuestión
             relacionada con tus datos, puedes contactarnos en{" "}
-            <a href="mailto:hola@yavoy.info" className="text-primary underline hover:no-underline">
-              hola@yavoy.info
+            <a href="mailto:yavoyweb@gmail.com" className="text-primary underline hover:no-underline">
+              yavoyweb@gmail.com
             </a>.
           </p>
         </section>
@@ -59,8 +59,8 @@ export default function PrivacyPolicyPage() {
           <p>
             Conservamos tus datos mientras tu cuenta esté activa. Si deseas eliminar tu cuenta y todos los datos
             asociados, escríbenos a{" "}
-            <a href="mailto:hola@yavoy.info" className="text-primary underline hover:no-underline">
-              hola@yavoy.info
+            <a href="mailto:yavoyweb@gmail.com" className="text-primary underline hover:no-underline">
+              yavoyweb@gmail.com
             </a>{" "}
             y los eliminaremos en un plazo máximo de 30 días.
           </p>
@@ -78,8 +78,8 @@ export default function PrivacyPolicyPage() {
           </ul>
           <p className="mt-2">
             Para ejercer cualquiera de estos derechos, escríbenos a{" "}
-            <a href="mailto:hola@yavoy.info" className="text-primary underline hover:no-underline">
-              hola@yavoy.info
+            <a href="mailto:yavoyweb@gmail.com" className="text-primary underline hover:no-underline">
+              yavoyweb@gmail.com
             </a>.
             También puedes presentar una reclamación ante la{" "}
             <a

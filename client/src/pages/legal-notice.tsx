@@ -25,8 +25,8 @@ export default function LegalNoticePage() {
           <h2 className="text-xl font-semibold text-primary">2. Contacto</h2>
           <p>
             Para cualquier consulta relacionada con el funcionamiento del sitio puedes escribirnos a:{" "}
-            <a href="mailto:hola@yavoy.info" className="text-primary underline hover:no-underline">
-              hola@yavoy.info
+            <a href="mailto:yavoyweb@gmail.com" className="text-primary underline hover:no-underline">
+              yavoyweb@gmail.com
             </a>
           </p>
         </section>
