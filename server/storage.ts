@@ -1,6 +1,6 @@
 import { users, rides, locations, driverProfiles, reviews, rideContacts, type User, type UpsertUser, type Ride, type InsertRide, type Location, type DriverProfile, type Review, type InsertReview, type DriverRating, type RideContact, type InsertRideContact } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, asc, ilike, sql, and, avg, count, gte } from "drizzle-orm";
+import { eq, desc, asc, ilike, sql, and, avg, count, gte, or } from "drizzle-orm";
 
 function normalizeLocationName(name: string): string {
   return name
@@ -92,7 +92,7 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(rides)
-      .where(gte(rides.date, today))
+      .where(or(gte(rides.date, today), eq(rides.isRecurrent, 1)))
       .orderBy(asc(rides.date), asc(rides.time));
   }
 
