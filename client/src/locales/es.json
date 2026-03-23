@@ -348,7 +348,9 @@
   "footer": {
     "disclaimer": "YaVoy es un piloto en fase de pruebas. Conectamos personas, no operamos transporte.",
     "madeWith": "Hecho con",
-    "forOurVillages": "para nuestros pueblos"
+    "forOurVillages": "para nuestros pueblos",
+    "legalNotice": "Aviso Legal",
+    "privacyPolicy": "Política de Privacidad"
   },
   "location": {
     "useCurrentLocation": "Utilizar ubicación actual",

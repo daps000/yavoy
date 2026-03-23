@@ -220,7 +220,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
             />
           </div>
           <p className="text-primary-foreground/80 max-w-md mx-auto text-[14px]">{t("footer.disclaimer")}</p>
-          <div className="pt-4 text-xs opacity-50">
+          <div className="flex items-center justify-center gap-4 pt-2">
+            <Link href="/aviso-legal" className="text-primary-foreground/70 text-xs hover:text-primary-foreground underline underline-offset-2">
+              {t("footer.legalNotice")}
+            </Link>
+            <span className="text-primary-foreground/40 text-xs">·</span>
+            <Link href="/privacidad" className="text-primary-foreground/70 text-xs hover:text-primary-foreground underline underline-offset-2">
+              {t("footer.privacyPolicy")}
+            </Link>
+          </div>
+          <div className="pt-2 text-xs opacity-50">
             {t("footer.madeWith")} <Heart className="inline h-3 w-3 mx-1 fill-current" /> {t("footer.forOurVillages")}
           </div>
         </div>
