@@ -49,6 +49,26 @@ export default function AboutPage() {
             </p>
           </div>
 
+          <div className="border-t pt-6 mt-2 text-center space-y-3">
+            <p className="text-sm text-muted-foreground">
+              ¿Te parece útil YaVoy? Si quieres ayudarnos a mantener los servidores, puedes invitarnos a un café. ☕
+            </p>
+            <a
+              href="https://buymeacoffee.com/yavoy"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="button-donate-coffee"
+            >
+              <Button
+                size="lg"
+                className="font-semibold px-8"
+                style={{ backgroundColor: "#FFDD00", color: "#000000" }}
+              >
+                ☕ Invítanos a un café
+              </Button>
+            </a>
+          </div>
+
           <div className="pt-2 text-center">
             <Link href="/publicar">
               <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-semibold px-8" data-testid="button-about-publish">
