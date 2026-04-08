@@ -229,6 +229,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Link href="/privacidad" className="text-primary-foreground/70 text-xs hover:text-primary-foreground underline underline-offset-2">
               {t("footer.privacyPolicy")}
             </Link>
+            <span className="text-primary-foreground/40 text-xs">·</span>
+            <a
+              href="https://buymeacoffee.com/yavoy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary-foreground/70 text-xs hover:text-primary-foreground underline underline-offset-2"
+            >
+              ☕ {t("footer.buyACoffee")}
+            </a>
           </div>
           <div className="pt-2 text-xs opacity-50">
             {t("footer.madeWith")} <Heart className="inline h-3 w-3 mx-1 fill-current" /> {t("footer.forOurVillages")}
