@@ -293,3 +293,16 @@ Files: `server/email.ts` (Resend integration), `server/email-templates.ts` (HTML
 - `build` - Build both client and server for production
 - `start` - Run production server
 - `db:push` - Push Drizzle schema changes to database
+
+### GitHub Auto-Sync
+
+Every commit is automatically mirrored to https://github.com/daps000/yavoy.
+
+**How it works:**
+- `scripts/github-sync.sh` - Core sync logic; pushes Replit main branch to GitHub (force-push; Replit is the source of truth, GitHub is a read mirror)
+- `scripts/install-git-hooks.sh` - Installs `.git/hooks/post-commit` so the sync fires on every git commit, including Replit checkpoints
+- `scripts/post-merge.sh` - Reinstalls the hook (in case of environment reset) and syncs immediately after each task merge
+
+**Required secret:** `GITHUB_TOKEN` must be set as a Replit secret. Without it, the sync step is skipped with a warning.
+
+`push-to-github.sh` is kept as a deprecated manual fallback only.
